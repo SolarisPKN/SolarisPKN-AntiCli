@@ -14,6 +14,14 @@ Salt emplea diferentes ejecutables: `salt`, `salt-call`, `salt-run`, `salt-key`,
 
 El catálogo inicial incluye [17 módulos y 146 comandos documentados](COMMAND_MODULES.es.md). **Fichas JSON:** `src/SolarisPKN.AntiCli/Data/guided-commands.json` (definiciones detalladas) y `src/SolarisPKN.AntiCli/Data/admin-commands.json` (catálogo base). La aplicación permite incorporar ficheros `*.json` del usuario bajo `%APPDATA%\SolarisPKN\AntiCLI\modules\` para ampliar los formularios sin recompilar; no sustituyen automáticamente las definiciones integradas. Cada esquema describe: nombre, búsqueda, flags, tipo de valor, operandos, plantilla, riesgo, compatibilidad, lote y timeout. Para una explicación del contrato, ver [FORMULARIOS_DINAMICOS.md](FORMULARIOS_DINAMICOS.md). Véase también [SKILL.md](../SKILL.md).
 
+## Consola directa e historial de operaciones
+
+El mismo panel permite escribir cualquier comando SSH directamente. **Copiar comando**, **Pegar comando** y **Copiar salida** usan el portapapeles de Windows, sin necesidad de abrir un navegador. El botón de ejecución respeta la clasificación visual de riesgo y la casilla sudo.
+
+Cada intento de ejecución (éxito o error) se agrega al historial de la pestaña con fecha UTC, host/puerto, sudo activo, comando enviado, código de salida, STDOUT y STDERR. El registro se puede consultar, reutilizar, copiar, **editar antes de compartir** y exportar a `.txt`. El contenido es local a la sesión de la aplicación; la exportación necesita una elección explícita de destino. **No se sube ningún log a GitHub automáticamente.**
+
+**Privacidad:** los argumentos, variables de entorno, logs, cabeceras, tokens o salidas pueden contener secretos. Antes de copiar/exportar, revisá y redactá el texto en la caja editable del historial. Los últimos cambios de la caja son el contenido que se copia/exporta. Limpiar historial elimina las entradas en memoria de esa pestaña, sin modificar archivos exportados.
+
 ## Seguridad
 
 Los logs de exploración se guardan fuera del repositorio en `%APPDATA%\SolarisPKN\AntiCLI\discovery`. Pueden contener detalles del entorno remoto y no se comparten automáticamente. Los comandos detectados se presentan como sugerencias; cuando el administrador los elige, se pueden ejecutar por SSH como cualquier comando manual. La clasificación de comandos desconocidos es 🔴 y no existe una segunda confirmación. El botón sudo agrega `sudo -n -- sh -c '…'` a la ejecución Linux, sin introducir contraseñas ni pedir UAC en la PC Windows.
