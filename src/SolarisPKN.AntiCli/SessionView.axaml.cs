@@ -798,6 +798,7 @@ public partial class SessionView : UserControl, IDisposable
             ExecutionStatus.Text = "Ejecutando por SSH " + (useSudo ? "con sudo -n..." : "...");
             // Side log is already docked; do not steal focus from the fixed command bar.
             Output.Text = "$ " + remoteCommand + "\n";
+            ShowCommandInProgress(started, auditHost, auditPort, remoteCommand);
             var timeoutSeconds = _activePlan is not null &&
                 string.Equals(command, _activePlan.Command, StringComparison.Ordinal)
                 ? _activePlan.TimeoutSeconds :
