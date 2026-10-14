@@ -205,13 +205,29 @@ public partial class SessionView
     {
         try
         {
-            if (!PrepareFlowForScript(out var flowProblem))
+            var hasLoops = _flowEdited && _flowNodes.Any(n => n.Kind == FlowNodeKind.Loop);
+            if (!hasLoops && !PrepareFlowForScript(out var flowProblem))
                 throw new InvalidOperationException(flowProblem);
             var definition = ComposeAutomation();
-            _lastScript = AutomationScriptExporter.Generate(definition);
+            if (hasLoops)
+            {
+                // The graph is the source of truth when it contains structured loops.
+                // The left-hand list supplies variables/rows and export preferences.
+                definition = definition with
+                {
+                    Steps = _flowNodes.Where(n => n.Kind == FlowNodeKind.Command)
+                        .Select((n, i) => new AutomationStep("graph-" + i, n.Label,
+                            n.CommandTemplate)).ToArray()
+                };
+                _lastScript = AutomationGraphScriptExporter.Generate(
+                    definition, CurrentFlowGraph());
+            }
+            else
+                _lastScript = AutomationScriptExporter.Generate(definition);
             AutomationScriptPreview.Text = _lastScript;
-            AutomationStatus.Text = "Vista previa de " + definition.Rows.Count + " filas × " +
-                definition.Steps.Count + " pasos. No se ejecutó nada.";
+            AutomationStatus.Text = "Vista previa generada para " + definition.Rows.Count +
+                " fila(s)" + (hasLoops ? " con bucles acotados" :
+                " × " + definition.Steps.Count + " pasos") + ". No se ejecutó nada.";
             OnAutomationStepsChanged();
         }
         catch (Exception ex)
