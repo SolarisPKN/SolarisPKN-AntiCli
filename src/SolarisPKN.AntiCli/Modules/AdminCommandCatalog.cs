@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using SolarisPKN.AntiCli.Models;
@@ -10,47 +11,46 @@ public sealed record AdminCommand(
     string Id, string Module, string GroupName, string LabelEs,
     string Command, CommandRisk Risk, string DescriptionEs);
 
+public sealed class AdminCommandData
+{
+    public int SchemaVersion { get; set; }
+    public List<AdminCommand> Linux { get; set; } = [];
+    public List<AdminCommand> Windows { get; set; } = [];
+}
+
 /// <summary>
-/// All platform actions are loaded from a versioned JSON resource, not hardcoded
-/// buttons. A new tool can be added by editing data, without a new UI class.
+/// All catalog entries live in Data/admin-commands.json and ship as an
+/// embedded resource. Adding a task NEVER requires modifying the UI.
 /// </summary>
 public static class AdminCommandCatalog
 {
-    private static readonly JsonSerializerOptions Options = new()
-    {
-        Converters = { new JsonStringEnumConverter() },
-        PropertyNameCaseInsensitive = true
-    };
+    private static readonly Lazy<AdminCommandData> Data = new(Load);
 
-    private sealed class CatalogFile
+    public static IReadOnlyList<AdminCommand> Linux => Data.Value.Linux;
+
+    private static AdminCommandData Load()
     {
-        public int SchemaVersion { get; set; }
-        public List<AdminCommand> Linux { get; set; } = [];
-        public List<AdminCommand> Windows { get; set; } = [];
+        using var stream = Assembly.GetExecutingAssembly()
+            .GetManifestResourceStream("AntiCli.AdminCommands")
+            ?? throw new InvalidOperationException("No se encontró el catálogo de comandos integrado.");
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        options.Converters.Add(new JsonStringEnumConverter());
+        var loaded = JsonSerializer.Deserialize<AdminCommandData>(stream, options)
+            ?? throw new InvalidDataException("El catálogo de comandos está vacío.");
+        if (loaded.SchemaVersion != 1)
+            throw new InvalidDataException("Versión de catálogo incompatible.");
+        if (loaded.Linux.Concat(loaded.Windows).Any(x =>
+                string.IsNullOrWhiteSpace(x.Id) || string.IsNullOrWhiteSpace(x.Command) ||
+                string.IsNullOrWhiteSpace(x.LabelEs)))
+            throw new InvalidDataException("Hay acciones incompletas en el catálogo.");
+        if (loaded.Linux.Concat(loaded.Windows).Select(x => x.Id).Distinct().Count() !=
+            loaded.Linux.Count + loaded.Windows.Count)
+            throw new InvalidDataException("Hay IDs de acciones duplicados.");
+        return loaded;
     }
-
-    private static readonly CatalogFile File = ReadCatalog();
-
-    private static CatalogFile ReadCatalog()
-    {
-        var stream = typeof(AdminCommandCatalog).Assembly.GetManifestResourceStream("AntiCli.AdminCommands")
-            ?? throw new InvalidDataException("Falta el recurso incorporado admin-commands.json.");
-        using (stream)
-        {
-            var data = JsonSerializer.Deserialize<CatalogFile>(stream, Options)
-                ?? throw new InvalidDataException("No se pudo leer el catálogo administrativo.");
-            if (data.SchemaVersion != 1 || data.Linux.Count == 0)
-                throw new InvalidDataException("Versión o contenido inválido de admin-commands.json.");
-            if (data.Linux.Concat(data.Windows).GroupBy(x => x.Id).Any(g => g.Count() != 1))
-                throw new InvalidDataException("IDs de acciones duplicados en admin-commands.json.");
-            return data;
-        }
-    }
-
-    public static IReadOnlyList<AdminCommand> Linux => File.Linux;
 
     public static IReadOnlyList<AdminCommand> For(TargetPlatform platform) =>
-        platform == TargetPlatform.Windows ? File.Windows : File.Linux;
+        platform == TargetPlatform.Windows ? Data.Value.Windows : Data.Value.Linux;
 
     public static AdminCommand? Find(TargetPlatform platform, string command) =>
         For(platform).FirstOrDefault(x =>
@@ -58,14 +58,13 @@ public static class AdminCommandCatalog
 
     public static CommandRisk Classify(TargetPlatform platform, string? command)
     {
-        var input = (command ?? "").Trim();
-        if (input.Length == 0) return CommandRisk.Green;
-        var known = Find(platform, input);
+        var text = (command ?? "").Trim();
+        if (text.Length == 0) return CommandRisk.Green;
+        var known = Find(platform, text);
         if (known is not null) return known.Risk;
         if (PlatformReadOnlyActions.For(platform).Any(x =>
-            string.Equals(x.Command, input, StringComparison.Ordinal)))
+            string.Equals(x.Command, text, StringComparison.Ordinal)))
             return CommandRisk.Green;
-        // Manual or composite commands get a conservative red indicator.
         return CommandRisk.Red;
     }
 
