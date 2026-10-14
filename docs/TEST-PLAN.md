@@ -40,6 +40,20 @@ dotnet run --project ./src/SolarisPKN.AntiCli/SolarisPKN.AntiCli.csproj
 - Reiniciar app: todas las preferencias persisten desde `%APPDATA%\\SolarisPKN\\AntiCLI\\settings.json`.
 - Verificar que `settings.json` no contiene credenciales SSH ni rutas de claves.
 
+## Primera conexión SSH, TOFU y rotación de claves (pendiente)
+
+- VPS nuevo, sin huella: pulsar «Autenticar» → detectar clave sin enviar credenciales; mostrar host:puerto, algoritmo y SHA256 y exigir una decisión explícita.
+- Elegir Cancelar o cerrar ventana → no persistir pin, no autenticar y no habilitar comandos.
+- Aceptar sin verificar por otro canal → permitir solo después de marcar conocimiento del riesgo TOFU; guardar el pin por host:puerto y pedir credenciales después.
+- Comparar la huella con la consola del proveedor; al guardarla no persistir contraseñas ni claves privadas en `known-hosts.json`.
+- Reconectar con clave idéntica → no volver a preguntar, autenticar normal.
+- Modificar la clave presentada por un VPS de prueba → bloquear autenticación, con huella nueva en error, y no enviar credenciales.
+- Forzar «Detectar / revisar clave» sobre un servidor modificado → advertir de manera destacada, mostrar huellas vieja y nueva, cancelar sin cambios o reemplazar solo con confirmación de verificación independiente.
+- Cambiar puerto o host → no reutilizar la clave del endpoint anterior; deben existir pines distintos.
+- Clonar sesión y luego rotar el pin del mismo endpoint → el clon desactualizado debe bloquear comandos hasta volver a autenticar.
+- Probar credenciales erróneas tras confiar en clave: SSH falla sin invalidar el pin del host.
+- Probar huella manual que difiere del servidor y perfiles viejos: jamás aprobar automáticamente.
+
 ## Interfaz y flujo de autenticación
 
 - Abrir: la pestaña **Entorno y SSH** aparece y exige elegir un sistema operativo.
