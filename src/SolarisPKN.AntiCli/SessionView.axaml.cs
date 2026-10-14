@@ -738,20 +738,25 @@ public partial class SessionView : UserControl, IDisposable
 
     private void AssistedKeyDown(object? sender, KeyEventArgs e)
     {
-        if (AppSettingsStore.Shared.Matches("ExecuteCommand", e))
+        // Terminal muscle memory: Enter RUNS the current text; Tab completes.
+        // Keep the configured Ctrl+Enter / alternate Execute shortcut as well.
+        if (AppSettingsStore.Shared.Matches("ExecuteCommand", e) ||
+            (e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None))
         {
             _ = ExecuteApprovedCommandAsync(AssistedCommand.Text ?? "");
             e.Handled = true;
         }
-        else if (e.Key is Key.Down or Key.Up)
+        else if (e.Key is Key.Down or Key.Up && e.KeyModifiers == KeyModifiers.None)
         {
             if (_matches.Count == 0) return;
             Suggestions.SelectedIndex = Math.Clamp(Suggestions.SelectedIndex +
                 (e.Key == Key.Down ? 1 : -1), 0, _matches.Count - 1);
             e.Handled = true;
         }
-        else if (e.Key == Key.Tab || (e.Key == Key.Enter && (e.KeyModifiers & KeyModifiers.Control) == 0))
+        else if (e.Key == Key.Tab && e.KeyModifiers == KeyModifiers.None)
         {
+            // Without a suggestion, let normal Tab focus navigation work.
+            if (Suggestions.SelectedItem is not SmartCliSuggestion) return;
             UseSelectedSuggestion();
             e.Handled = true;
         }
