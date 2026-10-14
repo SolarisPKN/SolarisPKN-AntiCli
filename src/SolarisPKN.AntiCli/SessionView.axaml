@@ -197,6 +197,7 @@
                            FontSize="16" TextWrapping="Wrap"/>
                 <WrapPanel Grid.Row="1" ItemSpacing="5" LineSpacing="5">
                   <Button Content="+ Comando" Click="FlowAddCommandClicked"/>
+                  <Button Content="+ Bucle ↺" Click="FlowAddLoopClicked" ToolTip.Tip="FOR (veces), WHILE (mientras), UNTIL (hasta), todos con límite de iteraciones"/>
                   <Button Content="+ IF" Click="FlowAddIfClicked"/>
                   <Button Content="+ AND" Click="FlowAddAndClicked"/>
                   <Button Content="+ OR" Click="FlowAddOrClicked"/>
@@ -207,6 +208,8 @@
                 <StackPanel Grid.Row="2" Spacing="5">
                   <WrapPanel ItemSpacing="6" LineSpacing="5">
                     <Button Content="Conectar →" Click="FlowConnectNextClicked"/>
+                    <Button Content="Cuerpo del bucle" Click="FlowConnectBodyClicked"/>
+                    <Button Content="Retorno ↺" Click="FlowConnectBackClicked"/>
                     <Button Content="Verdadero" Click="FlowConnectTrueClicked"/>
                     <Button Content="Falso" Click="FlowConnectFalseClicked"/>
                     <Button Content="Paralelo" Click="FlowConnectParallelClicked"/>
@@ -215,10 +218,20 @@
                     <Button Content="Abrir JSON" Click="FlowLoadClicked"/>
                   </WrapPanel>
                   <TextBox x:Name="FlowNodeTitle" Watermark="Nombre del nodo seleccionado"/>
-                  <TextBox x:Name="FlowNodeCommand" Watermark="Comando del nodo / prueba del IF, p.ej.: test -f /etc/os-release"/>
+                  <TextBox x:Name="FlowNodeCommand" Watermark="Comando del nodo o condición WHILE/UNTIL, ej.: test -f /tmp/seguir"/>
+                  <WrapPanel x:Name="FlowLoopSettings" IsVisible="False" ItemSpacing="9" LineSpacing="5" Orientation="Horizontal">
+                    <TextBlock Text="Modo de bucle" VerticalAlignment="Center"/>
+                    <ComboBox x:Name="FlowLoopModeSelector" Width="115" SelectedIndex="0">
+                      <ComboBoxItem Content="FOR"/>
+                      <ComboBoxItem Content="WHILE"/>
+                      <ComboBoxItem Content="UNTIL"/>
+                    </ComboBox>
+                    <TextBlock Text="Máx. iteraciones" VerticalAlignment="Center"/>
+                    <TextBox x:Name="FlowLoopMaxCount" Width="75" Text="20"/>
+                  </WrapPanel>
                   <Button Content="Aplicar título/comando al nodo" Click="FlowUpdateNodeClicked"
                           HorizontalAlignment="Left"/>
-                  <TextBlock x:Name="FlowStatus" Text="Agregá bloques o generá pasos a la izquierda. Seleccioná un nodo para editarlo; para conectar, elegí el tipo de flecha y tocá origen y destino."
+                  <TextBlock x:Name="FlowStatus" Text="Los bucles necesitan Cuerpo → comandos → Retorno ↺ al mismo Bucle, y opcionalmente Conectar → para continuar. Máximo configurable para evitar repeticiones infinitas. Seleccioná un nodo para editarlo."
                              TextWrapping="Wrap" FontSize="12"/>
                 </StackPanel>
                 <ScrollViewer Grid.Row="3" MinHeight="0"
