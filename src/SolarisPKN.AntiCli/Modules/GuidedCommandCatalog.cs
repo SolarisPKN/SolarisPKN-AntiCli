@@ -171,10 +171,30 @@ public static class GuidedCommandCatalog
     public static GuidedCommand? Find(string id) =>
         All.FirstOrDefault(x => x.Id == id);
 
-    public static GuidedCommand Resolve(AdminCommand action) =>
-        Definitions.FirstOrDefault(d =>
+    public static GuidedCommand Resolve(AdminCommand action)
+    {
+        var guide = Definitions.FirstOrDefault(d =>
             d.PresetCommands?.Contains(action.Command, StringComparer.Ordinal) == true)
-        ?? All.First(x => x.Id == "action." + action.Id);
+            ?? All.First(x => x.Id == "action." + action.Id);
+
+        // Reuse one schema for any catalog shortcut that supplies a single
+        // absolute file-path operand, preserving that shortcut's actual file.
+        // This is metadata-driven, NOT a special UI screen for "cat".
+        if (guide.Operands.Count == 1 &&
+            guide.Operands[0].ValueKind == GuidedValueKind.AbsolutePath &&
+            action.Command.StartsWith(guide.Executable + " /", StringComparison.Ordinal))
+        {
+            var path = action.Command[(guide.Executable.Length + 1)..].Trim();
+            if (path.StartsWith("/", StringComparison.Ordinal) &&
+                !path.Any(char.IsWhiteSpace) &&
+                !path.Contains(';') && !path.Contains('|'))
+                return guide with
+                {
+                    Operands = [guide.Operands[0] with { InitialValue = path }]
+                };
+        }
+        return guide;
+    }
 
     public static bool SupportsPlatform(GuidedCommand command, TargetPlatform platform)
     {
