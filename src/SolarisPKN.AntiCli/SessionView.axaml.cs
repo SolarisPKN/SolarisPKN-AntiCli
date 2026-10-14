@@ -758,7 +758,8 @@ public partial class SessionView : UserControl, IDisposable
             _busy = true;
             ExecutionStatus.Text = "Ejecutando por SSH " + (useSudo ? "con sudo -n..." : "...");
             Output.Text = "$ " + remoteCommand + "\n";
-            var result = await _ssh.ExecuteAsync(_connectedProfile, _connectedCredentials, remoteCommand);
+            var result = await _ssh.ExecuteAsync(_connectedProfile, _connectedCredentials,
+                remoteCommand, TimeSpan.FromMinutes(5));
             Output.Text = "$ " + remoteCommand + "\n\n" + result.StdOut
                 + (string.IsNullOrWhiteSpace(result.StdErr) ? "" : "\n[STDERR]\n" + result.StdErr);
             ExecutionStatus.Text = "Comando completado. Código de salida: " + result.ExitCode +
