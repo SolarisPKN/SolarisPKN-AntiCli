@@ -1,3 +1,15 @@
+## Interfaz y flujos administrativos — octubre 2026 (pendientes de prueba manual)
+
+- **Consola:** después de SSH, comprobá que el panel derecho ocupa cerca del 25% del ancho y que la barra inferior de comandos sigue visible aunque desplaces el catálogo. Expandir debe mostrar la consola a ancho completo sin tapar el campo manual; restaurar vuelve a 75/25 y ocultar deja visible el catálogo y el botón mostrar. Cada pestaña mantiene su propio historial; copiar/exportar deben conservar las redacciones del operador.
+- **Formulario sobre catálogo:** buscar `uname` o `adduser` y abrir su ficha. Debe superponerse al área donde se seleccionó, sin agregar altura al final de la lista; al cerrarla debe mostrarse de nuevo el catálogo. No cambia el ejecutable SSH ni las flags por cambiar la geometría.
+- **Editor de módulos:** crear un `local.prueba`, editar título, flags y operandos por filas visuales; borrar una fila, regenerar JSON, validar y guardar. Confirmar fichero en `%APPDATA%\\SolarisPKN\\AntiCLI\\modules` y aparición inmediata en la búsqueda. Probar errores: ID sin `local.`, JSON malformado, tipo de parámetro desconocido, bandera duplicada. Clonar una definición integrada no debe sobrescribir archivos integrados.
+- **Herramienta ausente:** conectarse a un servidor Debian/Ubuntu de laboratorio con un ejecutable mapeado que no aparezca en PATH. El programa debe mostrar un aviso, explicar que eso **no prueba desinstalación** y ofrecer el paquete mapeado. Sin pulsar instalar, no modificar el servidor. Si el mapa no conoce el ejecutable, no sugerir un paquete inventado. En Windows, otras distros o entornos Yocto no mapeados, no mostrar instalador APT engañoso.
+- **Instalación explícita:** con autorización y una VM desechable, pulsar instalar. Verificar que se ejecuta `apt-get update` seguido de `apt-get install -y` para el paquete conocido; con sudo habilitado debe usar `sudo -n`, sin sudo necesita privilegios propios. Revisar código de salida, errores y registro del historial; actualizar inventario PATH antes de ofrecer la acción otra vez.
+- **Preset Yocto:** buscar «Preparar dependencias ... Yocto», comprobar que muestra 20 paquetes y admite editar el parámetro; simular primero con la flag `-s`. En Ubuntu moderno probar deliberadamente la falta de `libsdl1.2-dev` para mostrar el error de repositorio, sin afirmar que el paquete se instaló.
+- **Regresión SSH:** autenticación y pin de host-key, manual `uname -a`, comando libre, sudo no interactivo, historial por pestaña y cierre de conexión continúan operativos. Comprobar que la GUI no se bloquea visualmente mientras ejecuta una orden de hasta 20 minutos.
+
+**Nota:** una compilación de GitHub Actions que termina en verde solo verifica compilación/empaquetado. Estas pruebas contra servidores reales, resolución y disposición visual siguen requiriendo validación humana antes de un lanzamiento estable.
+
 # Plan de verificación del rediseño
 
 **Estado:** pendientes de ejecución en Windows. Este documento no certifica que compile ni que SSH funcione.
