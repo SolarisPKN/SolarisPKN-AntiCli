@@ -143,6 +143,52 @@ Verify(untilOkScript.Contains("if sh -c 'test -f /tmp/anticli-ready'") &&
        untilOkScript.Contains("__ac_state='s3'"),
        "IF true means OK and EXIT, IF false retries via command 4 -> command 1");
 
+// When a shell is available, run the EXPORTED script, not just string checks.
+// It retries once, creates a local marker, checks again and exits successfully.
+var bash = OperatingSystem.IsWindows()
+    ? @"C:\Program Files\Git\bin\bash.exe" : "/bin/sh";
+if (File.Exists(bash))
+{
+    var temp = Directory.CreateTempSubdirectory("anticli-retry-smoke-");
+    try
+    {
+        var runnable = retryUntilOk with
+        {
+            Nodes = retryUntilOk.Nodes.Select(n => n.Id switch
+            {
+                "c1" => n with { CommandTemplate = "echo attempt >> attempts.log" },
+                "c2" => n with { CommandTemplate = "echo inspect >/dev/null" },
+                "if3" => n with { CommandTemplate = "test -f ready.flag" },
+                "c4" => n with { CommandTemplate = "touch ready.flag" },
+                _ => n
+            }).ToArray()
+        };
+        var script = AutomationGraphRouter.Generate(retryWorkflow, runnable);
+        File.WriteAllText(Path.Combine(temp.FullName, "retry.sh"), script);
+        var start = new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = bash,
+            WorkingDirectory = temp.FullName,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+        start.ArgumentList.Add("retry.sh");
+        using var process = System.Diagnostics.Process.Start(start)
+            ?? throw new InvalidOperationException("Could not start POSIX shell.");
+        if (!process.WaitForExit(10_000))
+        {
+            process.Kill(entireProcessTree: true);
+            throw new InvalidOperationException("Generated retry script did not terminate after OK.");
+        }
+        var attempts = File.ReadAllLines(Path.Combine(temp.FullName, "attempts.log"));
+        Verify(process.ExitCode == 0 && attempts.Length == 2,
+            "Exported script ACTUALLY retries on false and exits when check returns OK");
+    }
+    finally { temp.Delete(recursive: true); }
+}
+else Console.WriteLine("[SKIP] No POSIX shell available for actual retry execution.");
+
 var serialized = AutomationGraphFile.Serialize(retryGraph);
 Verify(AutomationGraphFile.Parse(serialized).StartNodeId == "c1",
     "Cyclic graph keeps its explicit entry point after JSON save/load");
