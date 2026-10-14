@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="SolarisPKN.AntiCli.SshTerminalPane">
+<Border BorderBrush="#777777"
+                  BorderThickness="1" CornerRadius="7" Padding="7">
+            <Grid RowDefinitions="Auto,*" RowSpacing="6">
+              <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="Consola SSH" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <Button x:Name="ExpandConsoleButton" Content="Expandir"/>
+                <Button x:Name="DetachConsoleButton" Content="Desacoplar ↗"/>
+                <Button x:Name="DockPositionButton" Content="Mover a izquierda"/>
+                <Button x:Name="HideConsoleButton" Content="Ocultar"/>
+              </StackPanel>
+              <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="8">
+            <TextBlock Text="Salida remota" FontWeight="SemiBold"/>
+            <TextBox x:Name="Output" MinHeight="180" IsReadOnly="True" AcceptsReturn="True"
+                     FontFamily="Consolas,Monospace" TextWrapping="NoWrap"/>
+            <TextBlock FontWeight="SemiBold" Text="Historial de comandos SSH de esta sesión"/>
+            <TextBlock Text="Cada ejecución registra fecha, destino, comando, resultado y código de salida. Revisá y borrá datos sensibles antes de compartir."
+                       FontSize="12" TextWrapping="Wrap"/>
+            <ListBox x:Name="CommandHistoryList" Height="120"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button x:Name="CopyHistoryCommandButton" Content="Copiar comando del historial"/>
+              <Button x:Name="ReuseHistoryCommandButton" Content="Reutilizar comando"/>
+              <Button x:Name="CopyLogButton" Content="Copiar log"/>
+              <Button x:Name="ExportLogButton" Content="Exportar log..."/>
+              <Button x:Name="ClearHistoryButton" Content="Limpiar historial"/>
+            </StackPanel>
+            <TextBox x:Name="CommandHistoryLog" MinHeight="160" AcceptsReturn="True"
+                     TextWrapping="NoWrap" FontFamily="Consolas,Monospace"
+                     Watermark="Registro editable: podés quitar secretos antes de copiar o exportar."/>
+                </StackPanel>
+              </ScrollViewer>
+            </Grid>
+          </Border>
+</UserControl>
