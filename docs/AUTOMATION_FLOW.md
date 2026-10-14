@@ -1,3 +1,13 @@
+## Editor de diagrama en ventana externa
+
+La vista de diagrama **no ocupa espacio al abrir la pestaña Automatizaciones**. Para visualizarla, pulsá **«Abrir diagrama ↗»**, junto a la vista previa y exportación. Aparece una ventana independiente que se puede mover a otro monitor, maximizar con su botón o con `F11`, restaurar y cerrar con **«Volver a AntiCLI ↙»**.
+
+AntiCLI **reutiliza el mismo editor y grafo de esa sesión**: cerrar y reabrir la ventana no reinicia los nodos ni las conexiones; los cambios quedan en el proyecto en memoria hasta guardarlos explícitamente como JSON. No se genera otra conexión SSH y la ventana externa no ejecuta comandos. Si se cierra la sesión/pestaña de origen, el diagrama desacoplado también se cierra. Abrir el botón dos veces enfoca la ventana existente, sin crear copias paralelas.
+
+## Teclado de la consola manual
+
+La entrada de comandos fija funciona como un CLI: **Enter ejecuta inmediatamente** el texto por SSH (según los permisos de la sesión); **Tab aplica el autocompletado seleccionado**. Las flechas ↑ ↓ recorren sugerencias; `Ctrl+Enter` o el atajo de ejecución configurado también pueden ejecutar, y el botón Ejecutar sigue funcionando. Tab sin sugerencia respeta la navegación normal de controles. Los colores de riesgo indican precaución, **no piden confirmaciones adicionales**.
+
 # AntiCLI: automatizaciones por lotes y diagrama de flujo (prototipo)
 
 ## Modelo universal: no se programa un lote por comando
