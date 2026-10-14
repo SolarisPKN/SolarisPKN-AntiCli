@@ -1,15 +1,15 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="SolarisPKN.AntiCli.SshTerminalPane">
-<Border BorderBrush="#777777"
+<Border MinHeight="0" MinWidth="0" BorderBrush="#777777"
                   BorderThickness="1" CornerRadius="7" Padding="7">
-            <Grid RowDefinitions="Auto,*" RowSpacing="6">
-              <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6">
+            <Grid RowDefinitions="Auto,*" RowSpacing="6" MinHeight="0" MinWidth="0">
+              <WrapPanel Grid.Row="0" Orientation="Horizontal" ItemSpacing="6" LineSpacing="4">
                 <TextBlock Text="Consola SSH" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 <Button x:Name="ExpandConsoleButton" Content="Expandir"/>
                 <Button x:Name="DetachConsoleButton" Content="Desacoplar ↗"/>
                 <Button x:Name="DockPositionButton" Content="Mover a izquierda"/>
                 <Button x:Name="HideConsoleButton" Content="Ocultar"/>
-              </StackPanel>
-              <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+              </WrapPanel>
+              <ScrollViewer Grid.Row="1" MinHeight="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto">
                 <StackPanel Spacing="8">
             <TextBlock Text="Salida remota" FontWeight="SemiBold"/>
             <TextBox x:Name="Output" MinHeight="180" IsReadOnly="True" AcceptsReturn="True"
