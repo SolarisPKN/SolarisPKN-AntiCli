@@ -74,6 +74,7 @@ public partial class SessionView
         HelpImportStatus.Text = "Ficha: " + definition.Id +
             " · flags: " + definition.Flags.Count +
             " · datos JSON + opciones importadas de este servidor, si existen.";
+        UpdateMissingToolPrompt();
         _activePlan = null;
         _orderedGuideFlags.Clear();
         foreach (var flag in definition.Flags.Where(x => x.SelectedByDefault))
@@ -332,6 +333,8 @@ public partial class SessionView
         _guideFields.Clear();
         GuidedPanel.IsVisible = false;
         GuidedError.Text = "";
+        MissingToolPanel.IsVisible = false;
+        _suggestedAptPackage = null;
     }
 
     private bool TryGetGuidedRisk(string? command, out CommandRisk risk)
