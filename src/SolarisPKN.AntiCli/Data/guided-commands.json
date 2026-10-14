@@ -1,0 +1,1099 @@
+{
+  "SchemaVersion": 1,
+  "Commands": [
+    {
+      "Id": "uname",
+      "Executable": "uname",
+      "TitleEs": "Información del sistema",
+      "ExplanationEs": "Elegí flags GNU uname. El orden visual afecta el comando, pero GNU uname imprime sus campos en un orden interno fijo.",
+      "SearchTerms": "sistema kernel arquitectura uname información servidor hardware",
+      "Risk": "Green",
+      "Template": "uname {flags}",
+      "Flags": [
+        {
+          "Token": "-a",
+          "LabelEs": "Todos los campos",
+          "DescriptionEs": "Muestra toda la información disponible.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Kernel",
+          "DescriptionEs": "Nombre del kernel Linux.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-n",
+          "LabelEs": "Nombre del equipo",
+          "DescriptionEs": "Nombre de red.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-r",
+          "LabelEs": "Lanzamiento del kernel",
+          "DescriptionEs": "Release del núcleo.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-v",
+          "LabelEs": "Versión de compilación",
+          "DescriptionEs": "Compilación del kernel.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-m",
+          "LabelEs": "Arquitectura de máquina",
+          "DescriptionEs": "Arquitectura de hardware.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-p",
+          "LabelEs": "Procesador",
+          "DescriptionEs": "Tipo de procesador, puede ser desconocido.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-i",
+          "LabelEs": "Plataforma de hardware",
+          "DescriptionEs": "Puede ser desconocida.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-o",
+          "LabelEs": "Sistema operativo",
+          "DescriptionEs": "Nombre del sistema operativo.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--help",
+          "LabelEs": "Ayuda",
+          "DescriptionEs": "Lista las opciones y finaliza.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--version",
+          "LabelEs": "Versión",
+          "DescriptionEs": "Muestra versión del ejecutable.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300,
+      "DocumentationUrl": "https://www.gnu.org/software/coreutils/manual/html_node/uname-invocation.html"
+    },
+    {
+      "Id": "adduser",
+      "Executable": "adduser",
+      "TitleEs": "Crear usuario o lote de usuarios",
+      "ExplanationEs": "Creá cuentas locales desde un formulario. Los lotes generan nombres correlativos. El modo sin contraseña no instala credenciales ni claves SSH.",
+      "SearchTerms": "crear usuario usuarios cuentas alta alumnos añadir usuario lote",
+      "Risk": "Red",
+      "Template": "adduser {flags} -- {account}",
+      "Flags": [
+        {
+          "Token": "--disabled-password",
+          "LabelEs": "Sin contraseña inicial",
+          "DescriptionEs": "No solicita contraseña interactiva; no genera credenciales.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": true,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--disabled-login",
+          "LabelEs": "Bloquear acceso interactivo",
+          "DescriptionEs": "Crea cuenta sin acceso de login.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--gecos",
+          "LabelEs": "Nombre completo/comentario",
+          "DescriptionEs": "Evita preguntas interactivas; opcionalmente escribe el nombre completo.",
+          "ValueKind": "Text",
+          "Placeholder": "Ej.: Alumno de redes",
+          "SelectedByDefault": true,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--shell",
+          "LabelEs": "Shell predeterminado",
+          "DescriptionEs": "Ruta de la shell, por ejemplo /bin/bash.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/bin/bash",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--home",
+          "LabelEs": "Directorio personal personalizado",
+          "DescriptionEs": "Ruta para una cuenta individual. No usar en lotes.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/alumno",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--ingroup",
+          "LabelEs": "Grupo principal",
+          "DescriptionEs": "El grupo debe existir.",
+          "ValueKind": "UserGroup",
+          "Placeholder": "alumnos",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--uid",
+          "LabelEs": "UID específico",
+          "DescriptionEs": "Solo para cuenta individual.",
+          "ValueKind": "PositiveId",
+          "Placeholder": "1050",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--no-create-home",
+          "LabelEs": "No crear HOME",
+          "DescriptionEs": "Crea la cuenta sin directorio personal.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--system",
+          "LabelEs": "Cuenta de servicio",
+          "DescriptionEs": "UID asignado como usuario de sistema.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--quiet",
+          "LabelEs": "Menos mensajes",
+          "DescriptionEs": "Reduce salida.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "account",
+          "LabelEs": "Nombre de usuario o prefijo",
+          "DescriptionEs": "Nombre de la cuenta, o prefijo al usar lotes.",
+          "ValueKind": "Account",
+          "Placeholder": "alumno",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": true,
+      "TimeoutSeconds": 300,
+      "BatchOperand": "account",
+      "RequiredAnyFlags": [
+        "--disabled-login",
+        "--disabled-password"
+      ],
+      "AutoFlags": [
+        "--gecos ''"
+      ],
+      "BatchDisallowedFlags": [
+        "--uid",
+        "--home"
+      ],
+      "DocumentationUrl": "https://manpages.ubuntu.com/manpages/noble/en/man8/adduser.8.html"
+    },
+    {
+      "Id": "apt-install",
+      "Executable": "apt-get",
+      "TitleEs": "Instalar paquetes APT",
+      "ExplanationEs": "Instala los paquetes elegidos. Podés indicar varios separados por espacios; no se descargan de repositorios no configurados.",
+      "SearchTerms": "instalar programa app paquetes software apt-get install debian ubuntu",
+      "Risk": "Red",
+      "Template": "apt-get {flags} install {packages}",
+      "Flags": [
+        {
+          "Token": "-y",
+          "LabelEs": "Aceptar preguntas automáticamente",
+          "DescriptionEs": "Responde afirmativamente a preguntas del gestor, no omite protecciones.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--no-install-recommends",
+          "LabelEs": "No instalar recomendados",
+          "DescriptionEs": "Instala solo dependencias obligatorias.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--reinstall",
+          "LabelEs": "Reinstalar",
+          "DescriptionEs": "Reinstala aunque ya esté presente.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--only-upgrade",
+          "LabelEs": "Solo actualizar existentes",
+          "DescriptionEs": "No instala paquetes nuevos.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Simular",
+          "DescriptionEs": "No aplica cambios, muestra operaciones previstas.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--download-only",
+          "LabelEs": "Solo descargar",
+          "DescriptionEs": "Descarga archivos pero no instala.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--fix-broken",
+          "LabelEs": "Intentar reparar dependencias",
+          "DescriptionEs": "Puede realizar cambios adicionales en paquetes.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "packages",
+          "LabelEs": "Paquetes",
+          "DescriptionEs": "Ejemplo: curl jq git. Admitidos varios nombres válidos separados por espacios.",
+          "ValueKind": "PackageList",
+          "Placeholder": "curl jq git",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300,
+      "DocumentationUrl": "https://manpages.ubuntu.com/manpages/noble/en/man8/apt-get.8.html"
+    },
+    {
+      "Id": "apt-remove",
+      "Executable": "apt-get",
+      "TitleEs": "Desinstalar paquetes",
+      "ExplanationEs": "Elimina paquetes sin borrar necesariamente su configuración; para esto último usá purgar.",
+      "SearchTerms": "desinstalar eliminar quitar paquetes apt remove",
+      "Risk": "Red",
+      "Template": "apt-get {flags} remove {packages}",
+      "Flags": [
+        {
+          "Token": "-y",
+          "LabelEs": "Aceptar automáticamente",
+          "DescriptionEs": "Continúa sin interacción.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Simular",
+          "DescriptionEs": "No modifica paquetes.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--auto-remove",
+          "LabelEs": "También dependencias huérfanas",
+          "DescriptionEs": "Incluye dependencias instaladas automáticamente.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "packages",
+          "LabelEs": "Paquetes",
+          "DescriptionEs": "Nombre(s) de paquetes a eliminar.",
+          "ValueKind": "PackageList",
+          "Placeholder": "jq",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300
+    },
+    {
+      "Id": "apt-purge",
+      "Executable": "apt-get",
+      "TitleEs": "Purgar paquetes",
+      "ExplanationEs": "Desinstala paquetes y archivos de configuración gestionados por APT.",
+      "SearchTerms": "purgar quitar configuración paquete apt",
+      "Risk": "Red",
+      "Template": "apt-get {flags} purge {packages}",
+      "Flags": [
+        {
+          "Token": "-y",
+          "LabelEs": "Aceptar automáticamente",
+          "DescriptionEs": "Elimina sin pedir confirmación.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Simular",
+          "DescriptionEs": "No modifica paquetes.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "packages",
+          "LabelEs": "Paquetes",
+          "DescriptionEs": "Nombre(s) de paquetes a purgar.",
+          "ValueKind": "PackageList",
+          "Placeholder": "jq",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300
+    },
+    {
+      "Id": "apt-update",
+      "Executable": "apt-get",
+      "TitleEs": "Actualizar índices APT",
+      "ExplanationEs": "Actualiza la información de los repositorios configurados.",
+      "SearchTerms": "actualizar indices listas repositorios apt update",
+      "Risk": "Yellow",
+      "Template": "apt-get {flags} update",
+      "Flags": [
+        {
+          "Token": "-q",
+          "LabelEs": "Modo silencioso",
+          "DescriptionEs": "Reduce información mostrada.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--allow-releaseinfo-change",
+          "LabelEs": "Aceptar cambios de Release",
+          "DescriptionEs": "Acepta cambios de información del repositorio; revisar antes de usar.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300
+    },
+    {
+      "Id": "apt-upgrade",
+      "Executable": "apt-get",
+      "TitleEs": "Actualizar paquetes instalados",
+      "ExplanationEs": "Instala actualizaciones de paquetes; algunos cambios pueden afectar servicios.",
+      "SearchTerms": "upgrade actualizar sistema actualizaciones apt",
+      "Risk": "Red",
+      "Template": "apt-get {flags} upgrade",
+      "Flags": [
+        {
+          "Token": "-y",
+          "LabelEs": "Sin preguntas",
+          "DescriptionEs": "Continúa sin interacción.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Simular",
+          "DescriptionEs": "Muestra un plan sin modificar el sistema.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--with-new-pkgs",
+          "LabelEs": "Agregar nuevas dependencias",
+          "DescriptionEs": "Puede instalar paquetes adicionales.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300
+    },
+    {
+      "Id": "apt-dist-upgrade",
+      "Executable": "apt-get",
+      "TitleEs": "Actualizar con resolución de dependencias",
+      "ExplanationEs": "Permite cambios más amplios, incluida la eliminación de paquetes.",
+      "SearchTerms": "dist-upgrade full-upgrade actualizar distribucion",
+      "Risk": "Red",
+      "Template": "apt-get {flags} dist-upgrade",
+      "Flags": [
+        {
+          "Token": "-y",
+          "LabelEs": "Aceptar automáticamente",
+          "DescriptionEs": "No espera respuestas.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Simular",
+          "DescriptionEs": "No modifica paquetes.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300
+    },
+    {
+      "Id": "apt-autoremove",
+      "Executable": "apt-get",
+      "TitleEs": "Quitar dependencias sobrantes",
+      "ExplanationEs": "Elimina paquetes considerados innecesarios por APT.",
+      "SearchTerms": "autoremove limpiar dependencias apt",
+      "Risk": "Red",
+      "Template": "apt-get {flags} autoremove",
+      "Flags": [
+        {
+          "Token": "-y",
+          "LabelEs": "Aceptar automáticamente",
+          "DescriptionEs": "No espera respuestas.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Simular",
+          "DescriptionEs": "Muestra qué se eliminaría.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--purge",
+          "LabelEs": "Purgar configuración",
+          "DescriptionEs": "También borra la configuración correspondiente.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300
+    },
+    {
+      "Id": "apt-search",
+      "Executable": "apt-cache",
+      "TitleEs": "Buscar paquetes disponibles",
+      "ExplanationEs": "Busca por nombre o descripción en la caché APT.",
+      "SearchTerms": "buscar paquete apt-cache search disponible software",
+      "Risk": "Green",
+      "Template": "apt-cache {flags} search {query}",
+      "Flags": [
+        {
+          "Token": "--names-only",
+          "LabelEs": "Solo nombres",
+          "DescriptionEs": "Busca solamente en el nombre del paquete.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "query",
+          "LabelEs": "Búsqueda",
+          "DescriptionEs": "Una o varias palabras que describen el paquete.",
+          "ValueKind": "Text",
+          "Placeholder": "nginx",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300
+    },
+    {
+      "Id": "apt-repository",
+      "Executable": "apt",
+      "TitleEs": "Agregar repositorio externo con clave verificada",
+      "ExplanationEs": "Configurá un origen APT tipo deb822. Verifica la huella de la clave GPG antes de instalarla y limita esa clave al repositorio mediante Signed-By. No usa apt-key.",
+      "SearchTerms": "agregar repositorio instalar origen apt fuente externa url llave clave gpg signed-by deb822",
+      "Risk": "Red",
+      "Template": "set -eu\nrepo_id={repo_id}\nrepo_uri={repo_uri}\nsuite={suite}\ncomponents={components}\nkey_uri={key_uri}\nfingerprint={fingerprint}\ntmp=\"$(mktemp -d)\"\ntrap 'rm -rf \"$tmp\"' EXIT\nmkdir -p /etc/apt/keyrings\ncurl -fsSL --max-time 30 \"$key_uri\" -o \"$tmp/vendor.asc\"\ngot=\"$(gpg --batch --show-keys --with-colons \"$tmp/vendor.asc\" 2>/dev/null | awk -F: '$1==\"fpr\" { print $10; exit }')\"\ntest \"$got\" = \"$fingerprint\" || { echo 'ERROR: huella GPG no coincide'; exit 4; }\ngpg --batch --yes --dearmor -o \"$tmp/vendor.gpg\" \"$tmp/vendor.asc\"\ninstall -m 0644 \"$tmp/vendor.gpg\" \"/etc/apt/keyrings/${repo_id}.gpg\"\nprintf 'Types: deb\\nURIs: %s\\nSuites: %s\\nComponents: %s\\nSigned-By: /etc/apt/keyrings/%s.gpg\\n' \"$repo_uri\" \"$suite\" \"$components\" \"$repo_id\" > \"/etc/apt/sources.list.d/${repo_id}.sources\"\napt-get update",
+      "Flags": [],
+      "Operands": [
+        {
+          "Name": "repo_id",
+          "LabelEs": "Identificador del repositorio",
+          "DescriptionEs": "Solo letras minúsculas, números y guiones; define nombres de archivos.",
+          "ValueKind": "Identifier",
+          "Placeholder": "ejemplo-repo",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "repo_uri",
+          "LabelEs": "URL del repositorio",
+          "DescriptionEs": "Dirección HTTPS de la raíz APT del proveedor.",
+          "ValueKind": "UrlHttps",
+          "Placeholder": "https://packages.example.org/debian",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "suite",
+          "LabelEs": "Versión / suite",
+          "DescriptionEs": "Distribución o suite del proveedor: noble, stable, bookworm...",
+          "ValueKind": "Suite",
+          "Placeholder": "noble",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "components",
+          "LabelEs": "Componentes",
+          "DescriptionEs": "Uno o varios componentes separados por espacios, ej. main contrib.",
+          "ValueKind": "Components",
+          "Placeholder": "main",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "key_uri",
+          "LabelEs": "URL de la clave GPG",
+          "DescriptionEs": "URL HTTPS de la clave ASCII pública proporcionada por el editor.",
+          "ValueKind": "UrlHttps",
+          "Placeholder": "https://packages.example.org/key.asc",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "fingerprint",
+          "LabelEs": "Huella GPG esperada",
+          "DescriptionEs": "Fingerprint completo de la clave según el editor; requisito de seguridad.",
+          "ValueKind": "Fingerprint",
+          "Placeholder": "0123456789ABCDEF0123456789ABCDEF01234567",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 420,
+      "DocumentationUrl": "https://manpages.ubuntu.com/manpages/noble/en/man5/sources.list.5.html"
+    },
+    {
+      "Id": "yocto-bitbake-build",
+      "Executable": "bitbake",
+      "TitleEs": "Yocto: compilar receta o imagen",
+      "ExplanationEs": "Inicializa el entorno del proyecto Yocto y compila una receta o imagen. Requiere fuentes y dependencias presentes.",
+      "SearchTerms": "yocto bitbake compilar receta imagen build linux embebido poky",
+      "Risk": "Red",
+      "Template": ". {poky}/oe-init-build-env {build} >/dev/null && bitbake {flags} {recipe}",
+      "Flags": [
+        {
+          "Token": "-k",
+          "LabelEs": "Continuar pese a errores",
+          "DescriptionEs": "Intenta tareas independientes aun si falla otra.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-n",
+          "LabelEs": "Modo simulación",
+          "DescriptionEs": "Muestra tareas sin ejecutarlas.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-f",
+          "LabelEs": "Forzar tareas",
+          "DescriptionEs": "Reejecuta aunque exista stamp.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-c",
+          "LabelEs": "Tarea específica",
+          "DescriptionEs": "Ej.: compile, clean, cleansstate, fetch, listtasks.",
+          "ValueKind": "Task",
+          "Placeholder": "compile",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-v",
+          "LabelEs": "Salida detallada",
+          "DescriptionEs": "Aumenta detalles.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-D",
+          "LabelEs": "Depuración",
+          "DescriptionEs": "Más información de debug.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-g",
+          "LabelEs": "Grafo de dependencias",
+          "DescriptionEs": "Genera archivos de análisis de dependencias.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Versiones de recetas",
+          "DescriptionEs": "Enumera recetas/versiones; suele usarse sin objetivo.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "poky",
+          "LabelEs": "Carpeta del proyecto Yocto (Poky)",
+          "DescriptionEs": "Ruta absoluta al directorio que contiene oe-init-build-env.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/usuario/poky",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "build",
+          "LabelEs": "Directorio de compilación",
+          "DescriptionEs": "Nombre o ruta absoluta del directorio build. Se creará si todavía no existe.",
+          "ValueKind": "PathOrName",
+          "Placeholder": "build",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "recipe",
+          "LabelEs": "Receta o imagen",
+          "DescriptionEs": "Ej.: core-image-minimal, busybox.",
+          "ValueKind": "Recipe",
+          "Placeholder": "core-image-minimal",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 7200,
+      "DocumentationUrl": "https://docs.yoctoproject.org/bitbake/"
+    },
+    {
+      "Id": "yocto-bitbake-versions",
+      "Executable": "bitbake",
+      "TitleEs": "Yocto: versiones de recetas",
+      "ExplanationEs": "Lista recetas y versiones encontradas en el entorno.",
+      "SearchTerms": "yocto recetas versiones bitbake show-versions",
+      "Risk": "Green",
+      "Template": ". {poky}/oe-init-build-env {build} >/dev/null && bitbake -s",
+      "Flags": [],
+      "Operands": [
+        {
+          "Name": "poky",
+          "LabelEs": "Carpeta del proyecto Yocto (Poky)",
+          "DescriptionEs": "Ruta absoluta al directorio que contiene oe-init-build-env.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/usuario/poky",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "build",
+          "LabelEs": "Directorio de compilación",
+          "DescriptionEs": "Nombre o ruta absoluta del directorio build. Se creará si todavía no existe.",
+          "ValueKind": "PathOrName",
+          "Placeholder": "build",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300,
+      "DocumentationUrl": "https://docs.yoctoproject.org/bitbake/"
+    },
+    {
+      "Id": "yocto-bitbake-layers",
+      "Executable": "bitbake-layers",
+      "TitleEs": "Yocto: ver capas",
+      "ExplanationEs": "Lista las capas configuradas y sus prioridades.",
+      "SearchTerms": "yocto layers capas bitbake-layers list show-layers",
+      "Risk": "Green",
+      "Template": ". {poky}/oe-init-build-env {build} >/dev/null && bitbake-layers show-layers",
+      "Flags": [],
+      "Operands": [
+        {
+          "Name": "poky",
+          "LabelEs": "Carpeta del proyecto Yocto (Poky)",
+          "DescriptionEs": "Ruta absoluta al directorio que contiene oe-init-build-env.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/usuario/poky",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "build",
+          "LabelEs": "Directorio de compilación",
+          "DescriptionEs": "Nombre o ruta absoluta del directorio build. Se creará si todavía no existe.",
+          "ValueKind": "PathOrName",
+          "Placeholder": "build",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300,
+      "DocumentationUrl": "https://docs.yoctoproject.org/dev/dev-manual/layers.html"
+    },
+    {
+      "Id": "yocto-bitbake-recipes",
+      "Executable": "bitbake-layers",
+      "TitleEs": "Yocto: ver recetas",
+      "ExplanationEs": "Enumera recetas ofrecidas por las capas activas.",
+      "SearchTerms": "yocto recetas show-recipes capas layers",
+      "Risk": "Green",
+      "Template": ". {poky}/oe-init-build-env {build} >/dev/null && bitbake-layers show-recipes",
+      "Flags": [],
+      "Operands": [
+        {
+          "Name": "poky",
+          "LabelEs": "Carpeta del proyecto Yocto (Poky)",
+          "DescriptionEs": "Ruta absoluta al directorio que contiene oe-init-build-env.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/usuario/poky",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "build",
+          "LabelEs": "Directorio de compilación",
+          "DescriptionEs": "Nombre o ruta absoluta del directorio build. Se creará si todavía no existe.",
+          "ValueKind": "PathOrName",
+          "Placeholder": "build",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300,
+      "DocumentationUrl": "https://docs.yoctoproject.org/dev/dev-manual/layers.html"
+    },
+    {
+      "Id": "yocto-add-layer",
+      "Executable": "bitbake-layers",
+      "TitleEs": "Yocto: añadir capa",
+      "ExplanationEs": "Añade una capa local existente a la configuración del build. No descarga código.",
+      "SearchTerms": "yocto agregar capa layer add-layer bitbake-layers",
+      "Risk": "Yellow",
+      "Template": ". {poky}/oe-init-build-env {build} >/dev/null && bitbake-layers add-layer {layer}",
+      "Flags": [],
+      "Operands": [
+        {
+          "Name": "poky",
+          "LabelEs": "Carpeta del proyecto Yocto (Poky)",
+          "DescriptionEs": "Ruta absoluta al directorio que contiene oe-init-build-env.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/usuario/poky",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "build",
+          "LabelEs": "Directorio de compilación",
+          "DescriptionEs": "Nombre o ruta absoluta del directorio build. Se creará si todavía no existe.",
+          "ValueKind": "PathOrName",
+          "Placeholder": "build",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "layer",
+          "LabelEs": "Ruta a la capa",
+          "DescriptionEs": "Directorio absoluto que contiene conf/layer.conf.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/usuario/meta-ejemplo",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300,
+      "DocumentationUrl": "https://docs.yoctoproject.org/dev/dev-manual/layers.html"
+    },
+    {
+      "Id": "yocto-bitbake-clean",
+      "Executable": "bitbake",
+      "TitleEs": "Yocto: limpiar resultados de receta",
+      "ExplanationEs": "Ejecuta una tarea de limpieza sobre una receta. cleanall también elimina descargas compartidas y puede afectar otros builds.",
+      "SearchTerms": "yocto limpiar receta clean cleansstate cleanall bitbake",
+      "Risk": "Red",
+      "Template": ". {poky}/oe-init-build-env {build} >/dev/null && bitbake -c {clean_task} {recipe}",
+      "Flags": [],
+      "Operands": [
+        {
+          "Name": "poky",
+          "LabelEs": "Carpeta del proyecto Yocto (Poky)",
+          "DescriptionEs": "Ruta absoluta al directorio que contiene oe-init-build-env.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/usuario/poky",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "build",
+          "LabelEs": "Directorio de compilación",
+          "DescriptionEs": "Nombre o ruta absoluta del directorio build. Se creará si todavía no existe.",
+          "ValueKind": "PathOrName",
+          "Placeholder": "build",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "clean_task",
+          "LabelEs": "Tipo de limpieza",
+          "DescriptionEs": "clean, cleansstate o cleanall.",
+          "ValueKind": "CleanTask",
+          "Placeholder": "cleansstate",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "recipe",
+          "LabelEs": "Receta",
+          "DescriptionEs": "Nombre válido de una receta.",
+          "ValueKind": "Recipe",
+          "Placeholder": "busybox",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 7200,
+      "DocumentationUrl": "https://docs.yoctoproject.org/bitbake/"
+    },
+    {
+      "Id": "yocto-bitbake-environment",
+      "Executable": "bitbake",
+      "TitleEs": "Yocto: variables de receta",
+      "ExplanationEs": "Muestra variables de entorno de la receta; puede incluir rutas, tokens y valores sensibles.",
+      "SearchTerms": "yocto inspeccionar entorno variables bitbake -e",
+      "Risk": "Yellow",
+      "Template": ". {poky}/oe-init-build-env {build} >/dev/null && bitbake -e {recipe}",
+      "Flags": [],
+      "Operands": [
+        {
+          "Name": "poky",
+          "LabelEs": "Carpeta del proyecto Yocto (Poky)",
+          "DescriptionEs": "Ruta absoluta al directorio que contiene oe-init-build-env.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/usuario/poky",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "build",
+          "LabelEs": "Directorio de compilación",
+          "DescriptionEs": "Nombre o ruta absoluta del directorio build. Se creará si todavía no existe.",
+          "ValueKind": "PathOrName",
+          "Placeholder": "build",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "recipe",
+          "LabelEs": "Receta",
+          "DescriptionEs": "Receta o imagen del proyecto.",
+          "ValueKind": "Recipe",
+          "Placeholder": "busybox",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300,
+      "DocumentationUrl": "https://docs.yoctoproject.org/bitbake/"
+    },
+    {
+      "Id": "yocto-devtool-status",
+      "Executable": "devtool",
+      "TitleEs": "Yocto: estado devtool",
+      "ExplanationEs": "Muestra el estado del workspace devtool.",
+      "SearchTerms": "yocto devtool workspace status",
+      "Risk": "Green",
+      "Template": ". {poky}/oe-init-build-env {build} >/dev/null && devtool status",
+      "Flags": [],
+      "Operands": [
+        {
+          "Name": "poky",
+          "LabelEs": "Carpeta del proyecto Yocto (Poky)",
+          "DescriptionEs": "Ruta absoluta al directorio que contiene oe-init-build-env.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/usuario/poky",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "build",
+          "LabelEs": "Directorio de compilación",
+          "DescriptionEs": "Nombre o ruta absoluta del directorio build. Se creará si todavía no existe.",
+          "ValueKind": "PathOrName",
+          "Placeholder": "build",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 300,
+      "DocumentationUrl": "https://docs.yoctoproject.org/dev/dev-manual/devtool.html"
+    },
+    {
+      "Id": "yocto-devtool-modify",
+      "Executable": "devtool",
+      "TitleEs": "Yocto: preparar modificación de receta",
+      "ExplanationEs": "Prepara fuentes de una receta para editarlas en el workspace devtool.",
+      "SearchTerms": "yocto devtool modify receta fuentes modificar",
+      "Risk": "Yellow",
+      "Template": ". {poky}/oe-init-build-env {build} >/dev/null && devtool modify {recipe}",
+      "Flags": [],
+      "Operands": [
+        {
+          "Name": "poky",
+          "LabelEs": "Carpeta del proyecto Yocto (Poky)",
+          "DescriptionEs": "Ruta absoluta al directorio que contiene oe-init-build-env.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "/home/usuario/poky",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "build",
+          "LabelEs": "Directorio de compilación",
+          "DescriptionEs": "Nombre o ruta absoluta del directorio build. Se creará si todavía no existe.",
+          "ValueKind": "PathOrName",
+          "Placeholder": "build",
+          "Required": true,
+          "InitialValue": ""
+        },
+        {
+          "Name": "recipe",
+          "LabelEs": "Receta",
+          "DescriptionEs": "Nombre de la receta a modificar.",
+          "ValueKind": "Recipe",
+          "Placeholder": "busybox",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 1800,
+      "DocumentationUrl": "https://docs.yoctoproject.org/dev/dev-manual/devtool.html"
+    }
+  ]
+}
