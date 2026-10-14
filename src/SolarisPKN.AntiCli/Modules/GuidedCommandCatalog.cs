@@ -178,7 +178,7 @@ public static class GuidedCommandCatalog
                 Validate(field.ValueKind, raw);
                 if (!Name.IsMatch(raw) || raw.Length > 26)
                     throw new ArgumentException("El prefijo debe ser corto y contener solo caracteres válidos de usuario.");
-                map[field.Name] = "\"" + raw + "\${suffix}\"";
+                map[field.Name] = "\"" + raw + "${suffix}\"";
             }
             else
                 map[field.Name] = Format(field.ValueKind, raw);
