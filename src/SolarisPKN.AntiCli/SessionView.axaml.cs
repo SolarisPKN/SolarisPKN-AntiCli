@@ -120,6 +120,10 @@ public partial class SessionView : UserControl, IDisposable
         AuthModeSelector.SelectionChanged += ConnectionModeChanged;
         KeyDown += SessionShortcutKeyDown;
         ProfileName.TextChanged += (_, _) => SessionTitleChanged?.Invoke(this, EventArgs.Empty);
+        // One data source per tab: the detached terminal is a synchronized view.
+        Output.PropertyChanged += ConsoleSourcePropertyChanged;
+        CommandHistoryLog.PropertyChanged += ConsoleSourcePropertyChanged;
+        ExecutionStatus.PropertyChanged += ConsoleSourcePropertyChanged;
         ReloadProfiles();
     }
 
@@ -152,6 +156,7 @@ public partial class SessionView : UserControl, IDisposable
         _remoteDictionary = null;
         UpdateRemoteDictionaryStatus();
         UseSudoToggle.IsChecked = false;
+        SyncDetachedConsole();
         SessionTitleChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -808,7 +813,11 @@ public partial class SessionView : UserControl, IDisposable
                 useSudo, null, "", "", ex.Message);
             ExecutionStatus.Text = "Consulta fallida: " + ex.Message;
         }
-        finally { FinishOperation(); }
+        finally
+        {
+            FinishOperation();
+            SyncDetachedConsole();
+        }
     }
 
     private async void ScanHelpClicked(object? sender, RoutedEventArgs e)
@@ -851,6 +860,7 @@ public partial class SessionView : UserControl, IDisposable
     {
         if (_disposed) return;
         _disposed = true;
+        CloseDetachedConsoleForDisposal();
         // Do not clear key bytes while an SSH operation is still using them.
         if (_busy)
         {
