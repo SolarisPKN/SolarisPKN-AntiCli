@@ -70,10 +70,11 @@ public sealed class RemoteCommandDictionary
             // Windows SSH default shell may be cmd.exe or PowerShell; cmd.exe
             // is normally available in either case.
             var literal = string.Join(",", candidates.Select(x => "'" + x + "'"));
-            return "powershell.exe -NoProfile -NonInteractive -Command " +
-                "\"$ErrorActionPreference='SilentlyContinue'; @(" + literal +
+            var code = "$ErrorActionPreference='SilentlyContinue'; @(" + literal +
                 ") | ForEach-Object { if (Get-Command -Name $_ -ErrorAction SilentlyContinue) " +
-                "{ [Console]::WriteLine('ANTICLI:' + $_) } }\"";
+                "{ [Console]::WriteLine('ANTICLI:' + $_) } }";
+            var encoded = Convert.ToBase64String(System.Text.Encoding.Unicode.GetBytes(code));
+            return "cmd /c powershell.exe -NoProfile -NonInteractive -EncodedCommand " + encoded;
         }
         // command -v is a shell builtin; this never runs the target binary.
         var safe = string.Join(" ", candidates.Select(x => "'" + x + "'"));
