@@ -13,7 +13,7 @@ Bring terminal capabilities into a lightweight visual application: identify the 
 ## Features implemented in source
 
 - **Remote environments:** profiles for Debian, Ubuntu, Windows, and other Linux distributions; the selected OS is checked after SSH authentication.
-- **SSH:** username + password, or username + private SSH key with optional passphrase. The server's SHA256 host-key fingerprint must be pinned beforehand; unknown keys are not automatically trusted.
+- **SSH and first contact:** username + password or private key with passphrase. On a new VPS, AntiCLI discovers the host's public key **without sending credentials**, shows its SHA256 fingerprint, and asks you to explicitly trust it (TOFU) or compare it with your provider first. Subsequent connections enforce the stored host:port pin; changed keys are blocked unless explicitly reviewed.
 - **Four independent DPAPI opt-ins:** remember username, private-key contents, password, and passphrase. **All are optional** and unchecked fields are not persisted. Profiles live outside the repository.
 - **Multiple sessions:** open an empty tab, clone authenticated credentials into a tab, create another window, or clone a session into a separate window. Each session owns its command state and output.
 - **Visual command builder:** clickable action and token buttons, plus Tab/Enter/arrow-key suggestions. Only exact matches from reviewed read-only catalogs can execute.
@@ -38,7 +38,7 @@ dotnet run --project .\src\SolarisPKN.AntiCli\SolarisPKN.AntiCli.csproj
 
 You can also double-click `COMPILAR_ANTICLI.cmd`. The local published executable is generated under `artifacts/release/win-x64/`, excluded from Git. For a build without publishing, run `./COMPILAR_ANTICLI.ps1 -BuildOnly`.
 
-**Typical workflow:** open a tab; select the remote OS; configure host, user, port, authentication method, and an independently verified host-key fingerprint; then select **Authenticate via SSH**. Command and module panels only unlock after the SSH and platform checks succeed.
+**Typical workflow:** open a tab, select remote OS, enter the host, user, port and credentials, then select **Authenticate via SSH**. When the host is new, review its automatically detected SHA256 key and explicitly accept or cancel before SSH authentication. For a changed key, choose **Detect/review server key** and verify it with your provider first. Command and module panels only unlock after the SSH and platform checks succeed.
 
 ## Security and privacy
 
