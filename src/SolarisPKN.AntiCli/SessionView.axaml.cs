@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using SolarisPKN.AntiCli.Models;
@@ -142,6 +143,7 @@ public partial class SessionView : UserControl, IDisposable
         _blocks.Clear();
         BlockPreview.Text = "Bloques: (vacío)";
         RemoteInfo.Text = "Sesión no autenticada";
+        UseSudoToggle.IsChecked = false;
         SessionTitleChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -515,14 +517,83 @@ public partial class SessionView : UserControl, IDisposable
 
     private void BuildActionButtons()
     {
+        if (_connectedProfile is null) return;
+        var modules = AdminCommandCatalog.For(_connectedProfile.Platform);
+        var groups = modules.Select(x => x.GroupName).Distinct().ToList();
+        if (_connectedProfile.Platform == TargetPlatform.Windows)
+            groups.Add("Windows");
+        else
+            groups.Add("Todos los módulos");
+        ModuleGroupSelector.ItemsSource = groups;
+        ModuleGroupSelector.SelectedIndex = 0;
+        UseSudoToggle.IsVisible = _connectedProfile.Platform != TargetPlatform.Windows;
+        PopulateActionButtons();
+        UpdateRiskDisplay();
+    }
+
+    private void ModuleGroupChanged(object? sender, SelectionChangedEventArgs e) => PopulateActionButtons();
+
+    private void PopulateActionButtons()
+    {
         OptionButtons.Children.Clear();
         if (_connectedProfile is null) return;
-        foreach (var action in PlatformReadOnlyActions.For(_connectedProfile.Platform))
+        var selected = ModuleGroupSelector.SelectedItem as string ?? "";
+        if (_connectedProfile.Platform == TargetPlatform.Windows)
         {
-            var option = new Button { Content = action.Label, Margin = new Thickness(0, 0, 8, 8) };
-            option.Click += (_, _) => SelectAction(action);
-            OptionButtons.Children.Add(option);
+            foreach (var action in PlatformReadOnlyActions.For(TargetPlatform.Windows))
+            {
+                var actionCopy = action;
+                var button = new Button
+                {
+                    Content = "🟢 " + action.Label, Margin = new Thickness(0, 0, 8, 8)
+                };
+                button.Click += (_, _) => SelectAction(actionCopy);
+                OptionButtons.Children.Add(button);
+            }
+            return;
         }
+        var commands = AdminCommandCatalog.For(_connectedProfile.Platform)
+            .Where(x => selected == "Todos los módulos" || x.GroupName == selected);
+        foreach (var cmd in commands)
+        {
+            var captured = cmd;
+            var button = new Button
+            {
+                Content = AdminCommandCatalog.Dot(cmd.Risk) + " " + cmd.LabelEs,
+                Margin = new Thickness(0, 0, 8, 8)
+            };
+            ToolTip.SetTip(button, cmd.Command + " — " + cmd.DescriptionEs);
+            button.Click += (_, _) => SelectAction(
+                new ReadOnlyAction(captured.Id, captured.LabelEs, captured.Command));
+            OptionButtons.Children.Add(button);
+        }
+    }
+
+    private void SudoToggleChanged(object? sender, RoutedEventArgs e) => UpdateRiskDisplay();
+
+    private void UpdateRiskDisplay()
+    {
+        if (RiskIndicator is null || RunAssistedButton is null || UseSudoToggle is null)
+            return;
+        var command = AssistedCommand?.Text?.Trim() ?? "";
+        var platform = _connectedProfile?.Platform ?? TargetPlatform.OtherLinux;
+        var risk = AdminCommandCatalog.Classify(platform, command);
+        var useSudo = UseSudoToggle.IsChecked == true && platform != TargetPlatform.Windows;
+        if (useSudo && risk == CommandRisk.Green)
+            risk = CommandRisk.Yellow;
+        var dot = AdminCommandCatalog.Dot(risk);
+        RiskIndicator.Text = dot + " " + AdminCommandCatalog.RiskName(risk) +
+            (useSudo ? " · sudo ACTIVO" : "");
+        RunAssistedButton.Content = dot + " Ejecutar comando" + (useSudo ? " con sudo" : "");
+        RunAssistedButton.Background = risk switch
+        {
+            CommandRisk.Green => Brushes.SeaGreen,
+            CommandRisk.Yellow => Brushes.Goldenrod,
+            _ => Brushes.Firebrick
+        };
+        RunAssistedButton.Foreground = risk == CommandRisk.Yellow ? Brushes.Black : Brushes.White;
+        ToolTip.SetTip(RunAssistedButton,
+            "Un clic ejecuta por SSH. " + AdminCommandCatalog.RiskName(risk));
     }
 
     private void SelectAction(ReadOnlyAction action)
@@ -531,6 +602,7 @@ public partial class SessionView : UserControl, IDisposable
         AssistedCommand.Text = "";
         TokenButtons.Children.Clear();
         HintDetail.Text = action.Label + " — " + action.Command;
+        UpdateRiskDisplay();
         foreach (var segment in action.Command.Split(' ', StringSplitOptions.RemoveEmptyEntries))
         {
             var token = segment;
@@ -578,28 +650,36 @@ public partial class SessionView : UserControl, IDisposable
             var candidate = hint;
             var choice = new Button
             {
-                Content = candidate.Command + (candidate.Approved ? "" : " [borrador]"),
+                Content = AdminCommandCatalog.Dot(
+                    AdminCommandCatalog.Classify(_connectedProfile.Platform, candidate.Command)) +
+                    " " + candidate.Command,
                 Margin = new Thickness(0, 0, 6, 6)
             };
             choice.Click += (_, _) =>
             {
                 AssistedCommand.Text = candidate.Command;
                 AssistedCommand.CaretIndex = candidate.Command.Length;
-                HintDetail.Text = candidate.DescriptionEs +
-                    (candidate.Approved ? " · Consulta disponible." : " · Solo informativo, no ejecutable.");
+                HintDetail.Text = candidate.DescriptionEs + " · " +
+                    AdminCommandCatalog.RiskName(AdminCommandCatalog.Classify(
+                        _connectedProfile.Platform, candidate.Command));
             };
             SuggestionButtons.Children.Add(choice);
         }
         if (_matches.Count == 0) HintDetail.Text = "No hay sugerencias para este texto.";
     }
 
-    private void AssistedTextChanged(object? sender, TextChangedEventArgs e) => ReloadSuggestions();
+    private void AssistedTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        ReloadSuggestions();
+        UpdateRiskDisplay();
+    }
 
     private void SuggestionSelected(object? sender, SelectionChangedEventArgs e)
     {
         if (Suggestions.SelectedItem is CommandHint hint)
-            HintDetail.Text = hint.DescriptionEs
-                + (hint.Approved ? " · Consulta permitida." : " · Borrador: no ejecutable.");
+            HintDetail.Text = hint.DescriptionEs + " · " +
+                AdminCommandCatalog.RiskName(AdminCommandCatalog.Classify(
+                    _connectedProfile?.Platform ?? TargetPlatform.OtherLinux, hint.Command));
     }
 
     private void SessionShortcutKeyDown(object? sender, KeyEventArgs e)
@@ -657,18 +737,32 @@ public partial class SessionView : UserControl, IDisposable
         var command = input.Trim();
         if (!CommandHints.CanRun(_connectedProfile.Platform, command))
         {
-            ExecutionStatus.Text = "El comando no está autorizado para esta plataforma.";
+            ExecutionStatus.Text = "Escribí un comando para ejecutar.";
             return;
+        }
+        // There is deliberately NO second confirmation. The button and status
+        // expose the risk before executing; the SSH identity was verified at login.
+        var useSudo = UseSudoToggle.IsChecked == true &&
+            _connectedProfile.Platform != TargetPlatform.Windows;
+        var hasExistingSudo = command.StartsWith("sudo ", StringComparison.Ordinal);
+        var remoteCommand = command;
+        if (useSudo && !hasExistingSudo)
+        {
+            // Execute the complete shell expression as root, including pipes and
+            // redirects. A single-quoted shell argument cannot escape by injecting '.
+            var escaped = command.Replace("'", "'\\"'\\"'", StringComparison.Ordinal);
+            remoteCommand = "sudo -n -- sh -c '" + escaped + "'";
         }
         try
         {
             _busy = true;
-            ExecutionStatus.Text = "Ejecutando consulta por SSH...";
-            Output.Text = "$ " + command + "\n";
-            var result = await _ssh.ExecuteAsync(_connectedProfile, _connectedCredentials, command);
-            Output.Text = "$ " + command + "\n\n" + result.StdOut
+            ExecutionStatus.Text = "Ejecutando por SSH " + (useSudo ? "con sudo -n..." : "...");
+            Output.Text = "$ " + remoteCommand + "\n";
+            var result = await _ssh.ExecuteAsync(_connectedProfile, _connectedCredentials, remoteCommand);
+            Output.Text = "$ " + remoteCommand + "\n\n" + result.StdOut
                 + (string.IsNullOrWhiteSpace(result.StdErr) ? "" : "\n[STDERR]\n" + result.StdErr);
-            ExecutionStatus.Text = "Consulta completada. Código de salida: " + result.ExitCode;
+            ExecutionStatus.Text = "Comando completado. Código de salida: " + result.ExitCode +
+                (useSudo && result.ExitCode != 0 ? " · sudo -n exige permisos sin contraseña interactiva." : "");
         }
         catch (Exception ex) { ExecutionStatus.Text = "Consulta fallida: " + ex.Message; }
         finally { FinishOperation(); }
