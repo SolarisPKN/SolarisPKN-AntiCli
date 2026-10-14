@@ -191,7 +191,7 @@
             </StackPanel>
           </ScrollViewer>
           <TabControl Grid.Column="1" MinHeight="0">
-            <TabItem Header="Diagrama visual">
+            <TabItem x:Name="FlowDesignerTab" Header="Diagrama visual" IsVisible="False">
               <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="7" Margin="6" MinHeight="0">
                 <TextBlock Text="Bloques y flechas · arrastrá los nodos con el mouse" FontWeight="SemiBold"
                            FontSize="16" TextWrapping="Wrap"/>
@@ -229,8 +229,9 @@
             </TabItem>
             <TabItem Header="Script / proyecto">
               <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="7" Margin="6" MinHeight="0">
-                <TextBlock Text="Vista previa del script POSIX" FontWeight="SemiBold" FontSize="17"/>
+                <TextBlock Text="Script y automatización. El diagrama visual se abre con el botón ↗." FontWeight="SemiBold" FontSize="17" TextWrapping="Wrap"/>
                 <WrapPanel Grid.Row="1" ItemSpacing="6" LineSpacing="5">
+                  <Button Content="Abrir diagrama ↗" Click="OpenFlowWindowClicked" Background="#285E75" Foreground="White" ToolTip.Tip="Abre el diagrama en una ventana independiente, apta para un segundo monitor"/>
                   <Button Content="Generar vista previa" Click="AutomationPreviewClicked"/>
                   <Button Content="Guardar .sh" Click="AutomationSaveScriptClicked"/>
                   <Button Content="Guardar proyecto JSON" Click="AutomationSaveProjectClicked"/>
