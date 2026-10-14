@@ -77,6 +77,13 @@
                      TextChanged="UniversalSearchChanged"/>
             <WrapPanel x:Name="UniversalResults" Orientation="Horizontal"/>
             <TextBlock Text="O elegí un módulo del catálogo: 🟢 Consulta · 🟡 Precaución · 🔴 Alto riesgo / no catalogado." TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock x:Name="InstalledDictionaryStatus" Text="Herramientas remotas: sin consultar"
+                         TextWrapping="Wrap" VerticalAlignment="Center"/>
+              <Button Content="Actualizar herramientas" Click="RefreshDictionaryClicked"/>
+            </StackPanel>
+            <TextBlock Text="✓ disponible en PATH  ·  ○ no visible en PATH  ·  ? sin comprobar. Algunos módulos Yocto requieren activar el entorno de compilación."
+                       FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
             <ComboBox x:Name="ModuleGroupSelector" Width="330" HorizontalAlignment="Left"
                       SelectionChanged="ModuleGroupChanged" PlaceholderText="Seleccioná módulo"/>
             <WrapPanel x:Name="OptionButtons" Orientation="Horizontal"/>
@@ -113,7 +120,7 @@
                       Checked="SudoToggleChanged" Unchecked="SudoToggleChanged"/>
             <TextBlock Text="Un clic ejecuta. El color indica riesgo, no solicita confirmación. sudo utiliza modo no interactivo (-n); necesita permisos sudo sin contraseña previa."
                        FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
-            <TextBlock Text="Flechas ↑ ↓: navegar · Tab/Enter: completar · Atajo de ejecución configurable en ⚙ Ajustes"
+            <TextBlock Text="Escribí aunque haya errores: umame → uname, aof-ghet → apt-get. Tab aplica la sugerencia elegida sin ejecutar. ↑ ↓ cambian selección."
                        FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
             <WrapPanel x:Name="SuggestionButtons" Orientation="Horizontal"/>
             <ListBox x:Name="Suggestions" Height="105" SelectionChanged="SuggestionSelected"/>
