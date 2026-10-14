@@ -68,6 +68,7 @@ Podés escribir y ejecutar comandos SSH sin el asistente. Incluye **Copiar coman
 - [Seguridad](docs/SECURITY.md)
 - [Consola asistida](docs/ASSISTED_CLI.md)
 - [Motor de formularios dinámicos](docs/FORMULARIOS_DINAMICOS.md)
+- [Automatizaciones, lotes y diagrama visual de flujo](docs/AUTOMATION_FLOW.md)
 - [Dependencias host de Yocto (20 paquetes)](docs/YOCTO_HOST_DEPENDENCIES.md)
 - [Catálogo administrativo: 146 acciones y 17 módulos](docs/COMMAND_MODULES.es.md) ([English](docs/COMMAND_MODULES.md))
 - [Motor universal JSON, APT y Yocto](docs/GENERIC_COMMAND_ENGINE.es.md) ([English](docs/GENERIC_COMMAND_ENGINE.md))
