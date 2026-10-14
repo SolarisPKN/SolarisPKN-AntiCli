@@ -113,14 +113,14 @@
         <ScrollViewer>
           <StackPanel Margin="15" Spacing="12">
             <TextBlock FontSize="19" FontWeight="SemiBold" Text="Creador de módulos de consola"/>
-            <TextBlock Text="Explorá ayudas CLI en servidores de prueba autorizados. Solo genera borradores no ejecutables."
+            <TextBlock Text="Explorá ayudas CLI en servidores de prueba autorizados. Los comandos descubiertos se incorporan como sugerencias; el administrador puede ejecutarlos."
                        TextWrapping="Wrap"/>
             <TextBlock Text="Nombre de ejecutable"/>
             <TextBox x:Name="ToolToDiscover" Watermark="salt, docker, git, bitbake..." Width="360" HorizontalAlignment="Left"/>
             <CheckBox x:Name="HelpConsent" Content="Autorizo explorar ayudas --help en este servidor de PRUEBAS"/>
             <Button Content="Analizar ayuda y crear borrador" Click="ScanHelpClicked" HorizontalAlignment="Left"/>
             <TextBlock x:Name="ScanStatus" Text="Sin escaneos en esta sesión." TextWrapping="Wrap"/>
-            <TextBlock Text="Los borradores y las opciones descubiertas no se habilitan automáticamente. La traducción avanzada con IA está pendiente." TextWrapping="Wrap"/>
+            <TextBlock Text="Los comandos descubiertos quedan señalados por riesgo; podés ejecutarlos como cualquier comando escrito manualmente. La traducción avanzada con IA está pendiente." TextWrapping="Wrap"/>
             <TextBox x:Name="ScanOutput" IsReadOnly="True" MinHeight="210" AcceptsReturn="True"
                      TextWrapping="Wrap" FontFamily="Consolas,Monospace"/>
           </StackPanel>
