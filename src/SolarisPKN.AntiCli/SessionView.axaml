@@ -115,6 +115,20 @@
                 </Border>
                 <StackPanel x:Name="GuidedOptions" Spacing="7"/>
                 <StackPanel x:Name="GuidedArguments" Spacing="8"/>
+                <Border x:Name="PackageRequirementsPanel" IsVisible="False"
+                        BorderBrush="#777777" BorderThickness="1" CornerRadius="6" Padding="8">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Comprobación de paquetes APT" FontWeight="SemiBold"/>
+                    <Button Content="Comprobar paquetes instalados en el servidor"
+                            Click="CheckPackageRequirementsClicked" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="PackageRequirementsStatus" Text="Sin comprobar."
+                               TextWrapping="Wrap"/>
+                    <Button x:Name="InstallRequiredPackagesButton" IsVisible="False"
+                            Content="Instalar únicamente los faltantes" Background="#9A3434"
+                            Foreground="White" Click="InstallRequiredPackagesClicked"
+                            HorizontalAlignment="Left"/>
+                  </StackPanel>
+                </Border>
                 <TextBlock x:Name="GuidedError" TextWrapping="Wrap" Foreground="#F28B82"/>
                 <TextBlock x:Name="GuidedPlanInfo" TextWrapping="Wrap" FontSize="12"/>
                 <Button Content="Cerrar constructor" Click="CloseGuidedClicked"
