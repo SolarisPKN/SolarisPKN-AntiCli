@@ -13,7 +13,7 @@ Acercar la potencia de una terminal a una interfaz visual de bajo consumo: ident
 ## Funciones presentes en el código
 
 - **Entornos remotos:** perfiles para Debian, Ubuntu, Windows y otras distribuciones Linux; el sistema elegido se verifica al autenticar.
-- **SSH:** acceso con usuario + contraseña o usuario + clave privada SSH con passphrase opcional. La huella SHA256 del servidor debe estar fijada de antemano; no hay aceptación automática de claves desconocidas.
+- **SSH y primera conexión:** autenticación con contraseña o clave privada con passphrase. Con un VPS nuevo, AntiCLI detecta la clave pública **sin enviar credenciales**, muestra el SHA256 y pide confirmación explícita para confiar (TOFU) o comparar con el proveedor. En conexiones posteriores comprueba la clave guardada por host:puerto y bloquea cambios no revisados.
 - **Cuatro preferencias DPAPI independientes:** recordar usuario, contenido de clave privada, contraseña y passphrase. **Todas son optativas**; no se guardan cuando no se marcan. Los perfiles se almacenan fuera del repositorio.
 - **Varias sesiones:** nueva pestaña, clonar autenticación en otra pestaña, nueva ventana y clonar sesión en ventana independiente. Cada sesión administra sus propios comandos y resultados.
 - **Constructor de comandos por bloques:** acciones seleccionables por botones y sugerencias con Tab, Enter y flechas. Solo se ejecutan comandos exactos incluidos en el catálogo predefinido de lectura.
@@ -38,7 +38,7 @@ dotnet run --project .\src\SolarisPKN.AntiCli\SolarisPKN.AntiCli.csproj
 
 También podés ejecutar `COMPILAR_ANTICLI.cmd`. La publicación local queda en `artifacts/release/win-x64/`, que está excluida de Git. Para probar el código sin publicar: `./COMPILAR_ANTICLI.ps1 -BuildOnly`.
 
-**Uso básico:** creá una pestaña, elegí plataforma, configurá host, usuario, puerto, método de autenticación y la huella SSH verificada por otra vía. Pulsá **Autenticar**. Solo al validar identidad, credenciales y sistema aparecen los paneles de comandos y creación de módulos.
+**Uso básico:** creá una pestaña, elegí plataforma y completá host, usuario, puerto y credenciales. Pulsá **Autenticar**: si es un servidor nuevo, AntiCLI detecta la huella SHA256 y pide que la revises y aceptes antes del inicio de sesión. Para una clave que cambió, usá **Detectar / revisar clave del servidor** y verificá el cambio con el proveedor. Solo al validar identidad, credenciales y sistema aparecen los paneles de comandos y creación de módulos.
 
 ## Seguridad y privacidad
 
