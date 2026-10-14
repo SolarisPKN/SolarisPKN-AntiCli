@@ -1115,6 +1115,61 @@
       "SupportsBatch": false,
       "TimeoutSeconds": 1800,
       "DocumentationUrl": "https://docs.yoctoproject.org/dev/dev-manual/devtool.html"
+    },
+    {
+      "Id": "yocto-host-dependencies",
+      "Executable": "apt-get",
+      "TitleEs": "Preparar dependencias Ubuntu/Debian para Yocto",
+      "ExplanationEs": "Preset de 20 paquetes para el host Yocto/BitBake aportado por el administrador. Instala versiones candidatas de repositorios APT configurados, no garantiza la última de Internet. libsdl1.2-dev o git-core pueden no estar disponibles en versiones modernas: revisar apt-cache policy en la VM.",
+      "SearchTerms": "preparar instalar dependencias yocto host bitbake build gawk wget git-core diffstat unzip texinfo gcc-multilib chrpath socat cpio xterm",
+      "Risk": "Red",
+      "Template": "apt-get {flags} install {packages}",
+      "Flags": [
+        {
+          "Token": "-y",
+          "LabelEs": "Instalación no interactiva",
+          "DescriptionEs": "Aprueba solicitudes habituales de APT. Los paquetes y cambios deben revisarse antes de ejecutar.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": true,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Simular primero",
+          "DescriptionEs": "APT muestra los cambios sin instalarlos.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "--no-install-recommends",
+          "LabelEs": "Sin paquetes recomendados",
+          "DescriptionEs": "Instala dependencias necesarias evitando recomendaciones.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "packages",
+          "LabelEs": "Lista editable de paquetes",
+          "DescriptionEs": "Separados por espacios. Ajustá esta lista a la distribución y versión del sistema.",
+          "ValueKind": "PackageList",
+          "Placeholder": "gawk wget git-core ...",
+          "Required": true,
+          "InitialValue": "gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat cpio python-is-python3 python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping libsdl1.2-dev xterm"
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 1200,
+      "DocumentationUrl": "https://docs.yoctoproject.org/ref-manual/system-requirements.html",
+      "Platforms": [
+        "Linux"
+      ]
     }
   ]
 }
