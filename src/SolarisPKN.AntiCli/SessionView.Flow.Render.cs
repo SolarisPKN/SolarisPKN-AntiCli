@@ -36,6 +36,8 @@ public partial class SessionView
             FlowEdgeKind.True => Brushes.LightGreen,
             FlowEdgeKind.False => Brushes.OrangeRed,
             FlowEdgeKind.Parallel => Brushes.Plum,
+            FlowEdgeKind.LoopBody => Brushes.LightSkyBlue,
+            FlowEdgeKind.LoopBack => Brushes.Orange,
             _ => Brushes.LightSlateGray
         };
         FlowLine(start, end, color);
@@ -84,6 +86,7 @@ public partial class SessionView
                     FlowNodeKind.If => Brushes.DarkGoldenrod,
                     FlowNodeKind.Parallel => Brushes.MediumPurple,
                     FlowNodeKind.Join => Brushes.Teal,
+                    FlowNodeKind.Loop => Brushes.DarkCyan,
                     _ => Brushes.DarkSlateBlue
                 },
                 Child = new StackPanel
@@ -93,14 +96,18 @@ public partial class SessionView
                     {
                         new TextBlock
                         {
-                            Text = node.Kind + " · " + node.Label,
+                            Text = (node.Kind == FlowNodeKind.Loop
+                                ? "↺ " + node.LoopMode + " ≤ " + node.MaxIterations
+                                : node.Kind.ToString()) + " · " + node.Label,
                             FontWeight = FontWeight.Bold, Foreground = Brushes.White,
                             TextTrimming = TextTrimming.CharacterEllipsis
                         },
                         new TextBlock
                         {
-                            Text = node.CommandTemplate.Length > 68
-                                ? node.CommandTemplate[..68] + "…" : node.CommandTemplate,
+                            Text = node.Kind == FlowNodeKind.Loop && node.LoopMode == FlowLoopMode.For
+                                ? "Repetir el cuerpo hasta " + node.MaxIterations + " veces"
+                                : node.CommandTemplate.Length > 68
+                                    ? node.CommandTemplate[..68] + "…" : node.CommandTemplate,
                             FontSize = 11, Foreground = Brushes.White,
                             TextWrapping = TextWrapping.Wrap
                         }
