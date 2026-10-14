@@ -19,7 +19,7 @@ public partial class SessionView
         {
             case ConsoleViewMode.Docked:
                 CommandsWorkspace.ColumnDefinitions = new ColumnDefinitions(
-                    _terminalOnLeft ? "*,3*" : "3*,*");
+                    _terminalOnLeft ? "9*,11*" : "11*,9*");
                 BrowsePane.IsVisible = true;
                 SideConsolePane.IsVisible = true;
                 Grid.SetColumn(BrowsePane, _terminalOnLeft ? 1 : 0);
@@ -119,27 +119,13 @@ public partial class SessionView
             return;
         }
 
-        var window = new DetachedConsoleWindow(RunFromDetachedConsoleAsync, DetachedWindowClosed);
+        var window = new DetachedConsoleWindow(DetachedWindowClosed);
         _detachedWindow = window;
-        window.SetInitialInput(AssistedCommand.Text ?? "", UseSudoToggle.IsChecked == true);
         _consoleMode = ConsoleViewMode.Detached;
         ApplyConsoleMode();
         SyncDetachedConsole();
         window.Show(); // Unowned: can be moved/maximized on a second monitor independently.
         window.Activate();
-    }
-
-    private async Task RunFromDetachedConsoleAsync(string command, bool sudo)
-    {
-        if (_disposed) return;
-        if (_busy)
-        {
-            ExecutionStatus.Text = "La sesión tiene otra operación SSH en curso.";
-            return;
-        }
-        AssistedCommand.Text = command;
-        UseSudoToggle.IsChecked = sudo && _connectedProfile?.Platform != Models.TargetPlatform.Windows;
-        await ExecuteApprovedCommandAsync(command);
     }
 
     private void DetachedWindowClosed()
@@ -168,17 +154,12 @@ public partial class SessionView
     private void SyncDetachedConsole()
     {
         if (_detachedWindow is null) return;
-        var platform = _connectedProfile?.Platform ?? Models.TargetPlatform.OtherLinux;
         var endpoint = _connectedProfile is null
             ? "Sesión SSH desconectada"
             : _connectedProfile.Name + " · " + _connectedProfile.Host + ":" +
               _connectedProfile.Port;
-        _detachedWindow.UpdateSnapshot(
-            endpoint,
-            Output.Text ?? "",
-            CommandHistoryLog.Text ?? "",
-            ExecutionStatus.Text ?? "",
-            IsAuthenticated, platform, _busy);
+        _detachedWindow.UpdateSnapshot(endpoint,
+            CommandHistoryLog.Text ?? "", ExecutionStatus.Text ?? "");
     }
 
 }
