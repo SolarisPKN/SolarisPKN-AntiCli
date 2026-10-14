@@ -1,0 +1,658 @@
+{
+  "SchemaVersion": 1,
+  "Description": "Fichas declarativas para renderizado automático. Campos, flags, valores, orden, ejecución y riesgos. No incluir secretos.",
+  "FieldsLegend": {
+    "switch": "Casilla",
+    "text": "Texto",
+    "integer": "Número",
+    "select": "Selector",
+    "url": "URL HTTPS",
+    "file": "Archivo",
+    "path": "Ruta"
+  },
+  "Commands": [
+    {
+      "Id": "uname",
+      "Family": "coreutils",
+      "Executable": "uname",
+      "TitleEs": "Información del kernel y sistema",
+      "SearchTerms": [
+        "ver sistema",
+        "arquitectura",
+        "kernel",
+        "hostname"
+      ],
+      "Risk": "Green",
+      "Source": "https://www.gnu.org/software/coreutils/manual/html_node/uname-invocation.html",
+      "Flags": [
+        [
+          "-a",
+          "Toda la información",
+          "switch"
+        ],
+        [
+          "-s",
+          "Nombre del kernel",
+          "switch"
+        ],
+        [
+          "-n",
+          "Nombre del servidor",
+          "switch"
+        ],
+        [
+          "-r",
+          "Release del kernel",
+          "switch"
+        ],
+        [
+          "-v",
+          "Versión completa del kernel",
+          "switch"
+        ],
+        [
+          "-m",
+          "Arquitectura de hardware",
+          "switch"
+        ],
+        [
+          "-p",
+          "Procesador",
+          "switch"
+        ],
+        [
+          "-i",
+          "Plataforma de hardware",
+          "switch"
+        ],
+        [
+          "-o",
+          "Sistema operativo",
+          "switch"
+        ],
+        [
+          "--help",
+          "Ayuda",
+          "switch"
+        ],
+        [
+          "--version",
+          "Versión del programa",
+          "switch"
+        ]
+      ],
+      "Parameters": [],
+      "OrderNote": "GNU uname muestra los campos en su orden propio"
+    },
+    {
+      "Id": "adduser",
+      "Family": "accounts",
+      "Executable": "adduser",
+      "TitleEs": "Crear cuentas de usuario",
+      "SearchTerms": [
+        "crear usuario",
+        "dar de alta usuario",
+        "alumnos"
+      ],
+      "Risk": "Red",
+      "Source": "https://manpages.ubuntu.com/manpages/noble/man8/adduser.8.html",
+      "Flags": [
+        [
+          "--disabled-password",
+          "Sin contraseña inicial",
+          "switch"
+        ],
+        [
+          "--disabled-login",
+          "Acceso desactivado",
+          "switch"
+        ],
+        [
+          "--gecos",
+          "Descripción de cuenta",
+          "text"
+        ],
+        [
+          "--shell",
+          "Shell inicial",
+          "path"
+        ],
+        [
+          "--ingroup",
+          "Grupo principal",
+          "text"
+        ],
+        [
+          "--home",
+          "Carpeta personal",
+          "path"
+        ],
+        [
+          "--uid",
+          "UID numérico",
+          "integer"
+        ],
+        [
+          "--system",
+          "Cuenta de sistema",
+          "switch"
+        ],
+        [
+          "--no-create-home",
+          "Sin home",
+          "switch"
+        ]
+      ],
+      "Parameters": [
+        {
+          "Name": "username",
+          "LabelEs": "Nombre o prefijo del usuario",
+          "Type": "text",
+          "Required": true,
+          "Validation": "linux-account"
+        }
+      ],
+      "Batch": {
+        "Supported": true,
+        "Operand": "username",
+        "Min": 1,
+        "Max": 100,
+        "Fields": [
+          "count",
+          "start",
+          "width"
+        ],
+        "Pattern": "{username}{counter}",
+        "StopOnError": true
+      },
+      "Rules": [
+        "No realizar prompts interactivos al crear cuentas por SSH",
+        "--uid y --home no se deben repetir idénticos en un lote"
+      ]
+    },
+    {
+      "Id": "apt-get",
+      "Family": "apt",
+      "Executable": "apt-get",
+      "TitleEs": "Administrar paquetes APT",
+      "SearchTerms": [
+        "instalar paquetes",
+        "actualizar paquetes",
+        "quitar",
+        "purga",
+        "apt"
+      ],
+      "Risk": "Red",
+      "Source": "https://manpages.ubuntu.com/manpages/noble/man8/apt-get.8.html",
+      "Subcommands": [
+        {
+          "Token": "update",
+          "LabelEs": "Actualizar índices",
+          "Risk": "Yellow",
+          "Arguments": []
+        },
+        {
+          "Token": "install",
+          "LabelEs": "Instalar paquetes",
+          "Risk": "Red",
+          "Arguments": [
+            {
+              "Name": "packages",
+              "LabelEs": "Paquete(s)",
+              "Type": "text",
+              "Required": true,
+              "Multiple": true
+            }
+          ]
+        },
+        {
+          "Token": "remove",
+          "LabelEs": "Desinstalar paquetes",
+          "Risk": "Red",
+          "Arguments": [
+            {
+              "Name": "packages",
+              "LabelEs": "Paquete(s)",
+              "Type": "text",
+              "Required": true,
+              "Multiple": true
+            }
+          ]
+        },
+        {
+          "Token": "purge",
+          "LabelEs": "Purgar paquetes y configuración",
+          "Risk": "Red",
+          "Arguments": [
+            {
+              "Name": "packages",
+              "LabelEs": "Paquete(s)",
+              "Type": "text",
+              "Required": true,
+              "Multiple": true
+            }
+          ]
+        },
+        {
+          "Token": "upgrade",
+          "LabelEs": "Actualizar paquetes",
+          "Risk": "Red",
+          "Arguments": []
+        },
+        {
+          "Token": "full-upgrade",
+          "LabelEs": "Actualizar resolviendo dependencias",
+          "Risk": "Red",
+          "Arguments": []
+        },
+        {
+          "Token": "autoremove",
+          "LabelEs": "Eliminar dependencias sin uso",
+          "Risk": "Red",
+          "Arguments": []
+        },
+        {
+          "Token": "autoclean",
+          "LabelEs": "Limpiar archivos descargados obsoletos",
+          "Risk": "Yellow",
+          "Arguments": []
+        },
+        {
+          "Token": "clean",
+          "LabelEs": "Vaciar caché APT",
+          "Risk": "Yellow",
+          "Arguments": []
+        }
+      ],
+      "Flags": [
+        [
+          "-s",
+          "Simular (sin cambios)",
+          "switch"
+        ],
+        [
+          "-y",
+          "Confirmar automáticamente",
+          "switch"
+        ],
+        [
+          "--no-install-recommends",
+          "No instalar recomendaciones",
+          "switch"
+        ],
+        [
+          "--reinstall",
+          "Reinstalar",
+          "switch"
+        ],
+        [
+          "--download-only",
+          "Solo descargar",
+          "switch"
+        ],
+        [
+          "--allow-downgrades",
+          "Permitir bajar versión",
+          "switch"
+        ],
+        [
+          "--fix-broken",
+          "Intentar corregir dependencias",
+          "switch"
+        ],
+        [
+          "-t",
+          "Release de destino",
+          "text"
+        ],
+        [
+          "-o",
+          "Opción de configuración APT",
+          "text"
+        ]
+      ]
+    },
+    {
+      "Id": "apt-sources",
+      "Family": "apt",
+      "Executable": "",
+      "TitleEs": "Agregar repositorio externo seguro (deb822)",
+      "SearchTerms": [
+        "agregar repositorio",
+        "url apt",
+        "clave gpg",
+        "firma",
+        "signed-by"
+      ],
+      "Risk": "Red",
+      "Source": "https://manpages.ubuntu.com/manpages/noble/man5/sources.list.5.html",
+      "Workflow": "deb822-signed-by",
+      "Fields": [
+        {
+          "Name": "name",
+          "LabelEs": "Nombre corto del repositorio",
+          "Type": "text",
+          "Required": true,
+          "Validation": "safe-filename"
+        },
+        {
+          "Name": "uri",
+          "LabelEs": "URL del repositorio HTTPS",
+          "Type": "url",
+          "Required": true,
+          "Validation": "https-only"
+        },
+        {
+          "Name": "suite",
+          "LabelEs": "Suite / codename (ej.: noble)",
+          "Type": "text",
+          "Required": true
+        },
+        {
+          "Name": "components",
+          "LabelEs": "Componentes (ej.: main)",
+          "Type": "text",
+          "Required": true
+        },
+        {
+          "Name": "architectures",
+          "LabelEs": "Arquitecturas (ej.: amd64)",
+          "Type": "text",
+          "Required": false
+        },
+        {
+          "Name": "keyUrl",
+          "LabelEs": "URL HTTPS de la clave pública publicada por el proveedor",
+          "Type": "url",
+          "Required": true,
+          "Validation": "https-only"
+        },
+        {
+          "Name": "keyFingerprint",
+          "LabelEs": "Huella completa esperada de la clave OpenPGP",
+          "Type": "text",
+          "Required": true,
+          "Validation": "gpg-fingerprint"
+        }
+      ],
+      "Steps": [
+        "Descargar clave por HTTPS con límite de tamaño",
+        "Comprobar huella OpenPGP contra documentación oficial por canal independiente",
+        "Guardar clave en /etc/apt/keyrings/NOMBRE.gpg o .asc",
+        "Crear /etc/apt/sources.list.d/NOMBRE.sources con Signed-By",
+        "Validar fuente y ejecutar apt-get update"
+      ],
+      "Rules": [
+        "Prohibido usar apt-key y trusted=yes",
+        "No suprimir errores TLS o firmas",
+        "La huella debe estar suministrada y contrastada, nunca inventada",
+        "Si se interrumpe el proceso, no dejar fuentes parcialmente activas"
+      ]
+    },
+    {
+      "Id": "bitbake",
+      "Family": "yocto",
+      "Executable": "bitbake",
+      "TitleEs": "Compilar y consultar recetas Yocto",
+      "SearchTerms": [
+        "yocto",
+        "receta",
+        "build image",
+        "compilar",
+        "bitbake"
+      ],
+      "Risk": "Yellow",
+      "Source": "https://docs.yoctoproject.org/bitbake/dev/bitbake-user-manual-intro.html",
+      "RequiresInitializedBuildEnvironment": true,
+      "Flags": [
+        [
+          "-e",
+          "Mostrar entorno de receta",
+          "switch"
+        ],
+        [
+          "-n",
+          "Simular tareas (dry-run)",
+          "switch"
+        ],
+        [
+          "-c",
+          "Elegir tarea",
+          "text"
+        ],
+        [
+          "-f",
+          "Forzar tarea",
+          "switch"
+        ],
+        [
+          "-k",
+          "Continuar compilación tras errores",
+          "switch"
+        ],
+        [
+          "-g",
+          "Graficar dependencias",
+          "switch"
+        ],
+        [
+          "-S",
+          "Modo firma",
+          "text"
+        ],
+        [
+          "--version",
+          "Versión de BitBake",
+          "switch"
+        ],
+        [
+          "-h",
+          "Ayuda",
+          "switch"
+        ]
+      ],
+      "Parameters": [
+        {
+          "Name": "recipe",
+          "LabelEs": "Receta o imagen (ej.: core-image-minimal)",
+          "Type": "text",
+          "Required": false
+        }
+      ],
+      "Context": [
+        "source oe-init-build-env <directorio>",
+        "BitBake y sus herramientas necesitan el ambiente de compilación iniciado"
+      ]
+    },
+    {
+      "Id": "bitbake-layers",
+      "Family": "yocto",
+      "Executable": "bitbake-layers",
+      "TitleEs": "Administración de capas Yocto",
+      "SearchTerms": [
+        "yocto",
+        "capas",
+        "bblayers",
+        "layers"
+      ],
+      "Risk": "Yellow",
+      "Source": "https://docs.yoctoproject.org/dev/dev-manual/layers.html",
+      "RequiresInitializedBuildEnvironment": true,
+      "Subcommands": [
+        {
+          "Token": "show-layers",
+          "LabelEs": "Listar capas",
+          "Risk": "Green"
+        },
+        {
+          "Token": "show-recipes",
+          "LabelEs": "Listar recetas",
+          "Risk": "Green"
+        },
+        {
+          "Token": "show-appends",
+          "LabelEs": "Mostrar bbappends",
+          "Risk": "Green"
+        },
+        {
+          "Token": "create-layer",
+          "LabelEs": "Crear capa",
+          "Risk": "Yellow",
+          "Arguments": [
+            {
+              "Name": "layer",
+              "LabelEs": "Nombre de la capa",
+              "Type": "text",
+              "Required": true
+            }
+          ]
+        },
+        {
+          "Token": "add-layer",
+          "LabelEs": "Añadir capa",
+          "Risk": "Yellow",
+          "Arguments": [
+            {
+              "Name": "layer",
+              "LabelEs": "Ruta de la capa",
+              "Type": "path",
+              "Required": true
+            }
+          ]
+        },
+        {
+          "Token": "remove-layer",
+          "LabelEs": "Quitar capa",
+          "Risk": "Red",
+          "Arguments": [
+            {
+              "Name": "layer",
+              "LabelEs": "Ruta de la capa",
+              "Type": "path",
+              "Required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "devtool",
+      "Family": "yocto",
+      "Executable": "devtool",
+      "TitleEs": "Desarrollo y recetas Yocto",
+      "SearchTerms": [
+        "yocto",
+        "devtool",
+        "receta",
+        "workspace"
+      ],
+      "Risk": "Yellow",
+      "Source": "https://docs.yoctoproject.org/dev/dev-manual/devtool.html",
+      "RequiresInitializedBuildEnvironment": true,
+      "Subcommands": [
+        {
+          "Token": "status",
+          "LabelEs": "Estado del workspace",
+          "Risk": "Green"
+        },
+        {
+          "Token": "add",
+          "LabelEs": "Crear receta desde fuentes",
+          "Risk": "Yellow",
+          "Arguments": [
+            {
+              "Name": "recipe",
+              "LabelEs": "Nombre de receta",
+              "Type": "text",
+              "Required": true
+            },
+            {
+              "Name": "source",
+              "LabelEs": "URL o ruta de fuentes",
+              "Type": "text",
+              "Required": false
+            }
+          ]
+        },
+        {
+          "Token": "modify",
+          "LabelEs": "Modificar receta",
+          "Risk": "Yellow",
+          "Arguments": [
+            {
+              "Name": "recipe",
+              "LabelEs": "Receta",
+              "Type": "text",
+              "Required": true
+            }
+          ]
+        },
+        {
+          "Token": "build",
+          "LabelEs": "Compilar receta",
+          "Risk": "Red",
+          "Arguments": [
+            {
+              "Name": "recipe",
+              "LabelEs": "Receta",
+              "Type": "text",
+              "Required": true
+            }
+          ]
+        },
+        {
+          "Token": "reset",
+          "LabelEs": "Retirar modificaciones de receta",
+          "Risk": "Red",
+          "Arguments": [
+            {
+              "Name": "recipe",
+              "LabelEs": "Receta",
+              "Type": "text",
+              "Required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "recipetool",
+      "Family": "yocto",
+      "Executable": "recipetool",
+      "TitleEs": "Generación y análisis de recetas",
+      "SearchTerms": [
+        "yocto",
+        "recipetool",
+        "generar receta"
+      ],
+      "Risk": "Yellow",
+      "Source": "https://docs.yoctoproject.org/dev/dev-manual/new-recipe.html",
+      "RequiresInitializedBuildEnvironment": true,
+      "Subcommands": [
+        {
+          "Token": "create",
+          "LabelEs": "Crear receta",
+          "Risk": "Yellow",
+          "Arguments": [
+            {
+              "Name": "source",
+              "LabelEs": "Fuente (URL o carpeta)",
+              "Type": "text",
+              "Required": true
+            }
+          ]
+        },
+        {
+          "Token": "appendfile",
+          "LabelEs": "Agregar archivo a receta",
+          "Risk": "Yellow"
+        },
+        {
+          "Token": "newappend",
+          "LabelEs": "Crear bbappend",
+          "Risk": "Yellow"
+        }
+      ]
+    }
+  ]
+}
