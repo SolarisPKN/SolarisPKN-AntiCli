@@ -59,6 +59,7 @@ public partial class SessionView
         ModuleEditorTemplate.Text = "";
         ModuleEditorFlags.Text = "";
         ModuleEditorOperands.Text = "";
+        RebuildModuleEditRows();
         ModuleEditorJson.Text = "";
         ModuleEditorStatus.Text = "Módulo vacío. Definí un ID local, completá los campos y generá el JSON.";
     }
@@ -76,6 +77,7 @@ public partial class SessionView
             ? selected.Id : "local." + Regex.Replace(selected.Id, @"[^a-zA-Z0-9_.-]", "-");
         _moduleEditorBase = selected with { Id = id };
         LoadModuleIntoFields(_moduleEditorBase);
+        RebuildModuleEditRows();
         ModuleEditorJson.Text = JsonSerializer.Serialize(new
         {
             SchemaVersion = 1, Commands = new[] { _moduleEditorBase }
