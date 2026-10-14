@@ -43,7 +43,7 @@ public partial class SessionView
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         var suggestedCount = countMatch.Success
             ? Math.Clamp(int.Parse(countMatch.Groups["count"].Value), 1, 100) : 1;
-        var candidates = GuidedCommandCatalog.Search(stripped);
+        var candidates = GuidedCommandCatalog.Search(stripped, _connectedProfile.Platform);
         foreach (var guide in candidates.Take(query.Length == 0 ? 6 : 12))
         {
             var item = guide;
@@ -62,11 +62,9 @@ public partial class SessionView
     private void BeginGuided(GuidedCommand definition, int quantity = 1)
     {
         if (_connectedProfile is null) return;
-        if (_connectedProfile.Platform == Models.TargetPlatform.Windows &&
-            definition.Executable is not ("cmd" or "cmd.exe" or "whoami" or
-                "hostname" or "ipconfig" or "tasklist" or "sc.exe" or "netstat"))
+        if (!GuidedCommandCatalog.SupportsPlatform(definition, _connectedProfile.Platform))
         {
-            ExecutionStatus.Text = "Este módulo es para Linux. Seleccioná un servidor Linux.";
+            ExecutionStatus.Text = "Este módulo no corresponde al sistema remoto.";
             return;
         }
 
