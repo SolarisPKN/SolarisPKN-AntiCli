@@ -16,8 +16,8 @@ Bring terminal capabilities into a lightweight visual application: identify the 
 - **SSH and first contact:** username + password or private key with passphrase. On a new VPS, AntiCLI discovers the host's public key **without sending credentials**, shows its SHA256 fingerprint, and asks you to explicitly trust it (TOFU) or compare it with your provider first. Subsequent connections enforce the stored host:port pin; changed keys are blocked unless explicitly reviewed.
 - **Four independent DPAPI opt-ins:** remember username, private-key contents, password, and passphrase. **All are optional** and unchecked fields are not persisted. Profiles live outside the repository.
 - **Multiple sessions:** open an empty tab, clone authenticated credentials into a tab, create another window, or clone a session into a separate window. Each session owns its command state and output.
-- **Visual command builder:** clickable action and token buttons, plus Tab/Enter/arrow-key suggestions. Only exact matches from reviewed read-only catalogs can execute.
-- **Draft modules:** bounded `--help` exploration on authorized test servers, with evidence logs and option discovery. Newly discovered commands remain **non-executable**.
+- **Administrator command builder:** 146 Linux quick actions across 17 modules, grouped by purpose, with 🟢/🟡/🔴 risk dots. Every manually entered command can execute; unknown commands default to red. The Execute button reflects the risk and runs immediately, without a second confirmation. Optional per-session **sudo** toggle uses non-interactive SSH execution.
+- **Discoverable modules:** bounded `--help` exploration on authorized test servers, with evidence logs and draft suggestions. Administrators can execute suggestions, including custom commands; a draft does not imply safety.
 - **Preferences:** ⚙ settings, system/dark/light themes, configurable accent/background, and six customizable keyboard shortcuts.
 - **Desktop technology:** C# / .NET 8 + Avalonia — no bundled Chromium browser.
 
@@ -46,6 +46,7 @@ You can also double-click `COMPILAR_ANTICLI.cmd`. The local published executable
 - Windows DPAPI `CurrentUser` is **not** a master password: another process running under the same Windows user may be able to access protected material.
 - Cloning copies credentials **in memory only**; it does not save secrets. It is not a persistent interactive shell: each operation opens a fresh SSH connection.
 - `--help` is **not guaranteed to be side-effect free**. Only explore help on explicitly authorized test machines.
+- A risk color is guidance only. **Red commands run with one click**, can be destructive, and execute with your SSH privileges. **sudo** uses `sudo -n` and requires noninteractive sudo authorization.
 - Fully automated AI translations, module activation workflows, and persistent SSH terminals are **not yet implemented**.
 - Do not access corporate credentials or infrastructure without permission.
 
@@ -54,6 +55,7 @@ You can also double-click `COMPILAR_ANTICLI.cmd`. The local published executable
 - [Architecture](docs/ARCHITECTURE.md)
 - [Security](docs/SECURITY.md)
 - [Assisted CLI](docs/ASSISTED_CLI.md)
+- [Administrative command modules: 146 actions](docs/COMMAND_MODULES.md) ([Español](docs/COMMAND_MODULES.es.md))
 - [Multiple sessions](docs/MULTI-SESSION.md)
 - [Appearance and keyboard preferences](docs/SETTINGS.md)
 - [Help-discovery security](docs/SCANNER-SECURITY.md)
