@@ -85,7 +85,9 @@
               <StackPanel Spacing="9">
                 <TextBlock x:Name="GuidedTitle" FontSize="18" FontWeight="SemiBold" Text="Operación guiada"/>
                 <TextBlock x:Name="GuidedDescription" TextWrapping="Wrap"/>
-                <TextBlock Text="Elegí las opciones en español y movelas ↑ ↓ para cambiar su orden en el comando." TextWrapping="Wrap" FontSize="12"/>
+                <TextBlock Text="Elegí las opciones y movelas ↑ ↓ para cambiar su orden. Las importadas desde --help conservan su descripción original hasta que se revise su traducción." TextWrapping="Wrap" FontSize="12"/>
+                <Button Content="📚 Cargar flags desde --help del servidor" Click="ImportGuidedHelpClicked" HorizontalAlignment="Left"/>
+                <TextBlock x:Name="HelpImportStatus" Text="Las fichas son datos JSON. Podés ampliar este comando sin actualizar el programa." TextWrapping="Wrap" FontSize="12"/>
                 <StackPanel x:Name="GuidedOptions" Spacing="7"/>
                 <StackPanel x:Name="GuidedArguments" Spacing="8"/>
                 <TextBlock x:Name="GuidedError" TextWrapping="Wrap" Foreground="#F28B82"/>
