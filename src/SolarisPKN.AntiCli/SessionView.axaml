@@ -70,11 +70,14 @@
         </ScrollViewer>
       </TabItem>
       <TabItem x:Name="CommandsTab" Header="2 · Comandos y bloques" IsEnabled="False">
-        <Grid x:Name="CommandsWorkspace" Margin="8" ColumnDefinitions="3*,*" RowDefinitions="*,Auto"
-              ColumnSpacing="9" RowSpacing="6">
-          <local:CommandWorkspaceView x:Name="BrowsePane" Grid.Column="0" Grid.Row="0" MinHeight="0"/>
-          <local:SshTerminalPane x:Name="SideConsolePane" Grid.Column="1" Grid.Row="0" MinHeight="0"/>
-          <local:CommandEntryPane x:Name="CommandBar" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <Grid x:Name="CommandsWorkspace" Margin="6" ColumnDefinitions="3*,*" RowDefinitions="7*,3*"
+              ColumnSpacing="8" RowSpacing="7" MinHeight="0" MinWidth="0">
+          <local:CommandWorkspaceView x:Name="BrowsePane" Grid.Column="0" Grid.Row="0"
+                                      MinHeight="0" MinWidth="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+          <local:SshTerminalPane x:Name="SideConsolePane" Grid.Column="1" Grid.Row="0"
+                                 MinHeight="0" MinWidth="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+          <local:CommandEntryPane x:Name="CommandBar" Grid.Row="1" Grid.Column="0"
+                                  Grid.ColumnSpan="2" MinHeight="0" MinWidth="0"/>
         </Grid>
       </TabItem>
       <TabItem x:Name="ModulesTab" Header="3 · Crear módulos" IsEnabled="False">
