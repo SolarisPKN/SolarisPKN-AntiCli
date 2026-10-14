@@ -1,6 +1,6 @@
 ## Retorno condicional a un comando anterior
 
-Podés crear **Comando 1 → Comando 2 → IF 3**. Si el test del IF devuelve código **0 (verdadero)**, toma **Verdadero → Comando 4**, y desde el 4 usás **Retorno ↺ → Comando 1**. La salida Falso, si no está conectada, termina el flujo. **No hay contador ni límite obligatorio**: repetirá hasta que cambie la condición.
+Podés crear **Comando 1 → Comando 2 → IF 3**. Si el test del IF devuelve código **0 (verdadero)**, toma **Verdadero → Comando 4**, y desde el 4 usás **Retorno ↺ → Comando 1**. Cualquier salida del IF sin conectar termina el flujo: podés conectar **Falso → Comando 4 → Comando 1** y dejar **Verdadero** libre, para que un test de «OK» cierre al devolver código 0. **No hay contador ni límite obligatorio**: repetirá hasta que cambie la condición.
 
 Para un diagrama cíclico sin nodo de entrada evidente, elegí Comando 1 y pulsá **«▶ Marcar inicio»**. El nodo inicial se guarda en el JSON. También podés usar la flecha normal «Conectar →» de 4 a 1.
 
