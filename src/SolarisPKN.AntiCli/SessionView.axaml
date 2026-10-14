@@ -28,9 +28,13 @@
                 <TextBox x:Name="HostInput" Watermark="192.168.1.50"/>
                 <TextBlock Text="Puerto SSH"/>
                 <TextBox x:Name="PortInput" Text="22"/>
-                <TextBlock Text="Huella SSH verificada del servidor (SHA256:)"/>
-                <TextBox x:Name="FingerprintInput" Watermark="SHA256:..."/>
-                <TextBlock Text="La huella se verifica por otro canal. Jamás se acepta automáticamente."
+                <TextBlock Text="Huella pública del servidor SSH (SHA256:)"/>
+                <TextBox x:Name="FingerprintInput" Watermark="Se completa al confirmar la clave del VPS"/>
+                <Button Content="🛡 Detectar / revisar clave del servidor" Click="DiscoverHostKeyClicked"
+                        HorizontalAlignment="Left"/>
+                <TextBlock x:Name="HostKeyStatus" Text="Primera conexión: AntiCLI detecta la clave antes de enviar credenciales. Vos decidís si confiar."
+                           FontSize="12" TextWrapping="Wrap"/>
+                <TextBlock Text="Compará la huella con la consola del proveedor. Si cambia luego, AntiCLI bloquea la conexión."
                            FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
               </StackPanel>
               <StackPanel Grid.Column="1" Spacing="7">
