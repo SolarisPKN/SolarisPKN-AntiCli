@@ -99,9 +99,14 @@
             <TextBlock FontWeight="SemiBold" Text="Comando generado (editable)"/>
             <WrapPanel x:Name="TokenButtons" IsVisible="False" Orientation="Horizontal"/>
             <TextBlock x:Name="BlockPreview" IsVisible="False" Text="Bloques: (vacío)"/>
-            <TextBlock FontWeight="SemiBold" Text="Consola asistida"/>
+            <TextBlock FontWeight="SemiBold" Text="Comandos directos · escribir, copiar, pegar y ejecutar"/>
             <TextBox x:Name="AssistedCommand" Watermark="Escribí un comando o completalo con los botones"
                      TextChanged="AssistedTextChanged" KeyDown="AssistedKeyDown"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Content="Copiar comando" Click="CopyCommandClicked"/>
+              <Button Content="Pegar comando" Click="PasteCommandClicked"/>
+              <Button Content="Copiar salida" Click="CopyOutputClicked"/>
+            </StackPanel>
             <TextBlock x:Name="RiskIndicator" FontWeight="SemiBold"
                        Text="🟢 Riesgo bajo: consulta" TextWrapping="Wrap"/>
             <CheckBox x:Name="UseSudoToggle" Content="Activar sudo para esta ejecución (Linux)" IsChecked="False"
@@ -122,6 +127,20 @@
             <TextBlock Text="Salida remota" FontWeight="SemiBold"/>
             <TextBox x:Name="Output" MinHeight="180" IsReadOnly="True" AcceptsReturn="True"
                      FontFamily="Consolas,Monospace" TextWrapping="NoWrap"/>
+            <TextBlock FontWeight="SemiBold" Text="Historial de comandos SSH de esta sesión"/>
+            <TextBlock Text="Cada ejecución registra fecha, destino, comando, resultado y código de salida. Revisá y borrá datos sensibles antes de compartir."
+                       FontSize="12" TextWrapping="Wrap"/>
+            <ListBox x:Name="CommandHistoryList" Height="120" SelectionChanged="CommandHistorySelected"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Content="Copiar comando del historial" Click="CopyHistoryCommandClicked"/>
+              <Button Content="Reutilizar comando" Click="ReuseHistoryCommandClicked"/>
+              <Button Content="Copiar log" Click="CopyLogClicked"/>
+              <Button Content="Exportar log..." Click="ExportLogClicked"/>
+              <Button Content="Limpiar historial" Click="ClearHistoryClicked"/>
+            </StackPanel>
+            <TextBox x:Name="CommandHistoryLog" MinHeight="160" AcceptsReturn="True"
+                     TextWrapping="NoWrap" FontFamily="Consolas,Monospace"
+                     Watermark="Registro editable: podés quitar secretos antes de copiar o exportar."/>
           </StackPanel>
         </ScrollViewer>
       </TabItem>
