@@ -1,3 +1,13 @@
+## Lectura de archivos, búsqueda y registro SSH unificado
+
+El módulo **«Lectura y edición de archivos»** incluye accesos rápidos a `cat`, `head`, `tail`, `less`, `more`, `nano` y `vim`. Escribiendo **leer**, **archivo** o **editar** en la búsqueda universal aparecen las fichas pertinentes, ordenadas priorizando los ejecutables que están disponibles en el `PATH` del servidor consultado. **✓** identifica una herramienta detectada, **○** una no detectada (punto de riesgo rojo) y **?** significa que todavía falta comprobar el servidor. Una ausencia en el `PATH` no demuestra por sí sola que el paquete esté desinstalado.
+
+El formulario es generado por la misma interfaz JSON para todas las herramientas; solo ofrece las flags declaradas para ese ejecutable. **No agrega opciones importadas al final de un comando preconstruido**: por ejemplo, seleccionar «Detectar sistema» prepara la ficha `cat` con archivo `/etc/os-release`, sin producir el absurdo `cat /etc/os-release --version`. Las opciones de metainformación `--help` y `--version` se ejecutan solas, nunca mezcladas con nombres de archivos. La escritura manual de comandos por un administrador continúa disponible sin bloqueos adicionales.
+
+**Importante:** `cat`, `head` y `tail` pueden mostrar información mediante SSH no interactivo. Los editores `nano`/`vim` y los visores paginados `less`/`more` necesitan una terminal interactiva real (PTY, teclado y pantalla). En esta versión aparecen documentados y se detecta su disponibilidad, **pero AntiCLI todavía no proporciona sesiones PTY para operarlos como editores**; el comando manual no los convierte en una TTY.
+
+La consola integrada ocupa por defecto el **45%** del ancho (55% para formularios), con una franja manual inferior compacta y fija. Ahora hay **un solo historial cronológico visible**: cada comando se presenta seguido de sus respuestas stdout/stderr, errores y código de salida. La ventana desacoplada muestra **el mismo registro continuo en una sola vista grande**, y **no contiene un segundo campo de comandos**. Los comandos se escriben exclusivamente en la barra inferior de AntiCLI. El registro puede revisarse/copiarse/exportarse antes de compartir información sensible. No hay todavía streaming de salida remota durante comandos en ejecución.
+
 ## Diseño modular adaptable y scroll independiente
 
 La pantalla **2 · Comandos y bloques** ahora está compuesta por **tres controles Avalonia independientes**, con código y vista propios:
