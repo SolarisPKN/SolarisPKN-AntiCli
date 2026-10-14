@@ -151,13 +151,14 @@ public partial class SessionView : UserControl, IDisposable
 
     private void InvalidateCurrentConnection()
     {
-        if (_loadingProfile || _connectedProfile is null) return;
+        if (_loadingProfile) return;
         if (_busy)
         {
             _invalidateAfterBusy = true;
-            AuthStatus.Text = "Los cambios se aplicarán después de finalizar la consulta.";
+            AuthStatus.Text = "Cambiaste la conexión durante una operación. Se cancelará su activación.";
             return;
         }
+        if (_connectedProfile is null) return;
         DisconnectSession();
         MainTabs.SelectedIndex = 0;
         AuthStatus.Text = "Cambiaste datos de la conexión. Volvé a autenticarte para aplicar los cambios.";
@@ -306,6 +307,15 @@ public partial class SessionView : UserControl, IDisposable
         catch (Exception ex) { AuthStatus.Text = "No se pudo guardar el perfil: " + ex.Message; }
     }
 
+    private void DisplayAcceptedFingerprint(string sha256)
+    {
+        // Programmatic trust display must not count as an interactive edit.
+        var priorLoading = _loadingProfile;
+        _loadingProfile = true;
+        try { FingerprintInput.Text = sha256; }
+        finally { _loadingProfile = priorLoading; }
+    }
+
     /// <summary>
     /// First-contact SSH key exchange. Never sees password, passphrase or private key.
     /// A stored pin is authoritative. Key rotation requires the explicit review button.
@@ -321,7 +331,7 @@ public partial class SessionView : UserControl, IDisposable
             if (string.IsNullOrWhiteSpace(profile.HostKeySha256))
             {
                 profile.HostKeySha256 = existing.Sha256;
-                FingerprintInput.Text = existing.Sha256;
+                DisplayAcceptedFingerprint(existing.Sha256);
             }
             if (profile.HostKeySha256 != existing.Sha256)
                 throw new InvalidOperationException(
@@ -338,7 +348,7 @@ public partial class SessionView : UserControl, IDisposable
             observed.Algorithm == existing.Algorithm)
         {
             profile.HostKeySha256 = existing.Sha256;
-            FingerprintInput.Text = existing.Sha256;
+            DisplayAcceptedFingerprint(existing.Sha256);
             HostKeyStatus.Text = "La clave pública del servidor coincide con la ya confiable.";
             return true;
         }
@@ -377,7 +387,7 @@ public partial class SessionView : UserControl, IDisposable
                 observed.Algorithm, observed.Sha256);
 
         profile.HostKeySha256 = observed.Sha256;
-        FingerprintInput.Text = observed.Sha256;
+        DisplayAcceptedFingerprint(observed.Sha256);
         HostKeyStatus.Text = (existing is null ? "Primera clave confiable guardada" : "Clave reemplazada tras revisión")
             + " para " + observed.Host + ":" + observed.Port + ".";
         return true;
@@ -424,12 +434,18 @@ public partial class SessionView : UserControl, IDisposable
                 AuthStatus.Text = "Conexión cancelada. La clave pública del servidor no fue aceptada.";
                 return;
             }
+            if (_invalidateAfterBusy)
+                throw new InvalidOperationException(
+                    "Cambiaste los datos de la conexión durante la comprobación SSH. Reintentá.");
 
             // Credential resolution starts only AFTER an explicit host-key trust decision.
             credentials = _store.Resolve(profile, UserInput.Text ?? "", PasswordInput.Text ?? "",
                 PassphraseInput.Text ?? "", KeyPathInput.Text);
             AuthStatus.Text = "Verificando clave pública del servidor, credenciales y sistema remoto...";
             var detectedOs = await _ssh.AuthenticateAsync(profile, credentials);
+            if (_invalidateAfterBusy)
+                throw new InvalidOperationException(
+                    "Se modificó la configuración durante la autenticación. No se activó la sesión.");
 
             _connectedProfile = profile;
             _connectedCredentials = credentials;
