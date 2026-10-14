@@ -145,7 +145,38 @@ public partial class SessionView : UserControl, IDisposable
         SessionTitleChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void ConnectionTextChanged(object? sender, TextChangedEventArgs e) => InvalidateCurrentConnection();
+    private void ConnectionTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        // A fingerprint belongs to a particular host AND port. Do not show an
+        // old endpoint's pin when the operator enters a different VPS.
+        if (!_loadingProfile && (ReferenceEquals(sender, HostInput) || ReferenceEquals(sender, PortInput)))
+        {
+            try
+            {
+                var host = HostInput.Text?.Trim() ?? "";
+                if (host.Length > 0 && int.TryParse(PortInput.Text, out var port) &&
+                    port is >= 1 and <= 65535)
+                {
+                    var saved = _hostKeys.Find(host, port);
+                    DisplayAcceptedFingerprint(saved?.Sha256 ?? "");
+                    HostKeyStatus.Text = saved is null
+                        ? "Servidor aún desconocido. Se pedirá confirmar su clave en la primera conexión."
+                        : "Clave confiable encontrada para " + host + ":" + port + ".";
+                }
+                else
+                {
+                    DisplayAcceptedFingerprint("");
+                    HostKeyStatus.Text = "Ingresá una dirección y un puerto SSH válidos.";
+                }
+            }
+            catch (Exception ex)
+            {
+                HostKeyStatus.Text = "No se pudo consultar el almacén de claves: " + ex.Message;
+                DisplayAcceptedFingerprint("");
+            }
+        }
+        InvalidateCurrentConnection();
+    }
 
     private void ConnectionModeChanged(object? sender, SelectionChangedEventArgs e) => InvalidateCurrentConnection();
 
