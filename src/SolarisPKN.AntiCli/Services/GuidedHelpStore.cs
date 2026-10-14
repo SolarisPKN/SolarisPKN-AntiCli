@@ -98,6 +98,11 @@ public static class GuidedHelpStore
 
     public static GuidedCommand Enrich(GuidedCommand guide, string host, int port)
     {
+        // A canned command such as "cat /etc/os-release" is already complete.
+        // Never append arbitrary flags (e.g. --version) to it. Only a schema
+        // with an explicit {flags} slot may receive options for THAT executable.
+        if (!guide.Template.Contains("{flags}", StringComparison.Ordinal))
+            return guide;
         var file = Filename(host, port, guide.Executable);
         if (!File.Exists(file)) return guide;
         try
@@ -107,13 +112,12 @@ public static class GuidedHelpStore
                 return guide;
             var flags = guide.Flags.ToList();
             foreach (var imported in cached.Flags)
-                if (SafeExecutable.IsMatch(guide.Executable) &&
+                if (imported.Token is not ("--help" or "--version") &&
+                    SafeExecutable.IsMatch(guide.Executable) &&
                     FlagToken.IsMatch(imported.Token) &&
                     !flags.Any(x => x.Token == imported.Token))
                     flags.Add(imported);
-            var template = guide.Template.Contains("{flags}", StringComparison.Ordinal)
-                ? guide.Template : guide.Template + " {flags}";
-            return guide with { Flags = flags, Template = template };
+            return guide with { Flags = flags };
         }
         catch (Exception) { return guide; } // Corrupt optional cache must not prevent SSH.
     }
