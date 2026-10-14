@@ -47,13 +47,13 @@ public static class ModuleDraftStore
                 foreach (var c in item.Commands.Take(40))
                 {
                     if (c.Command.Length is > 0 and < 256)
-                        hints.Add(new CommandHint(c.Command, c.DescriptionEs, false));
+                        hints.Add(new CommandHint(c.Command, c.DescriptionEs, true));
                     var prefix = c.Command.EndsWith(" --help", StringComparison.Ordinal)
                         ? c.Command[..^7] : c.Command;
                     foreach (var flag in c.Flags.Take(60))
                         if (flag.Token.StartsWith("--", StringComparison.Ordinal))
                             hints.Add(new CommandHint(prefix + " " + flag.Token,
-                                flag.DescriptionEs + (flag.RequiresValue ? " [valor]" : ""), false));
+                                flag.DescriptionEs + (flag.RequiresValue ? " [valor]" : ""), true));
                 }
             }
             catch (Exception) { /* Ignore corrupt drafts; never execute their content. */ }
