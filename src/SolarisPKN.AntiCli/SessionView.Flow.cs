@@ -12,6 +12,7 @@ public partial class SessionView
     private readonly List<FlowEdge> _flowEdges = [];
     private readonly Dictionary<string, Border> _flowBorders = [];
     private string? _flowSelected;
+    private string? _flowStartId;
     private string? _flowFrom;
     private FlowEdgeKind? _flowConnecting;
     private bool _flowEdited, _flowSyncing;
@@ -20,7 +21,7 @@ public partial class SessionView
     private Point _flowPointerStart, _flowNodeStart;
 
     private AutomationGraph CurrentFlowGraph() =>
-        new(1, _flowNodes.ToArray(), _flowEdges.ToArray());
+        new(1, _flowNodes.ToArray(), _flowEdges.ToArray(), _flowStartId);
 
     private void RefreshFlowDiagramFromAutomation()
     {
@@ -34,6 +35,7 @@ public partial class SessionView
                 40 + i % 3 * 330, 60 + i / 3 * 155));
             if (i > 0) _flowEdges.Add(new FlowEdge("auto-" + i, id));
         }
+        _flowStartId = _flowNodes.FirstOrDefault()?.Id;
         RenderFlowDiagram();
     }
 
@@ -107,9 +109,24 @@ public partial class SessionView
         var id = "flow-" + (++_flowSerial) + "-" + Guid.NewGuid().ToString("N")[..6];
         _flowNodes.Add(new FlowNode(id, kind, kind + " " + _flowSerial,
             command, 35 + _flowSerial % 4 * 265, 50 + _flowSerial / 4 % 5 * 150));
+        if (_flowNodes.Count == 1) _flowStartId = id;
         _flowEdited = true;
         RenderFlowDiagram();
         SelectFlow(id);
+    }
+
+    private void FlowSetStartClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_flowSelected is null || !_flowNodes.Any(n => n.Id == _flowSelected))
+        {
+            FlowStatus.Text = "Seleccioná un bloque para marcarlo como Inicio.";
+            return;
+        }
+        _flowStartId = _flowSelected;
+        _flowEdited = true;
+        RenderFlowDiagram();
+        FlowStatus.Text = "▶ Inicio: " + _flowNodes.First(n => n.Id == _flowStartId).Label +
+            ". Las flechas de retorno pueden llegar a este nodo.";
     }
 
     private void FlowConnectNextClicked(object? s, RoutedEventArgs e) => ConnectFlow(FlowEdgeKind.Next);
@@ -227,9 +244,10 @@ public partial class SessionView
                 2 => FlowLoopMode.Until,
                 _ => throw new ArgumentException("Modo de bucle inválido.")
             };
-            if (!int.TryParse(FlowLoopMaxCount.Text, out limit) || limit is < 1 or > 1000)
+            if (!int.TryParse(FlowLoopMaxCount.Text, out limit) ||
+                limit is < 0 or > 1000 || (loopMode == FlowLoopMode.For && limit == 0))
             {
-                FlowStatus.Text = "El límite de repeticiones debe estar entre 1 y 1000.";
+                FlowStatus.Text = "Límite: 1 a 1000 en FOR, o 0 para ilimitado en WHILE/UNTIL.";
                 return;
             }
             if (loopMode is FlowLoopMode.While or FlowLoopMode.Until &&
@@ -255,6 +273,8 @@ public partial class SessionView
     {
         _flowNodes.RemoveAll(n => n.Id == _flowSelected);
         _flowEdges.RemoveAll(x => x.FromId == _flowSelected || x.ToId == _flowSelected);
+        if (_flowStartId is not null && !_flowNodes.Any(n => n.Id == _flowStartId))
+            _flowStartId = _flowNodes.FirstOrDefault()?.Id;
         _flowSelected = null; _flowEdited = true;
         FlowLoopSettings.IsVisible = false;
         RenderFlowDiagram();
