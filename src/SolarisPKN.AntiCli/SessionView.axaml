@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SolarisPKN.AntiCli"
              x:Class="SolarisPKN.AntiCli.SessionView">
   <Grid RowDefinitions="Auto,*" RowSpacing="12" Margin="18">
     <StackPanel Grid.Row="0" Spacing="3">
@@ -69,144 +70,11 @@
         </ScrollViewer>
       </TabItem>
       <TabItem x:Name="CommandsTab" Header="2 · Comandos y bloques" IsEnabled="False">
-        <Grid x:Name="CommandsWorkspace" Margin="10" ColumnDefinitions="3*,*" RowDefinitions="*,Auto" ColumnSpacing="10" RowSpacing="8">
-          <!-- Browse and guided form share the SAME space. The form overlays the
-               selected command area rather than extending the page downward. -->
-          <Grid x:Name="BrowsePane" Grid.Row="0" Grid.Column="0" MinWidth="250">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-              <StackPanel Margin="8" Spacing="10">
-            <TextBlock x:Name="RemoteInfo" FontWeight="SemiBold" Text="Sesión no autenticada"/>
-            <TextBlock Text="Buscá una tarea por lo que querés hacer: crear usuario, ver kernel, listar Docker..." FontWeight="SemiBold" TextWrapping="Wrap"/>
-            <TextBox x:Name="UniversalSearch" Watermark="Ej.: crear 20 usuarios, versión del kernel, reiniciar servicio"
-                     TextChanged="UniversalSearchChanged"/>
-            <WrapPanel x:Name="UniversalResults" Orientation="Horizontal"/>
-            <TextBlock Text="O elegí un módulo del catálogo: 🟢 Consulta · 🟡 Precaución · 🔴 Alto riesgo / no catalogado." TextWrapping="Wrap"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <TextBlock x:Name="InstalledDictionaryStatus" Text="Herramientas remotas: sin consultar"
-                         TextWrapping="Wrap" VerticalAlignment="Center"/>
-              <Button Content="Actualizar herramientas" Click="RefreshDictionaryClicked"/>
-            </StackPanel>
-            <TextBlock Text="✓ disponible en PATH  ·  ○ no visible en PATH  ·  ? sin comprobar. Algunos módulos Yocto requieren activar el entorno de compilación."
-                       FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
-            <ComboBox x:Name="ModuleGroupSelector" Width="330" HorizontalAlignment="Left"
-                      SelectionChanged="ModuleGroupChanged" PlaceholderText="Seleccioná módulo"/>
-            <WrapPanel x:Name="OptionButtons" Orientation="Horizontal"/>
-              </StackPanel>
-            </ScrollViewer>
-            <Border x:Name="GuidedPanel" IsVisible="False" CornerRadius="8"
-                    BorderThickness="2" BorderBrush="#8794BA" Background="#242D3A" Padding="12">
-              <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Spacing="9">
-                <TextBlock x:Name="GuidedTitle" FontSize="18" FontWeight="SemiBold" Text="Operación guiada"/>
-                <TextBlock x:Name="GuidedDescription" TextWrapping="Wrap"/>
-                <TextBlock Text="Elegí las opciones y movelas ↑ ↓ para cambiar su orden. Las importadas desde --help conservan su descripción original hasta que se revise su traducción." TextWrapping="Wrap" FontSize="12"/>
-                <Button Content="📚 Cargar flags desde --help del servidor" Click="ImportGuidedHelpClicked" HorizontalAlignment="Left"/>
-                <TextBlock x:Name="HelpImportStatus" Text="Las fichas son datos JSON. Podés ampliar este comando sin actualizar el programa." TextWrapping="Wrap" FontSize="12"/>
-                <Border x:Name="MissingToolPanel" IsVisible="False" BorderBrush="#D59B38"
-                        BorderThickness="1" Padding="8" CornerRadius="6">
-                  <StackPanel Spacing="5">
-                    <TextBlock x:Name="MissingToolMessage" TextWrapping="Wrap"/>
-                    <TextBlock x:Name="MissingToolCandidate" TextWrapping="Wrap" FontSize="12"/>
-                    <Button x:Name="InstallMissingToolButton"
-                            Content="Instalar versión disponible en APT"
-                            Click="InstallMissingToolClicked"
-                            Background="#A33D3D" Foreground="White"
-                            HorizontalAlignment="Left"/>
-                  </StackPanel>
-                </Border>
-                <StackPanel x:Name="GuidedOptions" Spacing="7"/>
-                <StackPanel x:Name="GuidedArguments" Spacing="8"/>
-                <Border x:Name="PackageRequirementsPanel" IsVisible="False"
-                        BorderBrush="#777777" BorderThickness="1" CornerRadius="6" Padding="8">
-                  <StackPanel Spacing="6">
-                    <TextBlock Text="Comprobación de paquetes APT" FontWeight="SemiBold"/>
-                    <Button Content="Comprobar paquetes instalados en el servidor"
-                            Click="CheckPackageRequirementsClicked" HorizontalAlignment="Left"/>
-                    <TextBlock x:Name="PackageRequirementsStatus" Text="Sin comprobar."
-                               TextWrapping="Wrap"/>
-                    <Button x:Name="InstallRequiredPackagesButton" IsVisible="False"
-                            Content="Instalar únicamente los faltantes" Background="#9A3434"
-                            Foreground="White" Click="InstallRequiredPackagesClicked"
-                            HorizontalAlignment="Left"/>
-                  </StackPanel>
-                </Border>
-                <TextBlock x:Name="GuidedError" TextWrapping="Wrap" Foreground="#F28B82"/>
-                <TextBlock x:Name="GuidedPlanInfo" TextWrapping="Wrap" FontSize="12"/>
-                <Button Content="Cerrar constructor" Click="CloseGuidedClicked"
-                        HorizontalAlignment="Left"/>
-              </StackPanel></ScrollViewer>
-            </Border>
-
-          </Grid>
-          <!-- Live per-tab console occupies approximately 25% of workspace. -->
-          <Border x:Name="SideConsolePane" Grid.Row="0" Grid.Column="1" BorderBrush="#777777"
-                  BorderThickness="1" CornerRadius="7" Padding="7">
-            <Grid RowDefinitions="Auto,*" RowSpacing="6">
-              <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="Consola SSH" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                <Button x:Name="ExpandConsoleButton" Content="Expandir" Click="ToggleConsoleExpandClicked"/>
-                <Button x:Name="DetachConsoleButton" Content="Desacoplar ↗" Click="DetachConsoleClicked"/>
-                <Button Content="Ocultar" Click="HideConsoleClicked"/>
-              </StackPanel>
-              <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                <StackPanel Spacing="8">
-            <TextBlock Text="Salida remota" FontWeight="SemiBold"/>
-            <TextBox x:Name="Output" MinHeight="180" IsReadOnly="True" AcceptsReturn="True"
-                     FontFamily="Consolas,Monospace" TextWrapping="NoWrap"/>
-            <TextBlock FontWeight="SemiBold" Text="Historial de comandos SSH de esta sesión"/>
-            <TextBlock Text="Cada ejecución registra fecha, destino, comando, resultado y código de salida. Revisá y borrá datos sensibles antes de compartir."
-                       FontSize="12" TextWrapping="Wrap"/>
-            <ListBox x:Name="CommandHistoryList" Height="120" SelectionChanged="CommandHistorySelected"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <Button Content="Copiar comando del historial" Click="CopyHistoryCommandClicked"/>
-              <Button Content="Reutilizar comando" Click="ReuseHistoryCommandClicked"/>
-              <Button Content="Copiar log" Click="CopyLogClicked"/>
-              <Button Content="Exportar log..." Click="ExportLogClicked"/>
-              <Button Content="Limpiar historial" Click="ClearHistoryClicked"/>
-            </StackPanel>
-            <TextBox x:Name="CommandHistoryLog" MinHeight="160" AcceptsReturn="True"
-                     TextWrapping="NoWrap" FontFamily="Consolas,Monospace"
-                     Watermark="Registro editable: podés quitar secretos antes de copiar o exportar."/>
-                </StackPanel>
-              </ScrollViewer>
-            </Grid>
-          </Border>
-          <!-- Fixed command bar is never inside a ScrollViewer. -->
-          <Border x:Name="CommandBar" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                  BorderBrush="#777777" BorderThickness="1" CornerRadius="7" Padding="10">
-            <StackPanel Spacing="6">
-              <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock Text="Comando manual / comando generado" FontWeight="SemiBold"/>
-                <Button x:Name="ShowConsoleButton" Content="Mostrar consola" Click="ShowConsoleClicked" IsVisible="False"/>
-              </StackPanel>
-              <WrapPanel x:Name="TokenButtons" IsVisible="False"/>
-              <TextBlock x:Name="BlockPreview" IsVisible="False" Text="Bloques: (vacío)"/>
-            <TextBlock FontWeight="SemiBold" Text="Comandos directos · escribir, copiar, pegar y ejecutar"/>
-            <TextBox x:Name="AssistedCommand" Watermark="Escribí un comando o completalo con los botones"
-                     TextChanged="AssistedTextChanged" KeyDown="AssistedKeyDown"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <Button Content="Copiar comando" Click="CopyCommandClicked"/>
-              <Button Content="Pegar comando" Click="PasteCommandClicked"/>
-              <Button Content="Copiar salida" Click="CopyOutputClicked"/>
-            </StackPanel>
-            <TextBlock x:Name="RiskIndicator" FontWeight="SemiBold"
-                       Text="🟢 Riesgo bajo: consulta" TextWrapping="Wrap"/>
-            <CheckBox x:Name="UseSudoToggle" Content="Activar sudo para esta ejecución (Linux)" IsChecked="False"
-                      Checked="SudoToggleChanged" Unchecked="SudoToggleChanged"/>
-            <TextBlock Text="Un clic ejecuta. El color indica riesgo, no solicita confirmación. sudo utiliza modo no interactivo (-n); necesita permisos sudo sin contraseña previa."
-                       FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
-            <TextBlock Text="Escribí aunque haya errores: umame → uname, aof-ghet → apt-get. Tab aplica la sugerencia elegida sin ejecutar. ↑ ↓ cambian selección."
-                       FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
-            <WrapPanel x:Name="SuggestionButtons" Orientation="Horizontal"/>
-            <ListBox x:Name="Suggestions" Height="105" SelectionChanged="SuggestionSelected"/>
-            <TextBlock x:Name="HintDetail" Text="Elegí una sugerencia para ver la descripción." TextWrapping="Wrap"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <Button Content="Completar sugerencia" Click="UseSuggestionClicked"/>
-              <Button x:Name="RunAssistedButton" Content="🟢 Ejecutar comando" Click="RunAssistedClicked"
-                      Background="#187E51" Foreground="White"/>
-            </StackPanel>
-            <TextBlock x:Name="ExecutionStatus" Text="No hay acciones ejecutadas todavía." TextWrapping="Wrap"/>
-            </StackPanel>
-          </Border>
+        <Grid x:Name="CommandsWorkspace" Margin="8" ColumnDefinitions="3*,*" RowDefinitions="*,Auto"
+              ColumnSpacing="9" RowSpacing="6">
+          <local:CommandWorkspaceView x:Name="BrowsePane" Grid.Column="0" Grid.Row="0" MinHeight="0"/>
+          <local:SshTerminalPane x:Name="SideConsolePane" Grid.Column="1" Grid.Row="0" MinHeight="0"/>
+          <local:CommandEntryPane x:Name="CommandBar" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
         </Grid>
       </TabItem>
       <TabItem x:Name="ModulesTab" Header="3 · Crear módulos" IsEnabled="False">
