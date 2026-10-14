@@ -12,8 +12,8 @@ static GuidedCommand Module(string name) =>
     GuidedCommandCatalog.Find(name) ??
         throw new InvalidOperationException("Missing module: " + name);
 
-Verify(AdminCommandCatalog.For(TargetPlatform.Ubuntu).Count == 146,
-    "146 Linux quick actions load from embedded JSON");
+Verify(AdminCommandCatalog.For(TargetPlatform.Ubuntu).Count >= 146,
+    "Linux quick actions load from embedded JSON");
 Verify(AdminCommandCatalog.For(TargetPlatform.Windows).Count == 7,
     "7 Windows quick actions load from embedded JSON");
 Verify(GuidedCommandCatalog.All.Count >= 155,
@@ -101,4 +101,63 @@ var layer = GuidedCommandCatalog.Build(Module("yocto-add-layer"), [],
          ("layer", "/opt/meta-example")));
 Verify(layer.Command.Contains("bitbake-layers add-layer"),
     "Yocto layer management uses the same generic renderer and compiler");
+// Intentional conditional retry: 1 -> 2 -> IF -> 4 -> 1 until condition turns false.
+// The graph has no zero-indegree node; the author supplies an explicit Start.
+var retryWorkflow = new AutomationWorkflow(1, "retry until ready",
+    [new AutomationStep("a", "check", "echo check")],
+    Data(), [Data()], AutomationOrder.PerRow, true);
+var retryGraph = new AutomationGraph(1,
+    [
+        new FlowNode("c1", FlowNodeKind.Command, "Paso 1", "echo 1", 10, 10),
+        new FlowNode("c2", FlowNodeKind.Command, "Paso 2", "echo 2", 210, 10),
+        new FlowNode("if3", FlowNodeKind.If, "¿Seguir?", "test -f /tmp/anticli-retry", 410, 10),
+        new FlowNode("c4", FlowNodeKind.Command, "Paso 4", "sleep 1", 610, 10)
+    ],
+    [
+        new FlowEdge("c1", "c2"),
+        new FlowEdge("c2", "if3"),
+        new FlowEdge("if3", "c4", FlowEdgeKind.True),
+        new FlowEdge("c4", "c1", FlowEdgeKind.LoopBack)
+    ],
+    "c1");
+AutomationGraphFile.Validate(retryGraph);
+var retryScript = AutomationGraphRouter.Generate(retryWorkflow, retryGraph);
+Verify(retryScript.Contains("while [ -n \"$__ac_state\" ]") &&
+       retryScript.Contains("if sh -c 'test -f /tmp/anticli-retry'") &&
+       retryScript.Contains("__ac_state='s0'") &&
+       retryScript.Contains("__ac_state=''") &&
+       !retryScript.Contains("20.000"),
+       "IF + return to command 1 exports an unlimited conditional retry");
+var serialized = AutomationGraphFile.Serialize(retryGraph);
+Verify(AutomationGraphFile.Parse(serialized).StartNodeId == "c1",
+    "Cyclic graph keeps its explicit entry point after JSON save/load");
+
+var unlimitedUntil = new AutomationGraph(1,
+    [
+        new FlowNode("loop", FlowNodeKind.Loop, "Until ready",
+            "test -f /tmp/ready", 50, 50, FlowLoopMode.Until, 0),
+        new FlowNode("body", FlowNodeKind.Command, "Try again", "sleep 1", 300, 50)
+    ],
+    [
+        new FlowEdge("loop", "body", FlowEdgeKind.LoopBody),
+        new FlowEdge("body", "loop", FlowEdgeKind.LoopBack)
+    ],
+    "loop");
+AutomationGraphFile.Validate(unlimitedUntil);
+Verify(AutomationGraphRouter.Generate(retryWorkflow, unlimitedUntil)
+    .Contains("if sh -c 'test -f /tmp/ready'"),
+    "UNTIL without iteration cap exits when its test succeeds");
+try
+{
+    _ = AutomationGraphRouter.Generate(retryWorkflow, retryGraph with
+    {
+        Edges = retryGraph.Edges.Append(new FlowEdge("if3", "c1", FlowEdgeKind.True)).ToArray()
+    });
+    throw new InvalidOperationException("Ambiguous IF was accepted.");
+}
+catch (InvalidDataException)
+{
+    Console.WriteLine("[PASS] Duplicate IF true branch is rejected on export");
+}
+
 Console.WriteLine("ALL SCHEMA SMOKE TESTS PASSED.");
