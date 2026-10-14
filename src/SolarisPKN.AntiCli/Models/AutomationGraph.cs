@@ -14,7 +14,8 @@ public sealed record FlowNode(
 public sealed record FlowEdge(string FromId, string ToId, FlowEdgeKind Kind = FlowEdgeKind.Next);
 
 public sealed record AutomationGraph(int SchemaVersion,
-    IReadOnlyList<FlowNode> Nodes, IReadOnlyList<FlowEdge> Edges);
+    IReadOnlyList<FlowNode> Nodes, IReadOnlyList<FlowEdge> Edges,
+    string? StartNodeId = null);
 
 public static class AutomationGraphFile
 {
@@ -53,13 +54,17 @@ public static class AutomationGraphFile
             n.X is < 0 or > 4000 || n.Y is < 0 or > 4000))
             throw new InvalidDataException("Un nodo tiene nombre, posición o comando inválido.");
         if (graph.Edges.Any(e => !ids.Contains(e.FromId) ||
-            !ids.Contains(e.ToId) || e.FromId == e.ToId))
+            !ids.Contains(e.ToId)))
             throw new InvalidDataException("Una flecha conecta nodos inexistentes o conecta el nodo consigo mismo.");
         if (graph.Edges.Distinct().Count() != graph.Edges.Count)
             throw new InvalidDataException("Hay conexiones duplicadas.");
         var byId = graph.Nodes.ToDictionary(n => n.Id, StringComparer.Ordinal);
+        if (graph.StartNodeId is not null && !ids.Contains(graph.StartNodeId))
+            throw new InvalidDataException("El nodo inicial elegido no existe.");
         if (graph.Nodes.Any(n => n.Kind == FlowNodeKind.Loop &&
-            (n.MaxIterations is < 1 or > 1000 || !Enum.IsDefined(n.LoopMode))))
+            (n.MaxIterations is < 0 or > 1000 ||
+             (n.LoopMode == FlowLoopMode.For && n.MaxIterations == 0) ||
+             !Enum.IsDefined(n.LoopMode))))
             throw new InvalidDataException("Un bucle necesita un tipo válido y un máximo entre 1 y 1000 iteraciones.");
         if (graph.Edges.Any(e => e.Kind == FlowEdgeKind.LoopBack &&
             (byId[e.ToId].Kind != FlowNodeKind.Loop ||
@@ -67,26 +72,11 @@ public static class AutomationGraphFile
             graph.Edges.Any(e => e.Kind == FlowEdgeKind.LoopBody &&
                 byId[e.FromId].Kind != FlowNodeKind.Loop))
             throw new InvalidDataException("El retorno debe llegar a un bloque Bucle y el cuerpo debe salir de ese bloque.");
-        // Explicit LoopBack edges are controlled cycles; all other cycles are rejected.
-        // A loop's return is validated for structured shell export separately.
-        var incoming = graph.Nodes.ToDictionary(n => n.Id, _ => 0);
-        foreach (var edge in graph.Edges.Where(e => e.Kind != FlowEdgeKind.LoopBack))
-            incoming[edge.ToId]++;
-        var open = new Queue<string>(incoming.Where(x => x.Value == 0).Select(x => x.Key));
-        var visited = 0;
-        while (open.Count > 0)
-        {
-            var id = open.Dequeue();
-            visited++;
-            foreach (var edge in graph.Edges.Where(e =>
-                e.FromId == id && e.Kind != FlowEdgeKind.LoopBack))
-            {
-                incoming[edge.ToId]--;
-                if (incoming[edge.ToId] == 0) open.Enqueue(edge.ToId);
-            }
-        }
-        if (visited != graph.Nodes.Count)
-            throw new InvalidDataException("Hay un ciclo sin retorno explícito Bucle ↺. Usá un bloque Bucle y la flecha de retorno.");
+        // Cycles are allowed in the visual graph. IF true/false exits and arbitrary
+        // back edges are interpreted by the script router; topology checking belongs
+        // at export time, not while an administrator is still drawing arrows.
+        // No implicit maximum for a conditional cycle: the flow may wait forever.
+
     }
 
     public static bool CanExportAsLinearScript(AutomationGraph graph)
