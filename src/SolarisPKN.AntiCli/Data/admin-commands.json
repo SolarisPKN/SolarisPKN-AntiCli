@@ -1603,6 +1603,69 @@
       "Command": "apt-get update",
       "Risk": "Yellow",
       "DescriptionEs": "Descarga metadatos nuevos de repositorios"
+    },
+    {
+      "Id": "read.cat",
+      "Module": "read",
+      "GroupName": "Lectura y edición de archivos",
+      "LabelEs": "Leer archivo completo",
+      "Command": "cat /etc/hosts",
+      "Risk": "Green",
+      "DescriptionEs": "Lee un archivo de texto sin modificarlo."
+    },
+    {
+      "Id": "read.head",
+      "Module": "read",
+      "GroupName": "Lectura y edición de archivos",
+      "LabelEs": "Primeras líneas de un archivo",
+      "Command": "head /etc/hosts",
+      "Risk": "Green",
+      "DescriptionEs": "Muestra las primeras líneas de un archivo."
+    },
+    {
+      "Id": "read.tail",
+      "Module": "read",
+      "GroupName": "Lectura y edición de archivos",
+      "LabelEs": "Últimas líneas de un archivo",
+      "Command": "tail /etc/hosts",
+      "Risk": "Green",
+      "DescriptionEs": "Lee el final de un archivo."
+    },
+    {
+      "Id": "read.less",
+      "Module": "read",
+      "GroupName": "Lectura y edición de archivos",
+      "LabelEs": "Visor paginado Less",
+      "Command": "less /etc/hosts",
+      "Risk": "Yellow",
+      "DescriptionEs": "Requiere terminal interactiva PTY; pendiente de soporte."
+    },
+    {
+      "Id": "read.more",
+      "Module": "read",
+      "GroupName": "Lectura y edición de archivos",
+      "LabelEs": "Visor paginado More",
+      "Command": "more /etc/hosts",
+      "Risk": "Yellow",
+      "DescriptionEs": "Requiere navegación interactiva; pendiente de PTY."
+    },
+    {
+      "Id": "read.nano",
+      "Module": "read",
+      "GroupName": "Lectura y edición de archivos",
+      "LabelEs": "Editor Nano",
+      "Command": "nano /etc/hosts",
+      "Risk": "Yellow",
+      "DescriptionEs": "Editor interactivo: la consola actual no ofrece PTY."
+    },
+    {
+      "Id": "read.vim",
+      "Module": "read",
+      "GroupName": "Lectura y edición de archivos",
+      "LabelEs": "Editor Vim",
+      "Command": "vim /etc/hosts",
+      "Risk": "Yellow",
+      "DescriptionEs": "Editor interactivo: la consola actual no ofrece PTY."
     }
   ],
   "Windows": [
