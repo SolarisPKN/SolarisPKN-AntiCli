@@ -1,3 +1,15 @@
+## Regresión de teclado CLI y diagrama flotante — octubre 2026
+
+- Autenticar SSH y abrir **Comandos y bloques**. Escribir `uname -a` en el campo manual y presionar **Enter**: debe ejecutar por SSH, generar una entrada cronológica y mostrar el resultado. Nunca debe aplicar la sugerencia en lugar de ejecutar.
+- Escribir `una` o un comando parcialmente escrito y pulsar **Tab**: debe completar la sugerencia seleccionada en la entrada, **sin ejecutar**. Probar flechas arriba/abajo para navegar, y Tab sin sugerencias (debe moverse el foco normalmente).
+- Comprobar que el botón **Ejecutar** y el atajo configurado **Ctrl+Enter** siguen realizando una única ejecución, sin confirmaciones adicionales.
+- Abrir **4 · Automatizaciones**. Solo debe verse el constructor y la vista de script, **no el diagrama**; abrirlo únicamente mediante el botón **Abrir diagrama ↗**.
+- Abrir la ventana de diagrama, moverla a otro monitor, maximizar con el botón y con F11, arrastrar nodos y guardar. Volver a pulsar el botón desde AntiCLI: debe enfocar **la misma ventana**, nunca duplicarla.
+- Cerrar la ventana del diagrama y volver a abrirla: nodos, flechas y edición en memoria deben mantenerse. El diagrama no debe quedar intercalado dentro de la pestaña original.
+- Cerrar la sesión/pestaña de AntiCLI con la ventana flotante abierta: debe cerrarse también sin dejar ventana huérfana.
+- Probar creación de pasos y diagrama desde la pestaña con la ventana abierta/cerrada; el mismo grafo debe reflejar los cambios, salvo las modificaciones manuales que ya estén marcadas como edición de grafo.
+- Validar en Windows, tanto ventana normal como maximizada y monitores de distintas resoluciones. GitHub Actions solo prueba compilación y empaquetado; estos comportamientos necesitan prueba manual de UI.
+
 ## Regresión — lectura de archivos, disponibilidad y consola unificada
 
 - En Linux de pruebas con `cat` disponible, buscar **«leer»**: deben aparecer las fichas `cat`, `head`, `tail`, `less`, `more`, `nano` y `vim` cuando correspondan; los ejecutables ausentes se muestran con ○ y riesgo rojo, los instalados con ✓. Comprobar también la situación inicial **?** antes de actualizar el inventario.
