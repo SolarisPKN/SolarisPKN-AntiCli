@@ -754,6 +754,9 @@ public partial class SessionView : UserControl, IDisposable
             var escaped = command.Replace("'", "'" + '"' + "'" + '"' + "'", StringComparison.Ordinal);
             remoteCommand = "sudo -n -- sh -c '" + escaped + "'";
         }
+        var started = DateTimeOffset.UtcNow;
+        var auditHost = _connectedProfile.Host;
+        var auditPort = _connectedProfile.Port;
         try
         {
             _busy = true;
@@ -766,10 +769,17 @@ public partial class SessionView : UserControl, IDisposable
                 remoteCommand, TimeSpan.FromSeconds(timeoutSeconds));
             Output.Text = "$ " + remoteCommand + "\n\n" + result.StdOut
                 + (string.IsNullOrWhiteSpace(result.StdErr) ? "" : "\n[STDERR]\n" + result.StdErr);
+            RecordCommand(started, auditHost, auditPort, remoteCommand, useSudo,
+                result.ExitCode, result.StdOut, result.StdErr);
             ExecutionStatus.Text = "Comando completado. Código de salida: " + result.ExitCode +
                 (useSudo && result.ExitCode != 0 ? " · sudo -n exige permisos sin contraseña interactiva." : "");
         }
-        catch (Exception ex) { ExecutionStatus.Text = "Consulta fallida: " + ex.Message; }
+        catch (Exception ex)
+        {
+            RecordCommand(started, auditHost, auditPort, remoteCommand,
+                useSudo, null, "", "", ex.Message);
+            ExecutionStatus.Text = "Consulta fallida: " + ex.Message;
+        }
         finally { FinishOperation(); }
     }
 
