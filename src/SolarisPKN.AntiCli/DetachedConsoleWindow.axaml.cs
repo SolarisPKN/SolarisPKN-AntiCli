@@ -19,6 +19,7 @@ public partial class DetachedConsoleWindow : Window
     private Action? _dock;
     private TargetPlatform _platform = TargetPlatform.OtherLinux;
     private bool _connected;
+    private bool _hostBusy;
     private bool _executing;
 
     // Avalonia needs a parameterless constructor to load this XAML.
@@ -50,7 +51,7 @@ public partial class DetachedConsoleWindow : Window
 
     /// <summary>The source controls remain owned by the original SessionView.</summary>
     public void UpdateSnapshot(string session, string output, string history, string status,
-        bool connected, TargetPlatform platform)
+        bool connected, TargetPlatform platform, bool hostBusy)
     {
         SessionLabel.Text = session;
         ConsoleOutput.Text = output;
@@ -58,6 +59,7 @@ public partial class DetachedConsoleWindow : Window
         StatusLabel.Text = status;
         _platform = platform;
         _connected = connected;
+        _hostBusy = hostBusy;
         ConsoleSudo.IsVisible = platform != TargetPlatform.Windows;
         UpdateCommandRisk();
     }
@@ -85,7 +87,7 @@ public partial class DetachedConsoleWindow : Window
             _ => Brushes.Firebrick
         };
         ConsoleExecute.Foreground = risk == CommandRisk.Yellow ? Brushes.Black : Brushes.White;
-        ConsoleExecute.IsEnabled = _connected && !_executing && command.Length > 0;
+        ConsoleExecute.IsEnabled = _connected && !_hostBusy && !_executing && command.Length > 0;
     }
 
     private async void ExecuteClicked(object? sender, RoutedEventArgs e)
