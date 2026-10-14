@@ -1,0 +1,77 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets
+*.key
+*.pem
+*.p12
+*.pfx
+*.ppk
+id_rsa
+id_ed25519
+known_hosts
+secrets/
+credentials/
+vault/
+*.vault
+*.dpapi
+*.sqlite
+*.sqlite3
+*.db
+
+# IDE / .NET
+.vs/
+.vscode/
+.idea/
+**/bin/
+**/obj/
+TestResults/
+*.user
+*.suo
+*.userosscache
+
+# Logs and generated files
+*.log
+logs/
+artifacts/
+tmp/
+temp/
+*.bak
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Local AntiCLI runtime data, never commit
+profiles.json
+settings.json
+**/discovery/
+*.help.log
+*.binlog
+*.pdb
+*.userprefs
+appsettings.Local.json
+
+# Release staging
+dist/
+publish/
+release/
+*.zip
+*.7z
+
+# Sensitive key material and diagnostics
+*.p8
+*.p7b
+*.kdbx
+*.ovpn
+*.rdp
+*.asc
+*.token
+*.credentials
+*.dpapi
+*.private
+*.id_rsa
+*.id_ed25519

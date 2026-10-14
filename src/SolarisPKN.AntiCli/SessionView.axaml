@@ -1,0 +1,118 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SolarisPKN.AntiCli.SessionView">
+  <Grid RowDefinitions="Auto,*" RowSpacing="12" Margin="18">
+    <StackPanel Grid.Row="0" Spacing="3">
+      <TextBlock FontSize="26" FontWeight="Bold" Text="Solaris AntiCLI System"/>
+      <TextBlock Text="Entorno y credenciales exclusivos de esta pestaña. Los comandos y el historial no se mezclan con otras sesiones." Opacity="0.75"/>
+    </StackPanel>
+    <TabControl x:Name="MainTabs" Grid.Row="1">
+      <TabItem x:Name="ConnectionTab" Header="1 · Entorno y SSH">
+        <ScrollViewer>
+          <StackPanel Spacing="11" Margin="15">
+            <TextBlock FontSize="19" FontWeight="SemiBold" Text="Entorno de trabajo"/>
+            <TextBlock Text="Seleccioná primero el sistema operativo del servidor remoto."/>
+            <ComboBox x:Name="PlatformSelector" Width="320" HorizontalAlignment="Left"
+                      SelectionChanged="PlatformChanged" PlaceholderText="Seleccionar entorno"/>
+            <TextBlock Text="Conexión SSH" FontSize="19" FontWeight="SemiBold"/>
+            <TextBlock Text="Los datos se recuerdan únicamente cuando marcás su casilla DPAPI. Si no, se usan solo durante esta sesión."
+                       TextWrapping="Wrap" Opacity="0.7"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+              <StackPanel Grid.Column="0" Spacing="6">
+                <TextBlock Text="Perfiles"/>
+                <ListBox x:Name="ProfilesList" Height="100" SelectionChanged="ProfileSelected"/>
+                <Button Content="Crear perfil nuevo" Click="NewProfileClicked" HorizontalAlignment="Left"/>
+                <TextBlock Text="Nombre del perfil"/>
+                <TextBox x:Name="ProfileName" Watermark="Servidor desarrollo"/>
+                <TextBlock Text="Host / IP"/>
+                <TextBox x:Name="HostInput" Watermark="192.168.1.50"/>
+                <TextBlock Text="Puerto SSH"/>
+                <TextBox x:Name="PortInput" Text="22"/>
+                <TextBlock Text="Huella SSH verificada del servidor (SHA256:)"/>
+                <TextBox x:Name="FingerprintInput" Watermark="SHA256:..."/>
+                <TextBlock Text="La huella se verifica por otro canal. Jamás se acepta automáticamente."
+                           FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
+              </StackPanel>
+              <StackPanel Grid.Column="1" Spacing="7">
+                <TextBlock Text="Usuario SSH"/>
+                <TextBox x:Name="UserInput" Watermark="developer"/>
+                <CheckBox x:Name="RememberUser" Content="Recordar usuario mediante DPAPI"/>
+                <TextBlock Text="Autenticación principal"/>
+                <ComboBox x:Name="AuthModeSelector" Width="260" HorizontalAlignment="Left"/>
+                <TextBlock Text="Archivo de clave privada SSH"/>
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                  <TextBox x:Name="KeyPathInput" Grid.Column="0" Watermark="Seleccionar archivo de clave SSH"/>
+                  <Button Grid.Column="1" Content="Buscar..." Click="ChooseKeyClicked"/>
+                </Grid>
+                <CheckBox x:Name="RememberKey" Content="Recordar clave privada cifrada con DPAPI"/>
+                <TextBlock Text="Contraseña de la cuenta SSH"/>
+                <TextBox x:Name="PasswordInput" PasswordChar="●" Watermark="Contraseña SSH"/>
+                <CheckBox x:Name="RememberPassword" Content="Recordar contraseña mediante DPAPI"/>
+                <TextBlock Text="Passphrase de la clave SSH"/>
+                <TextBox x:Name="PassphraseInput" PasswordChar="●" Watermark="Passphrase de la clave (si tiene)"/>
+                <CheckBox x:Name="RememberPassphrase" Content="Recordar passphrase mediante DPAPI"/>
+                <TextBlock Text="Cuando los datos no se recuerdan, hay que ingresarlos nuevamente al abrir el programa."
+                           FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
+              </StackPanel>
+            </Grid>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Button Content="Guardar perfil" Click="SaveProfileClicked"/>
+              <Button Content="Autenticar por SSH" Click="ConnectClicked"/>
+              <Button Content="Desconectar / bloquear" Click="DisconnectClicked"/>
+            </StackPanel>
+            <TextBlock x:Name="AuthStatus" Text="Elegí un sistema remoto y configurá SSH." TextWrapping="Wrap"/>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+      <TabItem x:Name="CommandsTab" Header="2 · Comandos y bloques" IsEnabled="False">
+        <ScrollViewer>
+          <StackPanel Margin="15" Spacing="12">
+            <TextBlock x:Name="RemoteInfo" FontWeight="SemiBold" Text="Sesión no autenticada"/>
+            <TextBlock Text="Acciones disponibles para la plataforma elegida (tocá una para ver sus partes)." TextWrapping="Wrap"/>
+            <WrapPanel x:Name="OptionButtons" Orientation="Horizontal"/>
+            <TextBlock FontWeight="SemiBold" Text="Constructor visual: elegí los fragmentos"/>
+            <WrapPanel x:Name="TokenButtons" Orientation="Horizontal"/>
+            <TextBlock x:Name="BlockPreview" Text="Bloques: (vacío)" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Content="Deshacer bloque" Click="UndoBlockClicked"/>
+              <Button Content="Borrar comando" Click="ClearCommandClicked"/>
+            </StackPanel>
+            <TextBlock FontWeight="SemiBold" Text="Consola asistida"/>
+            <TextBox x:Name="AssistedCommand" Watermark="Escribí un comando o completalo con los botones"
+                     TextChanged="AssistedTextChanged" KeyDown="AssistedKeyDown"/>
+            <TextBlock Text="Flechas ↑ ↓: navegar · Tab/Enter: completar · Atajo de ejecución configurable en ⚙ Ajustes"
+                       FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
+            <WrapPanel x:Name="SuggestionButtons" Orientation="Horizontal"/>
+            <ListBox x:Name="Suggestions" Height="105" SelectionChanged="SuggestionSelected"/>
+            <TextBlock x:Name="HintDetail" Text="Elegí una sugerencia para ver la descripción." TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Content="Completar sugerencia" Click="UseSuggestionClicked"/>
+              <Button Content="Ejecutar consulta" Click="RunAssistedClicked"/>
+            </StackPanel>
+            <TextBlock x:Name="ExecutionStatus" Text="No hay acciones ejecutadas todavía." TextWrapping="Wrap"/>
+            <TextBlock Text="Salida remota" FontWeight="SemiBold"/>
+            <TextBox x:Name="Output" MinHeight="180" IsReadOnly="True" AcceptsReturn="True"
+                     FontFamily="Consolas,Monospace" TextWrapping="NoWrap"/>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+      <TabItem x:Name="ModulesTab" Header="3 · Crear módulos" IsEnabled="False">
+        <ScrollViewer>
+          <StackPanel Margin="15" Spacing="12">
+            <TextBlock FontSize="19" FontWeight="SemiBold" Text="Creador de módulos de consola"/>
+            <TextBlock Text="Explorá ayudas CLI en servidores de prueba autorizados. Solo genera borradores no ejecutables."
+                       TextWrapping="Wrap"/>
+            <TextBlock Text="Nombre de ejecutable"/>
+            <TextBox x:Name="ToolToDiscover" Watermark="salt, docker, git, bitbake..." Width="360" HorizontalAlignment="Left"/>
+            <CheckBox x:Name="HelpConsent" Content="Autorizo explorar ayudas --help en este servidor de PRUEBAS"/>
+            <Button Content="Analizar ayuda y crear borrador" Click="ScanHelpClicked" HorizontalAlignment="Left"/>
+            <TextBlock x:Name="ScanStatus" Text="Sin escaneos en esta sesión." TextWrapping="Wrap"/>
+            <TextBlock Text="Los borradores y las opciones descubiertas no se habilitan automáticamente. La traducción avanzada con IA está pendiente." TextWrapping="Wrap"/>
+            <TextBox x:Name="ScanOutput" IsReadOnly="True" MinHeight="210" AcceptsReturn="True"
+                     TextWrapping="Wrap" FontFamily="Consolas,Monospace"/>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+    </TabControl>
+  </Grid>
+</UserControl>

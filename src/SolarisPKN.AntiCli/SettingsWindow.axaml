@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="SolarisPKN.AntiCli.SettingsWindow"
+        Title="Configuración · Solaris AntiCLI"
+        Width="625" Height="720" MinWidth="505" MinHeight="500"
+        WindowStartupLocation="CenterOwner">
+  <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12" Margin="18">
+    <StackPanel Grid.Row="0" Spacing="4">
+      <TextBlock Text="⚙ Configuración" FontSize="25" FontWeight="SemiBold"/>
+      <TextBlock Text="Personalizá colores y atajos. Los cambios se aplican a todas las ventanas."
+                 TextWrapping="Wrap" Opacity="0.7"/>
+    </StackPanel>
+
+    <ScrollViewer Grid.Row="1">
+      <StackPanel Spacing="12">
+        <TextBlock Text="Apariencia" FontSize="18" FontWeight="SemiBold"/>
+        <TextBlock Text="Tema visual"/>
+        <ComboBox x:Name="ThemeSelector" HorizontalAlignment="Stretch"/>
+        <TextBlock Text="Color de acento"/>
+        <ComboBox x:Name="AccentSelector" HorizontalAlignment="Stretch"
+                  SelectionChanged="AccentSelectionChanged"/>
+        <TextBox x:Name="CustomAccent" Watermark="#7C4DFF"
+                 TextChanged="CustomAccentChanged"/>
+        <Border x:Name="AccentPreview" Height="14" CornerRadius="5"
+                Background="{DynamicResource AntiCliAccentBrush}"/>
+        <TextBlock Text="El acento colorea botones y detalles; también podés elegir un fondo personalizado compatible con el tema."
+                   TextWrapping="Wrap" Opacity="0.7" FontSize="12"/>
+        <TextBlock Text="Color de fondo de ventana (opcional)"/>
+        <TextBox x:Name="WindowBackgroundInput" Watermark="Vacío = automático; ejemplo oscuro: #171B25"/>
+        <TextBlock Text="Para usar un fondo personalizado elegí tema Claro u Oscuro. El programa exige contraste suficiente para leer los textos." TextWrapping="Wrap" Opacity="0.7" FontSize="12"/>
+        <Border Height="1" Background="#606574"/>
+        <TextBlock Text="Atajos de teclado" FontSize="18" FontWeight="SemiBold"/>
+        <TextBlock Text="Ejemplos: Ctrl+T, Ctrl+Shift+T, Alt+N, F5. No se permiten atajos duplicados."
+                   TextWrapping="Wrap" Opacity="0.7" FontSize="12"/>
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+              RowSpacing="8">
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="Nueva sesión" VerticalAlignment="Center"/>
+          <TextBox x:Name="NewSessionShortcut" Grid.Row="0" Grid.Column="1"/>
+          <TextBlock Grid.Row="1" Grid.Column="0" Text="Clonar sesión" VerticalAlignment="Center"/>
+          <TextBox x:Name="CloneSessionShortcut" Grid.Row="1" Grid.Column="1"/>
+          <TextBlock Grid.Row="2" Grid.Column="0" Text="Nueva ventana" VerticalAlignment="Center"/>
+          <TextBox x:Name="NewWindowShortcut" Grid.Row="2" Grid.Column="1"/>
+          <TextBlock Grid.Row="3" Grid.Column="0" Text="Clonar en ventana" VerticalAlignment="Center"/>
+          <TextBox x:Name="CloneWindowShortcut" Grid.Row="3" Grid.Column="1"/>
+          <TextBlock Grid.Row="4" Grid.Column="0" Text="Cerrar sesión" VerticalAlignment="Center"/>
+          <TextBox x:Name="CloseSessionShortcut" Grid.Row="4" Grid.Column="1"/>
+          <TextBlock Grid.Row="5" Grid.Column="0" Text="Ejecutar comando" VerticalAlignment="Center"/>
+          <TextBox x:Name="ExecuteCommandShortcut" Grid.Row="5" Grid.Column="1"/>
+        </Grid>
+        <TextBlock Text="El completado por Tab, Enter y flechas dentro de la semi-CLI se mantiene como navegación."
+                   TextWrapping="Wrap" Opacity="0.7" FontSize="12"/>
+      </StackPanel>
+    </ScrollViewer>
+    <StackPanel Grid.Row="2" Spacing="9">
+      <TextBlock Text="© 2026 SolarisPKN contributors · GNU GPLv3 · Sin garantía."
+                 TextWrapping="Wrap" FontSize="11" Opacity="0.7"/>
+      <TextBlock x:Name="ValidationMessage" TextWrapping="Wrap"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+        <Button Content="📄 Licencia GPLv3" Click="LicenseClicked"/>
+        <Button Content="Restaurar valores" Click="DefaultsClicked"/>
+        <Button Content="Cancelar" Click="CancelClicked"/>
+        <Button Content="Guardar cambios" Click="SaveClicked"
+                Background="{DynamicResource AntiCliAccentBrush}" Foreground="White"/>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</Window>

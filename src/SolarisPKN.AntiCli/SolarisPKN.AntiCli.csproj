@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>SolarisPKN.AntiCli</AssemblyName>
+    <RootNamespace>SolarisPKN.AntiCli</RootNamespace>
+    <ApplicationManifest></ApplicationManifest>
+    <Version>0.1.0</Version>
+    <Authors>SolarisPKN contributors</Authors>
+    <Description>Visual SSH/CLI assistant for Windows with controlled command discovery.</Description>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/SolarisPKN/SolarisPKN-AntiCli</RepositoryUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\LICENSE" LogicalName="AntiCli.LICENSE" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageReference Include="SSH.NET" Version="2026.0.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+</Project>

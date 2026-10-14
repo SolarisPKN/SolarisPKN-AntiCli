@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="SolarisPKN.AntiCli.MainWindow"
+        Title="Solaris AntiCLI System · Sesiones SSH"
+        Width="1170" Height="875" MinWidth="870" MinHeight="630">
+  <Grid RowDefinitions="Auto,Auto,*" Margin="14" RowSpacing="10">
+    <StackPanel Grid.Row="0" Spacing="3">
+      <TextBlock Text="Solaris AntiCLI System" FontSize="24" FontWeight="Bold"/>
+      <TextBlock Text="Varias máquinas, pestañas independientes y ventanas de trabajo."
+                 Opacity="0.72"/>
+    </StackPanel>
+    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+      <WrapPanel Grid.Column="0" Orientation="Horizontal">
+        <Button Content="＋ Nueva sesión" Click="NewSessionClicked" Margin="0,0,7,6"
+                Background="{DynamicResource AntiCliAccentBrush}" Foreground="White"/>
+        <Button Content="⧉ Clonar sesión" Click="CloneSessionClicked" Margin="0,0,7,6"/>
+        <Button Content="↗ Nueva ventana" Click="NewWindowClicked" Margin="0,0,7,6"/>
+        <Button Content="↗ Clonar en ventana" Click="CloneWindowClicked" Margin="0,0,7,6"/>
+      </WrapPanel>
+      <Button Grid.Column="1" Content="⚙ Ajustes" Click="SettingsClicked"
+              ToolTip.Tip="Tema, colores y atajos de teclado" Margin="0,0,0,6"/>
+    </Grid>
+    <TabControl x:Name="SessionTabs" Grid.Row="2"/>
+  </Grid>
+</Window>

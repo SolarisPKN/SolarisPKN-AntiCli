@@ -1,0 +1,11 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SolarisPKN.AntiCli.App"
+             RequestedThemeVariant="Default">
+  <Application.Resources>
+    <SolidColorBrush x:Key="AntiCliAccentBrush" Color="#7C4DFF"/>
+  </Application.Resources>
+  <Application.Styles>
+    <FluentTheme />
+  </Application.Styles>
+</Application>

@@ -1,0 +1,60 @@
+name: Windows build (preview)
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Compile and publish win-x64
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        shell: pwsh
+        run: dotnet restore ./src/SolarisPKN.AntiCli/SolarisPKN.AntiCli.csproj --nologo
+
+      - name: Build Release
+        shell: pwsh
+        run: dotnet build ./src/SolarisPKN.AntiCli/SolarisPKN.AntiCli.csproj -c Release --no-restore --nologo
+
+      - name: Publish self-contained Windows executable
+        shell: pwsh
+        run: |
+          dotnet publish ./src/SolarisPKN.AntiCli/SolarisPKN.AntiCli.csproj -c Release -r win-x64 --self-contained true --nologo -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=false -o ./dist/win-x64
+          if (-not (Test-Path ./dist/win-x64/SolarisPKN.AntiCli.exe)) {
+            throw "Expected EXE not found in CI output"
+          }
+
+      - name: Include GPL and third-party notices
+        shell: pwsh
+        run: |
+          Copy-Item ./LICENSE ./dist/win-x64/LICENSE
+          Copy-Item ./README.md ./dist/win-x64/README.md
+          Copy-Item ./README.es.md ./dist/win-x64/README.es.md
+          Copy-Item ./THIRD_PARTY_NOTICES.md ./dist/win-x64/THIRD_PARTY_NOTICES.md
+          Copy-Item ./third_party ./dist/win-x64/third_party -Recurse
+
+      - name: Upload preview executable and legal notices as CI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SolarisPKN-AntiCli-win-x64
+          path: dist/win-x64/*
+          if-no-files-found: error
+          retention-days: 14
