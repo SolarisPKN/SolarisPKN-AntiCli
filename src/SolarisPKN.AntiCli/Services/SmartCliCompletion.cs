@@ -88,7 +88,7 @@ public static class SmartCliCompletion
                 var action = AdminCommandCatalog.For(platform).FirstOrDefault(a =>
                     RemoteCommandDictionary.Root(a.Command)?.Equals(x.name, StringComparison.OrdinalIgnoreCase) == true);
                 var corrected = !x.exact;
-                var present = remote is null ? null : remote.Has(x.name);
+                bool? present = remote is null ? null : remote.Has(x.name);
                 var detail = guide?.TitleEs ?? action?.LabelEs ?? "Comando disponible en el catálogo";
                 return new SmartCliSuggestion(
                     query[..leading] + x.name + tail,
