@@ -160,7 +160,7 @@ public static class GuidedCommandCatalog
         // One remote invocation keeps the workflow fast; break stops the batch at the first failure.
         var script = "for suffix in " + string.Join(" ", suffixes) +
             "; do adduser " + string.Join(" ", options) +
-            " -- \"" + name + "${suffix}\" || break; done";
+            " -- \"" + name + "${suffix}\" || exit $?; done";
         return new GuidedPlan(script, CommandRisk.Red, quantity,
             "Lote de " + quantity + " cuentas: " + name + suffixes[0] + " … " +
             name + suffixes[^1] + ". Se detiene ante el primer error.");
@@ -176,7 +176,7 @@ public static class GuidedCommandCatalog
         if (kind == GuidedValueKind.UserGroup && !GroupName.IsMatch(value))
             throw new ArgumentException("Nombre de grupo Linux inválido.");
         if (kind == GuidedValueKind.AbsolutePath &&
-            (!value.StartsWith('/', StringComparison.Ordinal) || value.Contains("..", StringComparison.Ordinal)))
+            (!value.StartsWith("/", StringComparison.Ordinal) || value.Contains("..", StringComparison.Ordinal)))
             throw new ArgumentException("La ruta debe ser absoluta y no contener segmentos '..'.");
         if (kind == GuidedValueKind.PositiveId &&
             (!int.TryParse(value, CultureInfo.InvariantCulture, out var uid) || uid is < 1 or > 60000))
