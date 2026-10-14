@@ -7,10 +7,15 @@ namespace SolarisPKN.AntiCli;
 /// <summary>Explicit human decision, never auto-trust from a discovery event.</summary>
 public partial class HostKeyApprovalWindow : Window
 {
-    public HostKeyApprovalWindow(DiscoveredHostKey candidate, TrustedHostKey? previous)
+    // Avalonia's XAML resource loader requires a public parameterless constructor.
+    public HostKeyApprovalWindow()
     {
         InitializeComponent();
         AppSettingsStore.Shared.ApplyWindowBackground(this);
+    }
+
+    public HostKeyApprovalWindow(DiscoveredHostKey candidate, TrustedHostKey? previous) : this()
+    {
         Endpoint.Text = candidate.Host + ":" + candidate.Port;
         Algorithm.Text = candidate.Algorithm;
         Fingerprint.Text = candidate.Sha256;
