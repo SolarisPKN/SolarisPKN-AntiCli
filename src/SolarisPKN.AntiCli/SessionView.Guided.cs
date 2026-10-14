@@ -87,6 +87,7 @@ public partial class SessionView
         GuidedError.Text = "";
         _batchEnabled = definition.SupportsBatch && quantity > 1;
         BuildOperandInputs(quantity);
+        UpdatePackageRequirementsPanel();
         RebuildGuidedFlags();
         RecomputeGuidedPreview();
     }
@@ -335,6 +336,7 @@ public partial class SessionView
         GuidedError.Text = "";
         MissingToolPanel.IsVisible = false;
         _suggestedAptPackage = null;
+        PackageRequirementsPanel.IsVisible = false;
     }
 
     private bool TryGetGuidedRisk(string? command, out CommandRisk risk)
