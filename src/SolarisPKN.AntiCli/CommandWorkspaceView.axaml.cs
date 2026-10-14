@@ -4,6 +4,10 @@ namespace SolarisPKN.AntiCli;
 public partial class CommandWorkspaceView : UserControl
 {
  public CommandWorkspaceView(){InitializeComponent();}
+ public Button RefreshDictionaryButtonRef => RefreshDictionaryButton;
+ public Button ImportGuidedHelpButtonRef => ImportGuidedHelpButton;
+ public Button CheckPackageRequirementsButtonRef => CheckPackageRequirementsButton;
+ public Button CloseGuidedButtonRef => CloseGuidedButton;
  public TextBlock RemoteInfoRef => RemoteInfo;
  public TextBox UniversalSearchRef => UniversalSearch;
  public WrapPanel UniversalResultsRef => UniversalResults;
