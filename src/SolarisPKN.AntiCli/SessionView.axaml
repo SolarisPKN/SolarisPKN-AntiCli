@@ -190,7 +190,7 @@
               <TextBlock Text="Variables de plantilla: {{usuario}}, {{carpeta}}, {{grupo}}. Los valores se entrecomillan al generar el script. Revisá especialmente pasos destructivos y secretos." TextWrapping="Wrap" FontSize="12"/>
             </StackPanel>
           </ScrollViewer>
-          <TabControl Grid.Column="1" MinHeight="0">
+          <TabControl x:Name="AutomationRightTabs" Grid.Column="1" MinHeight="0" SelectedIndex="1">
             <TabItem x:Name="FlowDesignerTab" Header="Diagrama visual" IsVisible="False">
               <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="7" Margin="6" MinHeight="0">
                 <TextBlock Text="Bloques y flechas · arrastrá los nodos con el mouse" FontWeight="SemiBold"
