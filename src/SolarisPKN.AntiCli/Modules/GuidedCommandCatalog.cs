@@ -75,15 +75,50 @@ public static class GuidedCommandCatalog
         if (data.SchemaVersion != 1 || data.Commands.Count == 0 ||
             data.Commands.GroupBy(x => x.Id).Any(g => g.Count() != 1))
             throw new InvalidDataException("Versión o IDs del catálogo guiado no válidos.");
-        foreach (var command in data.Commands)
+        var modules = data.Commands.ToList();
+        foreach (var command in modules) ValidateSchema(command);
+
+        // User-owned JSON modules are read at startup; no recompilation required.
+        // They cannot silently replace a built-in definition, and they default RED.
+        var directory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "SolarisPKN", "AntiCLI", "modules");
+        if (Directory.Exists(directory))
         {
-            if (command.Template.Length > 10000 ||
-                command.Flags.Count > 160 || command.Operands.Count > 32 ||
-                command.Flags.Any(f => !Token.IsMatch(f.Token)) ||
-                command.Operands.Any(o => !Regex.IsMatch(o.Name, "^[a-z][a-z0-9_]*$")))
-                throw new InvalidDataException("Ficha guiada inválida: " + command.Id);
+            foreach (var file in Directory.EnumerateFiles(directory, "*.json").Take(100))
+            {
+                try
+                {
+                    var local = JsonSerializer.Deserialize<GuideFile>(
+                        File.ReadAllText(file), Options);
+                    if (local?.SchemaVersion != 1 || local.Commands.Count > 200) continue;
+                    foreach (var module in local.Commands)
+                    {
+                        if (modules.Any(x => x.Id == module.Id)) continue;
+                        ValidateSchema(module);
+                        modules.Add(module with { Risk = CommandRisk.Red });
+                    }
+                }
+                catch (Exception)
+                {
+                    // A damaged external file cannot stop users authenticating SSH.
+                    // The author can validate it independently against docs.
+                }
+            }
         }
-        return data.Commands;
+        return modules;
+    }
+
+    private static void ValidateSchema(GuidedCommand command)
+    {
+        if (string.IsNullOrWhiteSpace(command.Id) ||
+            command.Template is null || command.Template.Length is < 1 or > 10000 ||
+            command.Flags is null || command.Operands is null ||
+            command.Flags.Count > 160 || command.Operands.Count > 32 ||
+            command.TimeoutSeconds is < 1 or > 14400 ||
+            command.Flags.Any(f => !Token.IsMatch(f.Token)) ||
+            command.Operands.Any(o => !Regex.IsMatch(o.Name, "^[a-z][a-z0-9_]*$")))
+            throw new InvalidDataException("Ficha guiada inválida: " + command.Id);
     }
 
     private static readonly IReadOnlyList<GuidedCommand> Definitions = Load();
