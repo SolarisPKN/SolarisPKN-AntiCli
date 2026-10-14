@@ -16,7 +16,7 @@ Bring terminal capabilities into a lightweight visual application: identify the 
 - **SSH and first contact:** username + password or private key with passphrase. On a new VPS, AntiCLI discovers the host's public key **without sending credentials**, shows its SHA256 fingerprint, and asks you to explicitly trust it (TOFU) or compare it with your provider first. Subsequent connections enforce the stored host:port pin; changed keys are blocked unless explicitly reviewed.
 - **Four independent DPAPI opt-ins:** remember username, private-key contents, password, and passphrase. **All are optional** and unchecked fields are not persisted. Profiles live outside the repository.
 - **Multiple sessions:** open an empty tab, clone authenticated credentials into a tab, create another window, or clone a session into a separate window. Each session owns its command state and output.
-- **Administrator command builder:** 146 Linux quick actions across 17 modules, grouped by purpose, with 🟢/🟡/🔴 risk dots. Every manually entered command can execute; unknown commands default to red. The Execute button reflects the risk and runs immediately, without a second confirmation. Optional per-session **sudo** toggle uses non-interactive SSH execution.
+- **Schema-driven administrator UI:** 146 Linux and 7 Windows quick actions backed by JSON, plus generic guided forms for all catalog entries. Detailed JSON schemas cover ordered/checkbox flags, validated operands, sudo, bulk user creation, APT, signed third-party repositories and Yocto/BitBake. Unknown commands default to red; the risk-colored Execute button runs without a second confirmation.
 - **Discoverable modules:** bounded `--help` exploration on authorized test servers, with evidence logs and draft suggestions. Administrators can execute suggestions, including custom commands; a draft does not imply safety.
 - **Preferences:** ⚙ settings, system/dark/light themes, configurable accent/background, and six customizable keyboard shortcuts.
 - **Desktop technology:** C# / .NET 8 + Avalonia — no bundled Chromium browser.
@@ -56,6 +56,7 @@ You can also double-click `COMPILAR_ANTICLI.cmd`. The local published executable
 - [Security](docs/SECURITY.md)
 - [Assisted CLI](docs/ASSISTED_CLI.md)
 - [Administrative command modules: 146 actions](docs/COMMAND_MODULES.md) ([Español](docs/COMMAND_MODULES.es.md))
+- [Universal JSON command engine, Yocto and APT](docs/GENERIC_COMMAND_ENGINE.md) ([Español](docs/GENERIC_COMMAND_ENGINE.es.md))
 - [Multiple sessions](docs/MULTI-SESSION.md)
 - [Appearance and keyboard preferences](docs/SETTINGS.md)
 - [Help-discovery security](docs/SCANNER-SECURITY.md)
