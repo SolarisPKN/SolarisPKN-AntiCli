@@ -113,7 +113,10 @@
       "Operands": [],
       "SupportsBatch": false,
       "TimeoutSeconds": 300,
-      "DocumentationUrl": "https://www.gnu.org/software/coreutils/manual/html_node/uname-invocation.html"
+      "DocumentationUrl": "https://www.gnu.org/software/coreutils/manual/html_node/uname-invocation.html",
+      "PresetCommands": [
+        "uname -a"
+      ]
     },
     {
       "Id": "adduser",
@@ -240,7 +243,10 @@
         "--uid",
         "--home"
       ],
-      "DocumentationUrl": "https://manpages.ubuntu.com/manpages/noble/en/man8/adduser.8.html"
+      "DocumentationUrl": "https://manpages.ubuntu.com/manpages/noble/en/man8/adduser.8.html",
+      "PresetCommands": [
+        "useradd -m anticli_test"
+      ]
     },
     {
       "Id": "apt-install",
@@ -328,7 +334,10 @@
       ],
       "SupportsBatch": false,
       "TimeoutSeconds": 300,
-      "DocumentationUrl": "https://manpages.ubuntu.com/manpages/noble/en/man8/apt-get.8.html"
+      "DocumentationUrl": "https://manpages.ubuntu.com/manpages/noble/en/man8/apt-get.8.html",
+      "PresetCommands": [
+        "apt-get install -y jq"
+      ]
     },
     {
       "Id": "apt-remove",
@@ -379,7 +388,10 @@
         }
       ],
       "SupportsBatch": false,
-      "TimeoutSeconds": 300
+      "TimeoutSeconds": 300,
+      "PresetCommands": [
+        "apt-get remove -y jq"
+      ]
     },
     {
       "Id": "apt-purge",
@@ -453,7 +465,10 @@
       ],
       "Operands": [],
       "SupportsBatch": false,
-      "TimeoutSeconds": 300
+      "TimeoutSeconds": 300,
+      "PresetCommands": [
+        "apt-get update"
+      ]
     },
     {
       "Id": "apt-upgrade",
@@ -494,7 +509,10 @@
       ],
       "Operands": [],
       "SupportsBatch": false,
-      "TimeoutSeconds": 300
+      "TimeoutSeconds": 300,
+      "PresetCommands": [
+        "apt-get upgrade -y"
+      ]
     },
     {
       "Id": "apt-dist-upgrade",
@@ -567,7 +585,10 @@
       ],
       "Operands": [],
       "SupportsBatch": false,
-      "TimeoutSeconds": 300
+      "TimeoutSeconds": 300,
+      "PresetCommands": [
+        "apt-get autoremove -y"
+      ]
     },
     {
       "Id": "apt-search",
