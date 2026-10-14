@@ -180,6 +180,8 @@ public partial class SessionView
     {
         try
         {
+            if (!PrepareFlowForScript(out var flowProblem))
+                throw new InvalidOperationException(flowProblem);
             var definition = ComposeAutomation();
             _lastScript = AutomationScriptExporter.Generate(definition);
             AutomationScriptPreview.Text = _lastScript;
