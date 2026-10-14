@@ -78,7 +78,7 @@ public partial class SessionView
         {
             var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
             if (clipboard is null) return;
-            var text = await clipboard.TryGetTextAsync();
+            var text = await clipboard.GetTextAsync();
             if (!string.IsNullOrEmpty(text))
             {
                 AssistedCommand.Text = text.TrimEnd('\r', '\n');
