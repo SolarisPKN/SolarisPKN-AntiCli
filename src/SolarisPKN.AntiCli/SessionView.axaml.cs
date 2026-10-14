@@ -579,13 +579,19 @@ public partial class SessionView : UserControl, IDisposable
         foreach (var cmd in commands)
         {
             var captured = cmd;
+            var unavailable = _remoteDictionary is not null &&
+                RemoteCommandDictionary.Root(cmd.Command) is { } exe &&
+                !_remoteDictionary.Has(exe);
+            var displayRisk = unavailable ? CommandRisk.Red : cmd.Risk;
             var button = new Button
             {
-                Content = AdminCommandCatalog.Dot(cmd.Risk) + " " +
+                Content = AdminCommandCatalog.Dot(displayRisk) + " " +
                     AvailabilityMark(cmd.Command) + " " + cmd.LabelEs,
-                Margin = new Thickness(0, 0, 8, 8)
+                Margin = new Thickness(0, 0, 6, 5),
+                Padding = new Thickness(9, 5)
             };
-            ToolTip.SetTip(button, cmd.Command + " — " + cmd.DescriptionEs);
+            ToolTip.SetTip(button, cmd.Command + " — " + cmd.DescriptionEs +
+                (unavailable ? "\nNo encontrado en PATH remoto; revisá instalación o entorno." : ""));
             button.Click += (_, _) => SelectAction(
                 new ReadOnlyAction(captured.Id, captured.LabelEs, captured.Command));
             OptionButtons.Children.Add(button);
