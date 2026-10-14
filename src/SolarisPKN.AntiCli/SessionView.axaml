@@ -101,6 +101,18 @@
                 <TextBlock Text="Elegí las opciones y movelas ↑ ↓ para cambiar su orden. Las importadas desde --help conservan su descripción original hasta que se revise su traducción." TextWrapping="Wrap" FontSize="12"/>
                 <Button Content="📚 Cargar flags desde --help del servidor" Click="ImportGuidedHelpClicked" HorizontalAlignment="Left"/>
                 <TextBlock x:Name="HelpImportStatus" Text="Las fichas son datos JSON. Podés ampliar este comando sin actualizar el programa." TextWrapping="Wrap" FontSize="12"/>
+                <Border x:Name="MissingToolPanel" IsVisible="False" BorderBrush="#D59B38"
+                        BorderThickness="1" Padding="8" CornerRadius="6">
+                  <StackPanel Spacing="5">
+                    <TextBlock x:Name="MissingToolMessage" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="MissingToolCandidate" TextWrapping="Wrap" FontSize="12"/>
+                    <Button x:Name="InstallMissingToolButton"
+                            Content="Instalar versión disponible en APT"
+                            Click="InstallMissingToolClicked"
+                            Background="#A33D3D" Foreground="White"
+                            HorizontalAlignment="Left"/>
+                  </StackPanel>
+                </Border>
                 <StackPanel x:Name="GuidedOptions" Spacing="7"/>
                 <StackPanel x:Name="GuidedArguments" Spacing="8"/>
                 <TextBlock x:Name="GuidedError" TextWrapping="Wrap" Foreground="#F28B82"/>
@@ -194,6 +206,39 @@
             <Button Content="Analizar ayuda y crear borrador" Click="ScanHelpClicked" HorizontalAlignment="Left"/>
             <TextBlock x:Name="ScanStatus" Text="Sin escaneos en esta sesión." TextWrapping="Wrap"/>
             <TextBlock Text="Los comandos descubiertos quedan señalados por riesgo; podés ejecutarlos como cualquier comando escrito manualmente. La traducción avanzada con IA está pendiente." TextWrapping="Wrap"/>
+            <TextBlock FontWeight="SemiBold" FontSize="18" Text="Editor de fichas JSON · sin programar nuevas pantallas"/>
+            <TextBlock Text="Editá el nombre, ejecutable, plantilla, flags y parámetros. Generá JSON, validalo y guardalo en AppData. Si necesitás opciones avanzadas, corregí el JSON directamente antes de guardar." TextWrapping="Wrap"/>
+            <ComboBox x:Name="ModuleEditorSource" Width="360" HorizontalAlignment="Left"
+                      SelectionChanged="ModuleEditorSourceChanged" PlaceholderText="Plantilla para editar"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Content="Nuevo módulo" Click="ModuleEditorNewClicked"/>
+              <Button Content="Cargar plantilla" Click="ModuleEditorLoadClicked"/>
+            </StackPanel>
+            <TextBlock Text="ID único (prefijo local.), nombre y ejecutable"/>
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="7">
+              <TextBox x:Name="ModuleEditorId" Grid.Column="0" Watermark="local.mi-herramienta"/>
+              <TextBox x:Name="ModuleEditorTitle" Grid.Column="1" Watermark="Nombre visible"/>
+              <TextBox x:Name="ModuleEditorExecutable" Grid.Column="2" Watermark="ejecutable"/>
+            </Grid>
+            <TextBox x:Name="ModuleEditorDescription" Watermark="Explicación en español"/>
+            <TextBox x:Name="ModuleEditorKeywords" Watermark="Términos de búsqueda separados por espacios"/>
+            <TextBlock Text="Plantilla con {flags} y nombres de parámetros entre llaves"/>
+            <TextBox x:Name="ModuleEditorTemplate" Watermark="ejecutable {flags} {argumento}"/>
+            <TextBlock Text="Flags: una por línea · token | etiqueta | descripción | tipo | valor inicial | predeterminado (true/false)"/>
+            <TextBox x:Name="ModuleEditorFlags" AcceptsReturn="True" MinHeight="80" MaxHeight="220"
+                     FontFamily="Consolas,Monospace" TextWrapping="NoWrap"/>
+            <TextBlock Text="Parámetros: nombre | etiqueta | descripción | tipo | requerido (true/false) | valor inicial"/>
+            <TextBox x:Name="ModuleEditorOperands" AcceptsReturn="True" MinHeight="80" MaxHeight="220"
+                     FontFamily="Consolas,Monospace" TextWrapping="NoWrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Content="Generar JSON desde formulario" Click="ModuleEditorGenerateClicked"/>
+              <Button Content="Validar JSON" Click="ModuleEditorValidateClicked"/>
+              <Button Content="Guardar y activar módulo" Click="ModuleEditorSaveClicked"/>
+            </StackPanel>
+            <TextBlock x:Name="ModuleEditorStatus" Text="Sin modificaciones." TextWrapping="Wrap"/>
+            <TextBox x:Name="ModuleEditorJson" AcceptsReturn="True" MinHeight="240"
+                     FontFamily="Consolas,Monospace" TextWrapping="NoWrap"
+                     Watermark="JSON editable. Revisá antes de guardar."/>
             <TextBox x:Name="ScanOutput" IsReadOnly="True" MinHeight="210" AcceptsReturn="True"
                      TextWrapping="Wrap" FontFamily="Consolas,Monospace"/>
           </StackPanel>
