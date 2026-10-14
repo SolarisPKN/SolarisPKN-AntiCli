@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="SolarisPKN.AntiCli.CommandWorkspaceView">
+<Grid MinWidth="0">
+            <ScrollViewer VerticalScrollBarVisibility="Visible">
+              <StackPanel Margin="8" Spacing="10">
+            <TextBlock x:Name="RemoteInfo" FontWeight="SemiBold" Text="Sesión no autenticada"/>
+            <TextBlock Text="Buscá una tarea por lo que querés hacer: crear usuario, ver kernel, listar Docker..." FontWeight="SemiBold" TextWrapping="Wrap"/>
+            <TextBox x:Name="UniversalSearch" Watermark="Ej.: crear 20 usuarios, versión del kernel, reiniciar servicio"
+                    />
+            <WrapPanel x:Name="UniversalResults" Orientation="Horizontal"/>
+            <TextBlock Text="O elegí un módulo del catálogo: 🟢 Consulta · 🟡 Precaución · 🔴 Alto riesgo / no catalogado." TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock x:Name="InstalledDictionaryStatus" Text="Herramientas remotas: sin consultar"
+                         TextWrapping="Wrap" VerticalAlignment="Center"/>
+              <Button Content="Actualizar herramientas"/>
+            </StackPanel>
+            <TextBlock Text="✓ disponible en PATH  ·  ○ no visible en PATH  ·  ? sin comprobar. Algunos módulos Yocto requieren activar el entorno de compilación."
+                       FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
+            <ComboBox x:Name="ModuleGroupSelector" Width="330" HorizontalAlignment="Left"
+                      PlaceholderText="Seleccioná módulo"/>
+<TextBlock Text="Autocompletado y correcciones (Tab aplica la opción elegida)" FontWeight="SemiBold"/>
+<WrapPanel x:Name="SuggestionButtons" Orientation="Horizontal"/>
+<ListBox x:Name="Suggestions" Height="120"/>
+<TextBlock x:Name="HintDetail" Text="Elegí una sugerencia para conocer sus opciones." TextWrapping="Wrap"/>
+            <WrapPanel x:Name="OptionButtons" Orientation="Horizontal"/>
+              </StackPanel>
+            </ScrollViewer>
+            <Border x:Name="GuidedPanel" IsVisible="False" CornerRadius="8"
+                    BorderThickness="2" BorderBrush="#8794BA" Background="#242D3A" Padding="12">
+              <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Spacing="9">
+                <TextBlock x:Name="GuidedTitle" FontSize="18" FontWeight="SemiBold" Text="Operación guiada"/>
+                <TextBlock x:Name="GuidedDescription" TextWrapping="Wrap"/>
+                <TextBlock Text="Elegí las opciones y movelas ↑ ↓ para cambiar su orden. Las importadas desde --help conservan su descripción original hasta que se revise su traducción." TextWrapping="Wrap" FontSize="12"/>
+                <Button Content="📚 Cargar flags desde --help del servidor" HorizontalAlignment="Left"/>
+                <TextBlock x:Name="HelpImportStatus" Text="Las fichas son datos JSON. Podés ampliar este comando sin actualizar el programa." TextWrapping="Wrap" FontSize="12"/>
+                <Border x:Name="MissingToolPanel" IsVisible="False" BorderBrush="#D59B38"
+                        BorderThickness="1" Padding="8" CornerRadius="6">
+                  <StackPanel Spacing="5">
+                    <TextBlock x:Name="MissingToolMessage" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="MissingToolCandidate" TextWrapping="Wrap" FontSize="12"/>
+                    <Button x:Name="InstallMissingToolButton"
+                            Content="Instalar versión disponible en APT"
+                           
+                            Background="#A33D3D" Foreground="White"
+                            HorizontalAlignment="Left"/>
+                  </StackPanel>
+                </Border>
+                <StackPanel x:Name="GuidedOptions" Spacing="7"/>
+                <StackPanel x:Name="GuidedArguments" Spacing="8"/>
+                <Border x:Name="PackageRequirementsPanel" IsVisible="False"
+                        BorderBrush="#777777" BorderThickness="1" CornerRadius="6" Padding="8">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Comprobación de paquetes APT" FontWeight="SemiBold"/>
+                    <Button Content="Comprobar paquetes instalados en el servidor"
+                            HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="PackageRequirementsStatus" Text="Sin comprobar."
+                               TextWrapping="Wrap"/>
+                    <Button x:Name="InstallRequiredPackagesButton" IsVisible="False"
+                            Content="Instalar únicamente los faltantes" Background="#9A3434"
+                            Foreground="White"
+                            HorizontalAlignment="Left"/>
+                  </StackPanel>
+                </Border>
+                <TextBlock x:Name="GuidedError" TextWrapping="Wrap" Foreground="#F28B82"/>
+                <TextBlock x:Name="GuidedPlanInfo" TextWrapping="Wrap" FontSize="12"/>
+                <Button Content="Cerrar constructor"
+                        HorizontalAlignment="Left"/>
+              </StackPanel></ScrollViewer>
+            </Border>
+
+          </Grid>
+</UserControl>
