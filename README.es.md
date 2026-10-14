@@ -41,6 +41,10 @@ También podés ejecutar `COMPILAR_ANTICLI.cmd`. La publicación local queda en 
 **Uso básico:** creá una pestaña, elegí plataforma y completá host, usuario, puerto y credenciales. Pulsá **Autenticar**: si es un servidor nuevo, AntiCLI detecta la huella SHA256 y pide que la revises y aceptes antes del inicio de sesión. Para una clave que cambió, usá **Detectar / revisar clave del servidor** y verificá el cambio con el proveedor. Solo al validar identidad, credenciales y sistema aparecen los paneles de comandos y creación de módulos.
 
 
+## Diccionario inteligente por conexión SSH
+
+AntiCLI comprueba qué herramientas de su catálogo están disponibles en el **PATH del usuario SSH** al conectarse y permite actualizar el estado (✓ detectado, ○ no visible, ? sin comprobar). No ejecuta los programas durante la comprobación ni usa sudo. Las herramientas de Yocto pueden requerir activar su entorno antes de que aparezcan. El autocompletado con Tab propone comandos y flags parecidos aunque los escribas mal: `umame` → `uname`, `aof-ghet` → `apt-get`. Solo corrige cuando elegís una sugerencia; **nunca ejecuta automáticamente**. Consultá [la documentación del diccionario](docs/ASSISTED_CLI.md).
+
 ## Consola directa e historial
 
 Podés escribir y ejecutar comandos SSH sin el asistente. Incluye **Copiar comando**, **Pegar comando** y **Copiar salida**. También tiene un historial de la sesión con fecha, destino, comando, código de salida y resultado. Podés editar el texto antes de copiarlo o exportarlo para compartirlo con tu equipo; no se comparte automáticamente.
