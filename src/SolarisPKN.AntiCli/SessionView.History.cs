@@ -40,25 +40,35 @@ public partial class SessionView
 
     private static string FormatHistory(IEnumerable<SshCommandHistoryEntry> entries)
     {
-        var result = new StringBuilder();
-        result.AppendLine("# AntiCLI · Historial SSH");
-        result.AppendLine("# Revisá las líneas antes de compartir; algunas salidas contienen datos sensibles.");
-        result.AppendLine();
+        var log = new StringBuilder();
         foreach (var item in entries)
         {
-            result.AppendLine("------------------------------------------------------------");
-            result.AppendLine("Fecha UTC: " + item.StartedUtc.ToString("O"));
-            result.AppendLine("Servidor: " + item.Host + ":" + item.Port);
-            result.AppendLine("sudo: " + (item.UsedSudo ? "sí" : "no"));
-            result.AppendLine("Comando: " + item.Command);
-            result.AppendLine("Código de salida: " + (item.ExitCode?.ToString() ?? "sin código"));
-            if (item.Error is not null) result.AppendLine("Error: " + item.Error);
+            log.AppendLine("─────────────────────────────────────────────");
+            log.Append('[').Append(item.StartedUtc.ToLocalTime().ToString("HH:mm:ss"))
+                .Append("] ").Append(item.Host).Append(':').Append(item.Port)
+                .Append(item.UsedSudo ? " [sudo]" : "")
+                .AppendLine();
+            log.Append("$ ").AppendLine(item.Command);
             if (!string.IsNullOrWhiteSpace(item.StdOut))
-                result.AppendLine("STDOUT:\n" + item.StdOut);
+                log.AppendLine(item.StdOut.TrimEnd('\r', '\n'));
             if (!string.IsNullOrWhiteSpace(item.StdErr))
-                result.AppendLine("STDERR:\n" + item.StdErr);
+                log.Append("[stderr] ").AppendLine(item.StdErr.TrimEnd('\r', '\n'));
+            if (!string.IsNullOrWhiteSpace(item.Error))
+                log.Append("[error] ").AppendLine(item.Error);
+            log.Append("[exit] ").AppendLine(item.ExitCode?.ToString() ?? "sin código");
+            log.AppendLine();
         }
-        return result.ToString();
+        return log.ToString();
+    }
+
+    private void ShowCommandInProgress(DateTimeOffset when, string host, int port, string command)
+    {
+        // Only visual progress, not a history entry until the SSH operation ends.
+        CommandHistoryLog.Text = FormatHistory(_commandHistory) +
+            "─────────────────────────────────────────────\n" +
+            "[" + when.ToLocalTime().ToString("HH:mm:ss") + "] " +
+            host + ":" + port + "\n$ " + command + "\n[ejecutando…]";
+        CommandHistoryLog.CaretIndex = CommandHistoryLog.Text.Length;
     }
 
     private void RefreshHistory()
@@ -68,6 +78,7 @@ public partial class SessionView
         CommandHistoryList.ItemsSource = null;
         CommandHistoryList.ItemsSource = _commandHistory.ToArray();
         CommandHistoryLog.Text = FormatHistory(_commandHistory);
+        CommandHistoryLog.CaretIndex = CommandHistoryLog.Text.Length;
     }
 
     private async void CopyCommandClicked(object? sender, RoutedEventArgs e) =>
