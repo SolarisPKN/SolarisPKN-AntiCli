@@ -75,11 +75,14 @@ public sealed class SshProbe
             return identity;
         }));
 
-    public Task<RemoteCommandResult> ExecuteAsync(SshProfile profile, SshCredentials credentials, string command) =>
+    public Task<RemoteCommandResult> ExecuteAsync(
+        SshProfile profile, SshCredentials credentials, string command, TimeSpan? timeout = null) =>
         Task.Run(() => WithConnection(profile, credentials, client =>
         {
             using var remote = client.CreateCommand(command);
-            remote.CommandTimeout = TimeSpan.FromSeconds(20);
+            // Scanned --help stays bounded (20 s), explicit admin commands can
+            // take longer (APT, Docker etc.) without blocking the UI thread.
+            remote.CommandTimeout = timeout ?? TimeSpan.FromSeconds(20);
             var stdout = remote.Execute();
             return new RemoteCommandResult(Truncate(stdout), Truncate(remote.Error), remote.ExitStatus ?? -1);
         }));
