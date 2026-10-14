@@ -16,6 +16,7 @@
   <ItemGroup>
     <EmbeddedResource Include="..\..\LICENSE" LogicalName="AntiCli.LICENSE" />
     <EmbeddedResource Include="Data\admin-commands.json" LogicalName="AntiCli.AdminCommands" />
+    <EmbeddedResource Include="Data\admin-commands.json" LogicalName="AntiCli.AdminCommands" />
     <EmbeddedResource Include="Data\guided-commands.json" LogicalName="AntiCli.GuidedCommands" />
   </ItemGroup>
   <ItemGroup>
