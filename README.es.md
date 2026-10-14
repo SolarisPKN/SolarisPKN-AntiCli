@@ -57,6 +57,7 @@ También podés ejecutar `COMPILAR_ANTICLI.cmd`. La publicación local queda en 
 - [Consola asistida](docs/ASSISTED_CLI.md)
 - [Motor de formularios dinámicos](docs/FORMULARIOS_DINAMICOS.md)
 - [Catálogo administrativo: 146 acciones y 17 módulos](docs/COMMAND_MODULES.es.md) ([English](docs/COMMAND_MODULES.md))
+- [Motor universal JSON, APT y Yocto](docs/GENERIC_COMMAND_ENGINE.es.md) ([English](docs/GENERIC_COMMAND_ENGINE.md))
 - [Sesiones múltiples](docs/MULTI-SESSION.md)
 - [Ajustes de apariencia y teclado](docs/SETTINGS.md)
 - [Política de descubrimiento de ayuda](docs/SCANNER-SECURITY.md)
