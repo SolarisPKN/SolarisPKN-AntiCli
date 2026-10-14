@@ -1,3 +1,15 @@
+## Regresión — lectura de archivos, disponibilidad y consola unificada
+
+- En Linux de pruebas con `cat` disponible, buscar **«leer»**: deben aparecer las fichas `cat`, `head`, `tail`, `less`, `more`, `nano` y `vim` cuando correspondan; los ejecutables ausentes se muestran con ○ y riesgo rojo, los instalados con ✓. Comprobar también la situación inicial **?** antes de actualizar el inventario.
+- Elegir **Detectar sistema** (`cat /etc/os-release`) y marcar `-n`: el comando previsto debe ser `cat -n -- '/etc/os-release'`; nunca `cat /etc/os-release --version`.
+- Elegir **Configuración de montaje** (`cat /etc/fstab`) y **Estado RAID** (`cat /proc/mdstat`) y comprobar que la ruta preseleccionada corresponde al acceso rápido seleccionado (no siempre `/etc/os-release`).
+- Importar `cat --help` desde una VM autorizada y comprobar que la ficha muestra únicamente opciones de ese ejecutable y no inserta `--version`/`--help` junto al archivo. Las plantillas genéricas sin ranura `{flags}` no deben aceptar opciones arbitrarias.
+- Ejecutar `cat /etc/os-release`, después `uname -a`, después otro comando con stderr y otro con código de error. **Una sola consola visible** debe contener los comandos y salidas en orden, sin separar «última salida» e «historial» ni sobrescribir los anteriores.
+- Desacoplar la consola y comprobar que la ventana flotante tiene **un único visor** de toda la sesión, sin segundo campo de comando, `sudo` o botón de ejecución. La barra manual en la ventana principal es el único punto de ingreso.
+- Con ventana estrecha (mínimo soportado), comprobar el reparto aproximado **55% trabajo / 45% terminal**, botones de consola sin recorte, salida visible, scroll independiente y comando fijo inferior compacto. Comprobar también maximizada y con terminal a la izquierda.
+- Confirmar que `nano`, `vim`, `less` y `more` avisan de que requieren PTY y que la versión actual todavía no implementa ese modo interactivo.
+- Verificar búsqueda vacía, sin inventario, inventario remoto incompleto y reconexión a otro servidor; la disponibilidad debe recalcularse para la sesión actual.
+
 ## Pruebas responsive y módulos Avalonia — octubre 2026
 
 - Abrir **Comandos y bloques** y verificar tres controles visibles: área de trabajo arriba izquierda (~75% de ancho), consola arriba derecha (~25% de ancho) y entrada manual debajo (~30% del alto).
