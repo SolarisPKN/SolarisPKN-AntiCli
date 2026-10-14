@@ -16,7 +16,7 @@ Acercar la potencia de una terminal a una interfaz visual de bajo consumo: ident
 - **SSH y primera conexión:** autenticación con contraseña o clave privada con passphrase. Con un VPS nuevo, AntiCLI detecta la clave pública **sin enviar credenciales**, muestra el SHA256 y pide confirmación explícita para confiar (TOFU) o comparar con el proveedor. En conexiones posteriores comprueba la clave guardada por host:puerto y bloquea cambios no revisados.
 - **Cuatro preferencias DPAPI independientes:** recordar usuario, contenido de clave privada, contraseña y passphrase. **Todas son optativas**; no se guardan cuando no se marcan. Los perfiles se almacenan fuera del repositorio.
 - **Varias sesiones:** nueva pestaña, clonar autenticación en otra pestaña, nueva ventana y clonar sesión en ventana independiente. Cada sesión administra sus propios comandos y resultados.
-- **Consola administrativa:** 146 acciones Linux organizadas en 17 módulos con puntos de riesgo 🟢/🟡/🔴. También permite ejecutar cualquier comando escrito manualmente; lo desconocido aparece rojo. El botón **Ejecutar** cambia de color y actúa con un solo clic, sin doble confirmación. Casilla **sudo** optativa por sesión.
+- **Consola administrativa dinámica:** 146 acciones Linux y 7 Windows (17 categorías Linux) con puntos de riesgo 🟢/🟡/🔴. Buscador por intención y **un solo constructor visual universal** que se genera desde fichas JSON (flags ordenables, parámetros y lotes numerados); 20 fichas detalladas y formularios genéricos para el catálogo base. También permite comandos manuales; lo desconocido aparece rojo. **Ejecutar** cambia de color y actúa con un clic. Casilla **sudo** optativa por sesión.
 - **Módulos detectados:** exploración acotada de `--help` en laboratorios autorizados; permite descubrir nuevas sugerencias, con evidencias. El administrador puede ejecutar comandos sugeridos, pero el descubrimiento no certifica su seguridad.
 - **Ajustes:** botón ⚙, tema claro/oscuro/sistema, acento y fondo configurables, más seis atajos de teclado personalizables.
 - **Interfaz local:** C# / .NET 8 + Avalonia, sin navegador Chromium embebido.
@@ -55,6 +55,7 @@ También podés ejecutar `COMPILAR_ANTICLI.cmd`. La publicación local queda en 
 - [Arquitectura](docs/ARCHITECTURE.md)
 - [Seguridad](docs/SECURITY.md)
 - [Consola asistida](docs/ASSISTED_CLI.md)
+- [Motor de formularios dinámicos](docs/FORMULARIOS_DINAMICOS.md)
 - [Catálogo administrativo: 146 acciones y 17 módulos](docs/COMMAND_MODULES.es.md) ([English](docs/COMMAND_MODULES.md))
 - [Sesiones múltiples](docs/MULTI-SESSION.md)
 - [Ajustes de apariencia y teclado](docs/SETTINGS.md)
