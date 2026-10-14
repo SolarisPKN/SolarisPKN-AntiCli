@@ -34,7 +34,8 @@ public sealed record GuidedCommand(
     string? BatchOperand = null, string[]? RequiredAnyFlags = null,
     string[]? BatchDisallowedFlags = null, string[]? AutoFlags = null,
     string? DocumentationUrl = null,
-    string[]? PresetCommands = null);
+    string[]? PresetCommands = null,
+    string[]? Platforms = null);
 
 /// <summary>
 /// Data-driven command form engine. A single renderer consumes JSON definitions
@@ -99,7 +100,9 @@ public static class GuidedCommandCatalog
                     "action." + action.Id, action.Command.Split(' ')[0],
                     action.LabelEs, action.DescriptionEs,
                     action.LabelEs + " " + action.DescriptionEs + " " + action.GroupName,
-                    action.Risk, action.Command, [], [])))
+                    action.Risk, action.Command, [], [],
+                    Platforms: action.Id.StartsWith("windows.", StringComparison.Ordinal)
+                        ? ["Windows"] : ["Linux"])))
             .ToArray();
 
     public static GuidedCommand? Find(string id) =>
@@ -110,13 +113,21 @@ public static class GuidedCommandCatalog
             d.PresetCommands?.Contains(action.Command, StringComparer.Ordinal) == true)
         ?? All.First(x => x.Id == "action." + action.Id);
 
-    public static IReadOnlyList<GuidedCommand> Search(string? text)
+    public static bool SupportsPlatform(GuidedCommand command, TargetPlatform platform)
+    {
+        var family = platform == TargetPlatform.Windows ? "Windows" : "Linux";
+        return command.Platforms?.Contains(family, StringComparer.OrdinalIgnoreCase)
+            ?? platform != TargetPlatform.Windows;
+    }
+
+    public static IReadOnlyList<GuidedCommand> Search(string? text, TargetPlatform platform)
     {
         var terms = (text ?? "").Trim().ToLowerInvariant();
-        if (terms.Length == 0) return All.Take(30).ToArray();
+        if (terms.Length == 0) return All.Where(x => SupportsPlatform(x, platform)).Take(30).ToArray();
         var words = terms.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         return All.Where(x =>
         {
+            if (!SupportsPlatform(x, platform)) return false;
             var corpus = (x.TitleEs + " " + x.SearchTerms + " " + x.Executable +
                 " " + x.ExplanationEs).ToLowerInvariant();
             return words.All(corpus.Contains);
