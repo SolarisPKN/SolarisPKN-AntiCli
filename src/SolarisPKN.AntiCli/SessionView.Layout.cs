@@ -9,6 +9,7 @@ public partial class SessionView
 {
     private enum ConsoleViewMode { Docked, Expanded, Hidden, Detached }
     private ConsoleViewMode _consoleMode = ConsoleViewMode.Docked;
+    private bool _terminalOnLeft;
     private DetachedConsoleWindow? _detachedWindow;
 
     private void ApplyConsoleMode()
@@ -17,19 +18,25 @@ public partial class SessionView
         switch (_consoleMode)
         {
             case ConsoleViewMode.Docked:
-                CommandsWorkspace.ColumnDefinitions = new ColumnDefinitions("3*,*");
+                CommandsWorkspace.ColumnDefinitions = new ColumnDefinitions(
+                    _terminalOnLeft ? "*,3*" : "3*,*");
                 BrowsePane.IsVisible = true;
                 SideConsolePane.IsVisible = true;
-                Grid.SetColumn(SideConsolePane, 1);
+                Grid.SetColumn(BrowsePane, _terminalOnLeft ? 1 : 0);
+                Grid.SetColumn(SideConsolePane, _terminalOnLeft ? 0 : 1);
+                Grid.SetColumnSpan(BrowsePane, 1);
                 Grid.SetColumnSpan(SideConsolePane, 1);
                 Grid.SetColumnSpan(CommandBar, 2);
                 ExpandConsoleButton.Content = "Expandir";
+                SideConsolePane.DockPositionButtonRef.Content = _terminalOnLeft
+                    ? "Mover a derecha" : "Mover a izquierda";
                 ShowConsoleButton.IsVisible = false;
                 break;
             case ConsoleViewMode.Expanded:
                 CommandsWorkspace.ColumnDefinitions = new ColumnDefinitions("*,0");
                 BrowsePane.IsVisible = false;
                 SideConsolePane.IsVisible = true;
+                Grid.SetColumn(BrowsePane, 0);
                 Grid.SetColumn(SideConsolePane, 0);
                 Grid.SetColumnSpan(SideConsolePane, 2);
                 Grid.SetColumnSpan(CommandBar, 2);
@@ -40,6 +47,8 @@ public partial class SessionView
                 CommandsWorkspace.ColumnDefinitions = new ColumnDefinitions("*,0");
                 BrowsePane.IsVisible = true;
                 SideConsolePane.IsVisible = false;
+                Grid.SetColumn(BrowsePane, 0);
+                Grid.SetColumn(SideConsolePane, 1);
                 Grid.SetColumnSpan(CommandBar, 2);
                 ShowConsoleButton.IsVisible = true;
                 ShowConsoleButton.Content = "Acoplar consola ↙";
@@ -48,11 +57,20 @@ public partial class SessionView
                 CommandsWorkspace.ColumnDefinitions = new ColumnDefinitions("*,0");
                 BrowsePane.IsVisible = true;
                 SideConsolePane.IsVisible = false;
+                Grid.SetColumn(BrowsePane, 0);
+                Grid.SetColumn(SideConsolePane, 1);
                 Grid.SetColumnSpan(CommandBar, 2);
                 ShowConsoleButton.IsVisible = true;
                 ShowConsoleButton.Content = "Mostrar consola";
                 break;
         }
+    }
+
+    private void ToggleDockPositionClicked(object? sender, RoutedEventArgs e)
+    {
+        _terminalOnLeft = !_terminalOnLeft;
+        if (_consoleMode == ConsoleViewMode.Docked)
+            ApplyConsoleMode();
     }
 
     private void ToggleConsoleExpandClicked(object? sender, RoutedEventArgs e)
