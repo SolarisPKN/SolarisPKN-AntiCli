@@ -121,11 +121,39 @@ public static class GuidedCommandCatalog
             throw new InvalidDataException("Ficha guiada inválida: " + command.Id);
     }
 
-    private static readonly IReadOnlyList<GuidedCommand> Definitions = Load();
+    private static IReadOnlyList<GuidedCommand> Definitions = Load();
+
+    // An editor may add or modify user-owned JSON; rebuild without restarting.
+    public static void Reload()
+    {
+        Definitions = Load();
+        All = BuildAll();
+    }
+
+    public static IReadOnlyList<GuidedCommand> ValidateExternalJson(string json)
+    {
+        var data = JsonSerializer.Deserialize<GuideFile>(json, Options)
+            ?? throw new InvalidDataException("El archivo JSON está vacío o no es una ficha.");
+        if (data.SchemaVersion != 1 || data.Commands.Count is < 1 or > 200)
+            throw new InvalidDataException("Se requiere SchemaVersion 1 y entre 1 y 200 comandos.");
+        if (data.Commands.Select(x => x.Id).Distinct(StringComparer.Ordinal).Count() != data.Commands.Count)
+            throw new InvalidDataException("Hay IDs de módulos duplicados.");
+        foreach (var command in data.Commands)
+        {
+            ValidateSchema(command);
+            if (All.Any(x => x.Id == command.Id && !command.Id.StartsWith("local.", StringComparison.Ordinal)))
+                throw new InvalidDataException("El ID ya existe en el catálogo: " + command.Id +
+                    ". Usá un ID nuevo con prefijo local.");
+        }
+        return data.Commands;
+    }
+
 
     // Covers every catalogue entry even without a manually authored detailed schema:
     // generic, immediately editable form. Built-in detailed schemas take precedence.
-    public static IReadOnlyList<GuidedCommand> All { get; } =
+    public static IReadOnlyList<GuidedCommand> All { get; private set; } = BuildAll();
+
+    private static IReadOnlyList<GuidedCommand> BuildAll() =>
         Definitions.Concat(
             AdminCommandCatalog.For(TargetPlatform.OtherLinux)
                 .Concat(AdminCommandCatalog.For(TargetPlatform.Windows))
