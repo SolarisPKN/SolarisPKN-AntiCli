@@ -1245,7 +1245,8 @@
       "PresetCommands": [
         "cat /etc/os-release",
         "cat /etc/fstab",
-        "cat /proc/mdstat"
+        "cat /proc/mdstat",
+        "cat /etc/hosts"
       ]
     },
     {
@@ -1300,6 +1301,9 @@
       "TimeoutSeconds": 40,
       "Platforms": [
         "Linux"
+      ],
+      "PresetCommands": [
+        "less /etc/hosts"
       ]
     },
     {
@@ -1345,6 +1349,9 @@
       "TimeoutSeconds": 30,
       "Platforms": [
         "Linux"
+      ],
+      "PresetCommands": [
+        "more /etc/hosts"
       ]
     },
     {
@@ -1390,6 +1397,9 @@
       "TimeoutSeconds": 30,
       "Platforms": [
         "Linux"
+      ],
+      "PresetCommands": [
+        "head /etc/hosts"
       ]
     },
     {
@@ -1435,6 +1445,9 @@
       "TimeoutSeconds": 30,
       "Platforms": [
         "Linux"
+      ],
+      "PresetCommands": [
+        "tail /etc/hosts"
       ]
     },
     {
@@ -1480,6 +1493,9 @@
       "TimeoutSeconds": 45,
       "Platforms": [
         "Linux"
+      ],
+      "PresetCommands": [
+        "nano /etc/hosts"
       ]
     },
     {
@@ -1534,6 +1550,9 @@
       "TimeoutSeconds": 45,
       "Platforms": [
         "Linux"
+      ],
+      "PresetCommands": [
+        "vim /etc/hosts"
       ]
     }
   ]
