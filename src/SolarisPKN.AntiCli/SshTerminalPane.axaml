@@ -1,35 +1,34 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="SolarisPKN.AntiCli.SshTerminalPane">
-<Border MinHeight="0" MinWidth="0" BorderBrush="#777777"
-                  BorderThickness="1" CornerRadius="7" Padding="7">
-            <Grid RowDefinitions="Auto,*" RowSpacing="6" MinHeight="0" MinWidth="0">
-              <WrapPanel Grid.Row="0" Orientation="Horizontal" ItemSpacing="6" LineSpacing="4">
-                <TextBlock Text="Consola SSH" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                <Button x:Name="ExpandConsoleButton" Content="Expandir"/>
-                <Button x:Name="DetachConsoleButton" Content="Desacoplar ↗"/>
-                <Button x:Name="DockPositionButton" Content="Mover a izquierda"/>
-                <Button x:Name="HideConsoleButton" Content="Ocultar"/>
-              </WrapPanel>
-              <ScrollViewer Grid.Row="1" MinHeight="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto">
-                <StackPanel Spacing="8">
-            <TextBlock Text="Salida remota" FontWeight="SemiBold"/>
-            <TextBox x:Name="Output" MinHeight="180" IsReadOnly="True" AcceptsReturn="True"
-                     FontFamily="Consolas,Monospace" TextWrapping="NoWrap"/>
-            <TextBlock FontWeight="SemiBold" Text="Historial de comandos SSH de esta sesión"/>
-            <TextBlock Text="Cada ejecución registra fecha, destino, comando, resultado y código de salida. Revisá y borrá datos sensibles antes de compartir."
-                       FontSize="12" TextWrapping="Wrap"/>
-            <ListBox x:Name="CommandHistoryList" Height="120"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <Button x:Name="CopyHistoryCommandButton" Content="Copiar comando del historial"/>
-              <Button x:Name="ReuseHistoryCommandButton" Content="Reutilizar comando"/>
-              <Button x:Name="CopyLogButton" Content="Copiar log"/>
-              <Button x:Name="ExportLogButton" Content="Exportar log..."/>
-              <Button x:Name="ClearHistoryButton" Content="Limpiar historial"/>
-            </StackPanel>
-            <TextBox x:Name="CommandHistoryLog" MinHeight="160" AcceptsReturn="True"
-                     TextWrapping="NoWrap" FontFamily="Consolas,Monospace"
-                     Watermark="Registro editable: podés quitar secretos antes de copiar o exportar."/>
-                </StackPanel>
-              </ScrollViewer>
-            </Grid>
-          </Border>
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SolarisPKN.AntiCli.SshTerminalPane">
+  <Border BorderBrush="#656D7E" BorderThickness="1" CornerRadius="8" Padding="8"
+          MinHeight="0" MinWidth="0">
+    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="7" MinHeight="0">
+      <WrapPanel Grid.Row="0" Orientation="Horizontal" ItemSpacing="6" LineSpacing="5">
+        <TextBlock Text="Consola SSH" FontWeight="SemiBold" FontSize="15"
+                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+        <Button x:Name="ExpandConsoleButton" Content="Ampliar" Padding="8,4"/>
+        <Button x:Name="DetachConsoleButton" Content="Desacoplar ↗" Padding="8,4"/>
+        <Button x:Name="DockPositionButton" Content="Mover a izquierda" Padding="8,4"/>
+        <Button x:Name="HideConsoleButton" Content="Ocultar" Padding="8,4"/>
+      </WrapPanel>
+      <WrapPanel Grid.Row="1" Orientation="Horizontal" ItemSpacing="6" LineSpacing="5">
+        <Button x:Name="CopyLogButton" Content="Copiar registro" Padding="8,4"/>
+        <Button x:Name="ExportLogButton" Content="Exportar…" Padding="8,4"/>
+        <Button x:Name="ClearHistoryButton" Content="Limpiar" Padding="8,4"/>
+      </WrapPanel>
+      <!-- One continuous chronological log instead of last-output plus separate history.
+           The textbox owns vertical and horizontal scrolling within its grid cell. -->
+      <TextBox x:Name="CommandHistoryLog" Grid.Row="2" MinHeight="0" MinWidth="0"
+               AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas,Monospace"
+               ScrollViewer.HorizontalScrollBarVisibility="Auto"
+               ScrollViewer.VerticalScrollBarVisibility="Visible"
+               Watermark="Los comandos ejecutados aparecerán acá, con su salida y código de salida."/>
+      <!-- Compatibility-only state, never visible as a second output/history panel. -->
+      <TextBox x:Name="Output" IsVisible="False"/>
+      <ListBox x:Name="CommandHistoryList" IsVisible="False"/>
+      <Button x:Name="CopyHistoryCommandButton" IsVisible="False"/>
+      <Button x:Name="ReuseHistoryCommandButton" IsVisible="False"/>
+    </Grid>
+  </Border>
 </UserControl>
