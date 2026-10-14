@@ -208,6 +208,7 @@
                 <StackPanel Grid.Row="2" Spacing="5">
                   <WrapPanel ItemSpacing="6" LineSpacing="5">
                     <Button Content="Conectar →" Click="FlowConnectNextClicked"/>
+                    <Button Content="▶ Marcar inicio" Click="FlowSetStartClicked"/>
                     <Button Content="Cuerpo del bucle" Click="FlowConnectBodyClicked"/>
                     <Button Content="Retorno ↺" Click="FlowConnectBackClicked"/>
                     <Button Content="Verdadero" Click="FlowConnectTrueClicked"/>
@@ -226,12 +227,12 @@
                       <ComboBoxItem Content="WHILE"/>
                       <ComboBoxItem Content="UNTIL"/>
                     </ComboBox>
-                    <TextBlock Text="Máx. iteraciones" VerticalAlignment="Center"/>
+                    <TextBlock Text="Límite (0 = sin límite en WHILE/UNTIL)" VerticalAlignment="Center"/>
                     <TextBox x:Name="FlowLoopMaxCount" Width="75" Text="20"/>
                   </WrapPanel>
                   <Button Content="Aplicar título/comando al nodo" Click="FlowUpdateNodeClicked"
                           HorizontalAlignment="Left"/>
-                  <TextBlock x:Name="FlowStatus" Text="Los bucles necesitan Cuerpo → comandos → Retorno ↺ al mismo Bucle, y opcionalmente Conectar → para continuar. Máximo configurable para evitar repeticiones infinitas. Seleccioná un nodo para editarlo."
+                  <TextBlock x:Name="FlowStatus" Text="Podés conectar Retorno ↺ a cualquier comando anterior. IF Verdadero continúa; si no conectás Falso, termina. Marcá ▶ Inicio donde deba comenzar, incluso en un ciclo. Sin límite obligatorio; detené manualmente los flujos indefinidos."
                              TextWrapping="Wrap" FontSize="12"/>
                 </StackPanel>
                 <ScrollViewer Grid.Row="3" MinHeight="0"
