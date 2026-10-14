@@ -72,17 +72,31 @@
         <ScrollViewer>
           <StackPanel Margin="15" Spacing="12">
             <TextBlock x:Name="RemoteInfo" FontWeight="SemiBold" Text="Sesión no autenticada"/>
-            <TextBlock Text="Elegí un módulo o escribí cualquier comando. 🟢 Consulta · 🟡 Precaución · 🔴 Alto riesgo / no catalogado." TextWrapping="Wrap"/>
+            <TextBlock Text="Buscá una tarea por lo que querés hacer: crear usuario, ver kernel, listar Docker..." FontWeight="SemiBold" TextWrapping="Wrap"/>
+            <TextBox x:Name="UniversalSearch" Watermark="Ej.: crear 20 usuarios, versión del kernel, reiniciar servicio"
+                     TextChanged="UniversalSearchChanged"/>
+            <WrapPanel x:Name="UniversalResults" Orientation="Horizontal"/>
+            <TextBlock Text="O elegí un módulo del catálogo: 🟢 Consulta · 🟡 Precaución · 🔴 Alto riesgo / no catalogado." TextWrapping="Wrap"/>
             <ComboBox x:Name="ModuleGroupSelector" Width="330" HorizontalAlignment="Left"
                       SelectionChanged="ModuleGroupChanged" PlaceholderText="Seleccioná módulo"/>
             <WrapPanel x:Name="OptionButtons" Orientation="Horizontal"/>
-            <TextBlock FontWeight="SemiBold" Text="Constructor visual: elegí los fragmentos"/>
-            <WrapPanel x:Name="TokenButtons" Orientation="Horizontal"/>
-            <TextBlock x:Name="BlockPreview" Text="Bloques: (vacío)" TextWrapping="Wrap"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <Button Content="Deshacer bloque" Click="UndoBlockClicked"/>
-              <Button Content="Borrar comando" Click="ClearCommandClicked"/>
-            </StackPanel>
+            <Border x:Name="GuidedPanel" IsVisible="False" CornerRadius="8"
+                    BorderThickness="1" BorderBrush="#777777" Padding="14">
+              <StackPanel Spacing="9">
+                <TextBlock x:Name="GuidedTitle" FontSize="18" FontWeight="SemiBold" Text="Operación guiada"/>
+                <TextBlock x:Name="GuidedDescription" TextWrapping="Wrap"/>
+                <TextBlock Text="Elegí las opciones en español y movelas ↑ ↓ para cambiar su orden en el comando." TextWrapping="Wrap" FontSize="12"/>
+                <StackPanel x:Name="GuidedOptions" Spacing="7"/>
+                <StackPanel x:Name="GuidedArguments" Spacing="8"/>
+                <TextBlock x:Name="GuidedError" TextWrapping="Wrap" Foreground="#F28B82"/>
+                <TextBlock x:Name="GuidedPlanInfo" TextWrapping="Wrap" FontSize="12"/>
+                <Button Content="Cerrar constructor" Click="CloseGuidedClicked"
+                        HorizontalAlignment="Left"/>
+              </StackPanel>
+            </Border>
+            <TextBlock FontWeight="SemiBold" Text="Comando generado (editable)"/>
+            <WrapPanel x:Name="TokenButtons" IsVisible="False" Orientation="Horizontal"/>
+            <TextBlock x:Name="BlockPreview" IsVisible="False" Text="Bloques: (vacío)"/>
             <TextBlock FontWeight="SemiBold" Text="Consola asistida"/>
             <TextBox x:Name="AssistedCommand" Watermark="Escribí un comando o completalo con los botones"
                      TextChanged="AssistedTextChanged" KeyDown="AssistedKeyDown"/>
