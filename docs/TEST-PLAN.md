@@ -1,3 +1,16 @@
+## Regresión de bucles de automatización (FOR / WHILE / UNTIL)
+
+- Abrí **Automatizaciones → Abrir diagrama ↗** y creá `Bucle ↺` + `Comando`. Uní **Cuerpo del bucle** desde Bucle al comando y **Retorno ↺** desde el comando al Bucle. Cambiá modo FOR y máximo 3: se debe guardar el diagrama JSON con el ciclo explícito (sin rechazo de ciclo arbitrario).
+- Agregá otro comando después, conectado desde **Bucle** por `Conectar →`. Generá la vista previa del script; debe contener un `while` acotado a tres iteraciones, después el comando posterior, **sin conexiones ignoradas**.
+- Probar FOR 0, -1 y 1001: deben rechazarse al editar o validar JSON. Probar límite 1 y 1000. Probar 100 filas × 1000 repeticiones: el exportador debe impedir más de 20.000 comandos estimados.
+- Elegir WHILE: condición `test -f /tmp/anticli-loop-control`; comprobar que se evalúa **antes** de cada iteración, se detiene al fallar o al alcanzar máximo. Para UNTIL, la condición verdadera debe detener antes de ejecutar el cuerpo.
+- Cambiar variables de una tabla (por ejemplo, `archivo;carpeta`) y confirmar que `{{archivo}}`/ `{{carpeta}}` se sustituyen con entrecomillado correcto dentro de cuerpo y condición.
+- Probar un ciclo entre dos comandos **sin** bloque Bucle o flecha `Retorno ↺`: debe rechazarse. Conectar Retorno a un nodo que no sea Bucle: debe rechazarse.
+- Probar IF, OR, XOR, paralelismo, bucles anidados, cuerpo sin retorno, dos raíces o nodos sueltos: el JSON puede representar diseños parciales, pero la exportación a shell debe fallar explícitamente; **nunca** ejecutar una versión incompleta.
+- Guardar, cerrar/reabrir la ventana de diagrama y volver a abrir el JSON: deben conservarse modo de bucle, número máximo, flechas, variables y posiciones de nodos.
+- La exportación de `.sh` no debe ejecutar SSH ni modificar máquinas por sí sola. Probar el script primero en un servidor de pruebas, sin comandos destructivos.
+- Ejecutar el script exportado en un shell POSIX de laboratorio con condiciones que devuelvan éxito y error para validar el número exacto de iteraciones. Un GitHub Actions verde **no sustituye** esta prueba funcional.
+
 ## Regresión de teclado CLI y diagrama flotante — octubre 2026
 
 - Autenticar SSH y abrir **Comandos y bloques**. Escribir `uname -a` en el campo manual y presionar **Enter**: debe ejecutar por SSH, generar una entrada cronológica y mostrar el resultado. Nunca debe aplicar la sugerencia en lugar de ejecutar.
