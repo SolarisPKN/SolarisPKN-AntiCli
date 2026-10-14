@@ -46,6 +46,7 @@ Desktop.ini
 .DS_Store
 
 # Local AntiCLI runtime data, never commit
+known-hosts.json
 profiles.json
 settings.json
 **/discovery/
