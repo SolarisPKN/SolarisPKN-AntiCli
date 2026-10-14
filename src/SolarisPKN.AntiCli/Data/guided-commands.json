@@ -6,7 +6,7 @@
       "Executable": "uname",
       "TitleEs": "Información del sistema",
       "ExplanationEs": "Elegí flags GNU uname. El orden visual afecta el comando, pero GNU uname imprime sus campos en un orden interno fijo.",
-      "SearchTerms": "sistema kernel arquitectura uname información servidor hardware",
+      "SearchTerms": "sistema kernel arquitectura uname información servidor hardware mostrar informacion sistema",
       "Risk": "Green",
       "Template": "uname {flags}",
       "Flags": [
@@ -1167,6 +1167,371 @@
       "SupportsBatch": false,
       "TimeoutSeconds": 1200,
       "DocumentationUrl": "https://docs.yoctoproject.org/ref-manual/system-requirements.html",
+      "Platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "Id": "cat",
+      "Executable": "cat",
+      "TitleEs": "Leer archivo completo",
+      "ExplanationEs": "Muestra archivos de texto completos en la consola; no modifica su contenido.",
+      "SearchTerms": "leer lectura abrir mostrar visualizar consultar archivo archivos texto contenido cat",
+      "Risk": "Green",
+      "Template": "cat {flags} -- {file}",
+      "Flags": [
+        {
+          "Token": "-n",
+          "LabelEs": "Numerar todas las líneas",
+          "DescriptionEs": "Muestra números de línea.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-b",
+          "LabelEs": "Numerar solo líneas con contenido",
+          "DescriptionEs": "Omite numeración de líneas vacías.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Comprimir líneas vacías",
+          "DescriptionEs": "Reduce secuencias de líneas en blanco.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-E",
+          "LabelEs": "Mostrar finales de línea",
+          "DescriptionEs": "Marca el final de cada línea.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-T",
+          "LabelEs": "Mostrar tabulaciones",
+          "DescriptionEs": "Representa tabulaciones como ^I.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "file",
+          "LabelEs": "Ruta del archivo",
+          "DescriptionEs": "Archivo de texto que querés leer.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "Ruta del archivo",
+          "Required": true,
+          "InitialValue": "/etc/os-release"
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 30,
+      "Platforms": [
+        "Linux"
+      ],
+      "PresetCommands": [
+        "cat /etc/os-release",
+        "cat /etc/fstab",
+        "cat /proc/mdstat"
+      ]
+    },
+    {
+      "Id": "less",
+      "Executable": "less",
+      "TitleEs": "Leer archivo página por página",
+      "ExplanationEs": "Visor paginado; requiere una terminal interactiva con PTY. La consola SSH de AntiCLI aún no soporta interacción de teclas.",
+      "SearchTerms": "leer lectura abrir visualizar navegar archivo texto paginar less visor",
+      "Risk": "Yellow",
+      "Template": "less {flags} -- {file}",
+      "Flags": [
+        {
+          "Token": "-N",
+          "LabelEs": "Números de línea",
+          "DescriptionEs": "Muestra números de línea.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-S",
+          "LabelEs": "No partir líneas largas",
+          "DescriptionEs": "Desplazamiento horizontal.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-i",
+          "LabelEs": "Ignorar mayúsculas al buscar",
+          "DescriptionEs": "Comparación sin distinguir mayúsculas.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "file",
+          "LabelEs": "Archivo para visualizar",
+          "DescriptionEs": "Ruta del archivo.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "Ruta del archivo",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 40,
+      "Platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "Id": "more",
+      "Executable": "more",
+      "TitleEs": "Leer archivo por páginas",
+      "ExplanationEs": "Visor por páginas; sin PTY interactiva no se pueden avanzar páginas. Para ver el contenido desde AntiCLI, preferí cat, head o tail.",
+      "SearchTerms": "leer lectura visualizar archivo paginar more páginas visor",
+      "Risk": "Yellow",
+      "Template": "more {flags} {file}",
+      "Flags": [
+        {
+          "Token": "-d",
+          "LabelEs": "Mensajes de ayuda",
+          "DescriptionEs": "Muestra instrucciones para continuar.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-s",
+          "LabelEs": "Reducir líneas vacías",
+          "DescriptionEs": "Compacta espacios verticales.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "file",
+          "LabelEs": "Ruta del archivo",
+          "DescriptionEs": "Archivo de texto.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "Ruta del archivo",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 30,
+      "Platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "Id": "head",
+      "Executable": "head",
+      "TitleEs": "Leer primeras líneas de un archivo",
+      "ExplanationEs": "Muestra las primeras líneas de un archivo. No abre un editor interactivo.",
+      "SearchTerms": "leer lectura primeras lineas archivo texto inicio head",
+      "Risk": "Green",
+      "Template": "head {flags} -- {file}",
+      "Flags": [
+        {
+          "Token": "-v",
+          "LabelEs": "Mostrar nombre del archivo",
+          "DescriptionEs": "Encabezado con el nombre del archivo.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-q",
+          "LabelEs": "Ocultar nombre del archivo",
+          "DescriptionEs": "Suprime encabezados.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "file",
+          "LabelEs": "Archivo",
+          "DescriptionEs": "Ruta del archivo para leer.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "Ruta del archivo",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 30,
+      "Platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "Id": "tail",
+      "Executable": "tail",
+      "TitleEs": "Leer últimas líneas de un archivo",
+      "ExplanationEs": "Muestra las últimas líneas. El modo seguimiento continuo requiere una sesión de streaming que aún está pendiente.",
+      "SearchTerms": "leer lectura ultimas lineas archivo texto logs registros tail",
+      "Risk": "Green",
+      "Template": "tail {flags} -- {file}",
+      "Flags": [
+        {
+          "Token": "-n",
+          "LabelEs": "Cantidad de líneas",
+          "DescriptionEs": "Número de líneas a mostrar.",
+          "ValueKind": "PositiveId",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-f",
+          "LabelEs": "Seguir cambios en vivo",
+          "DescriptionEs": "Necesita streaming SSH; no se verá continuamente hasta contar con esa función.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "file",
+          "LabelEs": "Archivo o log",
+          "DescriptionEs": "Ruta de archivo de texto.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "Ruta del archivo",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 30,
+      "Platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "Id": "nano",
+      "Executable": "nano",
+      "TitleEs": "Abrir archivo en editor Nano",
+      "ExplanationEs": "Editor de texto interactivo. Requiere PTY/TTY: la consola actual de ejecución SSH no ofrece teclado interactivo al editor.",
+      "SearchTerms": "leer editar modificar archivo texto editor nano",
+      "Risk": "Yellow",
+      "Template": "nano {flags} {file}",
+      "Flags": [
+        {
+          "Token": "-v",
+          "LabelEs": "Solo lectura",
+          "DescriptionEs": "Abre el editor en modo de visualización.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-l",
+          "LabelEs": "Mostrar números de línea",
+          "DescriptionEs": "Numeración de líneas en la interfaz.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "file",
+          "LabelEs": "Archivo a abrir",
+          "DescriptionEs": "Ruta del archivo que vas a editar.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "Ruta del archivo",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 45,
+      "Platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "Id": "vim",
+      "Executable": "vim",
+      "TitleEs": "Abrir archivo en editor Vim",
+      "ExplanationEs": "Editor de texto interactivo. Requiere PTY/TTY: la consola actual no ofrece entrada interactiva a Vim.",
+      "SearchTerms": "leer editar modificar archivo texto editor vim vi",
+      "Risk": "Yellow",
+      "Template": "vim {flags} {file}",
+      "Flags": [
+        {
+          "Token": "-R",
+          "LabelEs": "Solo lectura",
+          "DescriptionEs": "Abre Vim en modo de lectura.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-n",
+          "LabelEs": "Sin archivo swap",
+          "DescriptionEs": "Desactiva archivo swap; precaución ante pérdida de datos.",
+          "ValueKind": "None",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        },
+        {
+          "Token": "-u",
+          "LabelEs": "Archivo de configuración",
+          "DescriptionEs": "Indica vimrc alternativo.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "",
+          "SelectedByDefault": false,
+          "InitialValue": ""
+        }
+      ],
+      "Operands": [
+        {
+          "Name": "file",
+          "LabelEs": "Archivo a abrir",
+          "DescriptionEs": "Ruta del archivo que vas a editar.",
+          "ValueKind": "AbsolutePath",
+          "Placeholder": "Ruta del archivo",
+          "Required": true,
+          "InitialValue": ""
+        }
+      ],
+      "SupportsBatch": false,
+      "TimeoutSeconds": 45,
       "Platforms": [
         "Linux"
       ]
