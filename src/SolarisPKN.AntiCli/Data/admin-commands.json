@@ -1315,6 +1315,294 @@
       "Command": "rsync -av --delete /tmp/a/ /tmp/b/",
       "Risk": "Red",
       "DescriptionEs": "DESTRUCTIVO en destino: --delete elimina archivos"
+    },
+    {
+      "Id": "yocto.bitbake-version",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Versión de BitBake",
+      "Command": "bitbake --version",
+      "Risk": "Green",
+      "DescriptionEs": "Muestra versión de BitBake; requiere ambiente de build iniciado"
+    },
+    {
+      "Id": "yocto.bitbake-help",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Ayuda de BitBake",
+      "Command": "bitbake --help",
+      "Risk": "Green",
+      "DescriptionEs": "Muestra opciones de BitBake"
+    },
+    {
+      "Id": "yocto.recipes",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Recetas disponibles",
+      "Command": "bitbake-layers show-recipes",
+      "Risk": "Green",
+      "DescriptionEs": "Enumera recetas según las capas cargadas"
+    },
+    {
+      "Id": "yocto.layers",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Capas activas",
+      "Command": "bitbake-layers show-layers",
+      "Risk": "Green",
+      "DescriptionEs": "Lista capas de bblayers.conf"
+    },
+    {
+      "Id": "yocto.appends",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Recetas extendidas",
+      "Command": "bitbake-layers show-appends",
+      "Risk": "Green",
+      "DescriptionEs": "Lista extensiones bbappend"
+    },
+    {
+      "Id": "yocto.env",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Entorno de compilación",
+      "Command": "bitbake -e",
+      "Risk": "Yellow",
+      "DescriptionEs": "Muestra muchas variables de entorno, incluidas potencialmente sensibles"
+    },
+    {
+      "Id": "yocto.devtool-status",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Estado del workspace devtool",
+      "Command": "devtool status",
+      "Risk": "Green",
+      "DescriptionEs": "Recetas modificadas mediante devtool"
+    },
+    {
+      "Id": "yocto.devtool-help",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Ayuda devtool",
+      "Command": "devtool --help",
+      "Risk": "Green",
+      "DescriptionEs": "Subcomandos y opciones"
+    },
+    {
+      "Id": "yocto.recipetool-help",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Ayuda recipetool",
+      "Command": "recipetool --help",
+      "Risk": "Green",
+      "DescriptionEs": "Muestra opciones para generar recetas"
+    },
+    {
+      "Id": "yocto.layer-help",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Ayuda bitbake-layers",
+      "Command": "bitbake-layers --help",
+      "Risk": "Green",
+      "DescriptionEs": "Subcomandos de administración de capas"
+    },
+    {
+      "Id": "yocto.bitbake-build",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Compilar imagen de ejemplo",
+      "Command": "bitbake core-image-minimal",
+      "Risk": "Red",
+      "DescriptionEs": "Inicia compilación que puede consumir gran cantidad de CPU y disco"
+    },
+    {
+      "Id": "yocto.bitbake-clean",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Limpiar estado de receta",
+      "Command": "bitbake -c clean core-image-minimal",
+      "Risk": "Red",
+      "DescriptionEs": "Elimina resultados de compilación de receta"
+    },
+    {
+      "Id": "yocto.bitbake-cleansstate",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Limpiar caché sstate",
+      "Command": "bitbake -c cleansstate core-image-minimal",
+      "Risk": "Red",
+      "DescriptionEs": "Deshace caché sstate de receta"
+    },
+    {
+      "Id": "yocto.layer-create",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Crear capa de ejemplo",
+      "Command": "bitbake-layers create-layer meta-anticli-test",
+      "Risk": "Yellow",
+      "DescriptionEs": "Genera directorio y metadatos de capa"
+    },
+    {
+      "Id": "yocto.layer-add",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Agregar capa de ejemplo",
+      "Command": "bitbake-layers add-layer meta-anticli-test",
+      "Risk": "Yellow",
+      "DescriptionEs": "Modifica bblayers.conf"
+    },
+    {
+      "Id": "yocto.devtool-add",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Agregar receta de ejemplo",
+      "Command": "devtool add anticli-example",
+      "Risk": "Yellow",
+      "DescriptionEs": "Crea espacio de trabajo/receta de ejemplo; requiere fuentes apropiadas"
+    },
+    {
+      "Id": "yocto.devtool-reset",
+      "Module": "yocto",
+      "GroupName": "Yocto / BitBake",
+      "LabelEs": "Retirar cambios del workspace",
+      "Command": "devtool reset anticli-example",
+      "Risk": "Red",
+      "DescriptionEs": "Elimina cambios del workspace de devtool"
+    },
+    {
+      "Id": "apt.help",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Ayuda apt-get",
+      "Command": "apt-get --help",
+      "Risk": "Green",
+      "DescriptionEs": "Enumera opciones apt-get"
+    },
+    {
+      "Id": "apt.search",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Buscar paquete",
+      "Command": "apt-cache search nginx",
+      "Risk": "Green",
+      "DescriptionEs": "Busca paquetes apt disponibles"
+    },
+    {
+      "Id": "apt.package-info",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Información de paquete",
+      "Command": "apt-cache show nginx",
+      "Risk": "Green",
+      "DescriptionEs": "Descripción y metadatos de un paquete"
+    },
+    {
+      "Id": "apt.package-policy",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Origen y versión de paquete",
+      "Command": "apt-cache policy nginx",
+      "Risk": "Green",
+      "DescriptionEs": "Muestra versiones y candidatos por fuente"
+    },
+    {
+      "Id": "apt.simulate-install",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Simular instalación",
+      "Command": "apt-get -s install nginx",
+      "Risk": "Green",
+      "DescriptionEs": "Muestra plan sin instalar"
+    },
+    {
+      "Id": "apt.simulate-upgrade",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Simular actualización",
+      "Command": "apt-get -s upgrade",
+      "Risk": "Green",
+      "DescriptionEs": "Muestra actualización simulada"
+    },
+    {
+      "Id": "apt.install",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Instalar paquete de ejemplo",
+      "Command": "apt-get install -y nginx",
+      "Risk": "Red",
+      "DescriptionEs": "Instala paquete nginx sin pedir confirmación interactiva"
+    },
+    {
+      "Id": "apt.reinstall",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Reinstalar paquete de ejemplo",
+      "Command": "apt-get install --reinstall -y nginx",
+      "Risk": "Red",
+      "DescriptionEs": "Reinstala paquete y sus archivos"
+    },
+    {
+      "Id": "apt.remove",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Quitar paquete de ejemplo",
+      "Command": "apt-get remove -y nginx",
+      "Risk": "Red",
+      "DescriptionEs": "Desinstala paquete nginx"
+    },
+    {
+      "Id": "apt.purge",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Purgar paquete de ejemplo",
+      "Command": "apt-get purge -y nginx",
+      "Risk": "Red",
+      "DescriptionEs": "Elimina paquete y configuración"
+    },
+    {
+      "Id": "apt.hold",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Bloquear actualización de paquete",
+      "Command": "apt-mark hold nginx",
+      "Risk": "Yellow",
+      "DescriptionEs": "Retiene actualizaciones de nginx"
+    },
+    {
+      "Id": "apt.unhold",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Permitir actualización de paquete",
+      "Command": "apt-mark unhold nginx",
+      "Risk": "Yellow",
+      "DescriptionEs": "Habilita actualizaciones futuras"
+    },
+    {
+      "Id": "apt.sources",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Repositorios configurados",
+      "Command": "grep -rh '^URIs:' /etc/apt/sources.list.d --include='*.sources'",
+      "Risk": "Green",
+      "DescriptionEs": "Consulta URI de fuentes deb822"
+    },
+    {
+      "Id": "apt.keyrings",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Llaveros APT del sistema",
+      "Command": "ls -lah /etc/apt/keyrings",
+      "Risk": "Green",
+      "DescriptionEs": "Lista archivos de firmas de repositorios"
+    },
+    {
+      "Id": "apt.update",
+      "Module": "apt",
+      "GroupName": "APT y repositorios",
+      "LabelEs": "Actualizar índices APT",
+      "Command": "apt-get update",
+      "Risk": "Yellow",
+      "DescriptionEs": "Descarga metadatos nuevos de repositorios"
     }
   ],
   "Windows": [
