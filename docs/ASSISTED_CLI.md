@@ -1,3 +1,11 @@
+## Consola SSH desacoplable (dos monitores)
+
+Dentro de la pestaña de comandos, la consola aparece a la derecha (aprox. 25% de ancho). Pulsá **Desacoplar ↗** para abrir una **ventana de consola independiente**. Arrastrala al segundo monitor y pulsá **Maximizar** (también funciona `F11`). De este modo, el catálogo, los formularios y la barra fija de comandos manuales siguen visibles en la ventana principal; la salida y el historial ocupan la otra pantalla.
+
+La consola desacoplada incluye un campo para ejecutar comandos en **la misma sesión SSH**, con la indicación de riesgo 🟢🟡🔴 y la casilla opcional `sudo -n`. No abre otra sesión ni crea una segunda copia de las credenciales. Las órdenes ejecutadas desde ambas ventanas comparten el mismo historial; si una operación está activa, no se inicia una segunda en paralelo. La salida actual se refleja al inicio y al final de la ejecución: **todavía no existe streaming de stdout/stderr a medida que llega**.
+
+Con **Acoplar al sistema ↙**, o simplemente cerrando la ventana desacoplada, la consola vuelve a la posición derecha. Al cerrar la pestaña original o salir de AntiCLI se cierra también su consola independiente, para evitar ventanas huérfanas. El historial sigue siendo propio de esa pestaña y no se comparte entre sesiones distintas.
+
 # Comandos visuales, consola asistida y módulos
 
 ## Secuencia de pestañas
