@@ -1,3 +1,16 @@
+## Pruebas responsive y módulos Avalonia — octubre 2026
+
+- Abrir **Comandos y bloques** y verificar tres controles visibles: área de trabajo arriba izquierda (~75% de ancho), consola arriba derecha (~25% de ancho) y entrada manual debajo (~30% del alto).
+- Reducir y aumentar el tamaño de la ventana (mínimo permitido y maximizada). **Ninguno de los tres debe desaparecer ni empujar a otros fuera de la pantalla**. El control inferior debe conservar siempre visible el `TextBox` de comando manual.
+- Crear suficientes resultados de búsqueda para desbordar el área de trabajo y desplazarse **solo dentro de ella**. El panel terminal y el comando inferior deben permanecer inmóviles.
+- Abrir un formulario guiado con muchas opciones; comprobar que su scroll es independiente y que al cerrarlo se recupera el catálogo sin saltos.
+- Generar registros SSH largos, desplazarse en la terminal y comprobar que el catálogo y el campo manual no se mueven. La barra de controles de terminal debe envolver sus botones si no caben horizontalmente.
+- Hacer clic en **Mover a izquierda**, verificar distribución **terminal 25% izquierda + trabajo 75% derecha**; restaurar derecha. Deben continuar operativas las búsquedas, acciones y el historial.
+- Expandir, ocultar, restaurar y desacoplar consola. Desacoplarla en otro monitor, maximizar con el botón/F11, ejecutar comando desde esa ventana y confirmar sincronización con el historial original. Cerrar la ventana desacoplada y confirmar que vuelve a acoplarse sin borrar salida.
+- En la franja inferior, mostrar sugerencias o mensajes largos y desplazar **solo sus controles auxiliares**; el campo de comando manual debe permanecer visible.
+- Repetir con dos sesiones SSH abiertas para confirmar que los historiales de cada pestaña siguen separados y cerrar una sesión no cierra la consola de otra.
+- Validar a 1366×768, 1920×1080 y en ventanas reducidas. Las pruebas visuales son manuales: una compilación CI verde no sustituye revisar el scroll y los tamaños reales.
+
 ## Interfaz y flujos administrativos — octubre 2026 (pendientes de prueba manual)
 
 - **Consola:** después de SSH, comprobá que el panel derecho ocupa cerca del 25% del ancho y que la barra inferior de comandos sigue visible aunque desplaces el catálogo. Expandir debe mostrar la consola a ancho completo sin tapar el campo manual; restaurar vuelve a 75/25 y ocultar deja visible el catálogo y el botón mostrar. Cada pestaña mantiene su propio historial; copiar/exportar deben conservar las redacciones del operador.
