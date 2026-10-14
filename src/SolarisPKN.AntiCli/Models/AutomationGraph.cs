@@ -67,11 +67,11 @@ public static class AutomationGraphFile
              !Enum.IsDefined(n.LoopMode))))
             throw new InvalidDataException("Un bucle necesita un tipo válido y un máximo entre 1 y 1000 iteraciones.");
         if (graph.Edges.Any(e => e.Kind == FlowEdgeKind.LoopBack &&
-            (byId[e.ToId].Kind != FlowNodeKind.Loop ||
-             byId[e.FromId].Kind != FlowNodeKind.Command)) ||
+                byId[e.FromId].Kind != FlowNodeKind.Command) ||
             graph.Edges.Any(e => e.Kind == FlowEdgeKind.LoopBody &&
                 byId[e.FromId].Kind != FlowNodeKind.Loop))
-            throw new InvalidDataException("El retorno debe llegar a un bloque Bucle y el cuerpo debe salir de ese bloque.");
+            throw new InvalidDataException(
+                "Retorno ↺ debe salir de un comando; Cuerpo debe salir de un bloque Bucle.");
         // Cycles are allowed in the visual graph. IF true/false exits and arbitrary
         // back edges are interpreted by the script router; topology checking belongs
         // at export time, not while an administrator is still drawing arrows.
