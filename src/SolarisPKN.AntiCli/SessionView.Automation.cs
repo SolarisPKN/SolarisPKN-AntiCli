@@ -20,6 +20,7 @@ public partial class SessionView
             .Select((x, i) => (i + 1) + ". " + x).ToArray();
         AutomationStepsList.SelectedIndex = selected >= 0 ? selected : _automationSteps.Count - 1;
         _lastScript = "";
+        OnAutomationStepsChanged();
     }
 
     private void AutomationAddStepClicked(object? sender, RoutedEventArgs e)
