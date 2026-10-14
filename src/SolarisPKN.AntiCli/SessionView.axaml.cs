@@ -15,6 +15,7 @@ public partial class SessionView : UserControl, IDisposable
 {
     private readonly ProfileStore _store = new();
     private readonly SshProbe _ssh = new();
+    private readonly TrustedHostKeyStore _hostKeys = new();
     private readonly List<string> _blocks = [];
     private IReadOnlyList<CommandHint> _matches = [];
     private Guid _editingId = Guid.NewGuid();
@@ -68,6 +69,8 @@ public partial class SessionView : UserControl, IDisposable
             ProfileName.Text = profile.Name;
             HostInput.Text = profile.Host;
             PortInput.Text = profile.Port.ToString();
+            // The saved fingerprint travels with the authenticated tab, but every
+            // SSH operation checks the global host:port pin as well.
             FingerprintInput.Text = profile.HostKeySha256;
             UserInput.Text = credentials.User;
             RememberUser.IsChecked = profile.RememberUser;
@@ -196,6 +199,7 @@ public partial class SessionView : UserControl, IDisposable
             PlatformSelector.SelectedIndex = -1;
             AuthModeSelector.SelectedIndex = 0;
             ProfileName.Text = HostInput.Text = FingerprintInput.Text = "";
+            HostKeyStatus.Text = "Primera conexión: detectá la huella SSH y decidí si confiar.";
             UserInput.Text = KeyPathInput.Text = PasswordInput.Text = PassphraseInput.Text = "";
             PortInput.Text = "22";
             RememberUser.IsChecked = RememberKey.IsChecked =
@@ -221,7 +225,11 @@ public partial class SessionView : UserControl, IDisposable
             ProfileName.Text = p.Name;
             HostInput.Text = p.Host;
             PortInput.Text = p.Port.ToString();
-            FingerprintInput.Text = p.HostKeySha256;
+            var trusted = _hostKeys.Find(p.Host, p.Port);
+            FingerprintInput.Text = trusted?.Sha256 ?? p.HostKeySha256;
+            HostKeyStatus.Text = trusted is null
+                ? "Sin clave confiable para este host:puerto. Detectala y confirmala antes de autenticar."
+                : "Clave del servidor ya guardada para " + p.Host + ":" + p.Port + ".";
             RememberUser.IsChecked = p.RememberUser;
             RememberKey.IsChecked = p.RememberKey;
             RememberPassword.IsChecked = p.RememberPassword;
@@ -286,12 +294,118 @@ public partial class SessionView : UserControl, IDisposable
         {
             DisconnectSession();
             var profile = FormProfile();
+            var pinned = _hostKeys.Find(profile.Host, profile.Port);
+            if (pinned is not null && pinned.Sha256 != profile.HostKeySha256)
+                throw new InvalidOperationException(
+                    "La huella difiere de la clave confiable: revisá el cambio de servidor antes de guardar.");
             _store.Save(profile, UserInput.Text ?? "", PasswordInput.Text ?? "",
                 PassphraseInput.Text ?? "", KeyPathInput.Text);
             ReloadProfiles();
             AuthStatus.Text = "Perfil guardado. Solo se cifraron los datos que marcaste para recordar.";
         }
         catch (Exception ex) { AuthStatus.Text = "No se pudo guardar el perfil: " + ex.Message; }
+    }
+
+    /// <summary>
+    /// First-contact SSH key exchange. Never sees password, passphrase or private key.
+    /// A stored pin is authoritative. Key rotation requires the explicit review button.
+    /// </summary>
+    private async Task<bool> EnsureServerKeyAsync(SshProfile profile, bool forceDiscovery)
+    {
+        if (string.IsNullOrWhiteSpace(profile.Host) || profile.Port is < 1 or > 65535)
+            throw new InvalidOperationException("Ingresá un host y un puerto SSH válidos.");
+
+        var existing = _hostKeys.Find(profile.Host, profile.Port);
+        if (existing is not null && !forceDiscovery)
+        {
+            if (string.IsNullOrWhiteSpace(profile.HostKeySha256))
+            {
+                profile.HostKeySha256 = existing.Sha256;
+                FingerprintInput.Text = existing.Sha256;
+            }
+            if (profile.HostKeySha256 != existing.Sha256)
+                throw new InvalidOperationException(
+                    "La huella del perfil no coincide con la clave confiable. " +
+                    "Usá «Detectar / revisar clave» para comprobar qué servidor respondió.");
+            HostKeyStatus.Text = "Clave SSH confiable guardada: " + profile.Host + ":" + profile.Port;
+            return true;
+        }
+
+        AuthStatus.Text = "Detectando clave pública SSH sin enviar usuario, contraseña ni clave privada...";
+        var observed = await _ssh.DiscoverHostKeyAsync(profile.Host, profile.Port);
+
+        if (existing is not null && observed.Sha256 == existing.Sha256 &&
+            observed.Algorithm == existing.Algorithm)
+        {
+            profile.HostKeySha256 = existing.Sha256;
+            FingerprintInput.Text = existing.Sha256;
+            HostKeyStatus.Text = "La clave pública del servidor coincide con la ya confiable.";
+            return true;
+        }
+
+        if (existing is not null && !forceDiscovery)
+            throw new InvalidOperationException(
+                "¡ADVERTENCIA! La clave del servidor cambió. La autenticación está bloqueada. " +
+                "Revisá la nueva clave y verificála con el proveedor antes de confiar.");
+
+        if (existing is null && !string.IsNullOrWhiteSpace(profile.HostKeySha256) &&
+            profile.HostKeySha256 != observed.Sha256)
+            throw new InvalidOperationException(
+                "La huella recibida NO coincide con la que ingresaste. " +
+                "Verificá el servidor por otro canal; no se confió en la clave.");
+
+        var owner = TopLevel.GetTopLevel(this) as Window
+            ?? throw new InvalidOperationException("No se encontró la ventana de AntiCLI.");
+        var dialog = new HostKeyApprovalWindow(observed, existing);
+        var accepted = await dialog.ShowDialog<bool>(owner);
+        if (!accepted)
+        {
+            HostKeyStatus.Text = "Clave no aceptada. No se guardó ninguna confianza.";
+            return false;
+        }
+
+        // Never trust an endpoint different from the one the user saw in the dialog.
+        if (!string.Equals(HostInput.Text?.Trim(), observed.Host, StringComparison.OrdinalIgnoreCase) ||
+            !int.TryParse(PortInput.Text, out var currentPort) || currentPort != observed.Port)
+            throw new InvalidOperationException(
+                "El host o puerto cambió durante la confirmación. Repetí la detección.");
+
+        if (existing is null)
+            _hostKeys.TrustFirst(observed.Host, observed.Port, observed.Algorithm, observed.Sha256);
+        else
+            _hostKeys.ReplaceAfterReview(observed.Host, observed.Port, existing,
+                observed.Algorithm, observed.Sha256);
+
+        profile.HostKeySha256 = observed.Sha256;
+        FingerprintInput.Text = observed.Sha256;
+        HostKeyStatus.Text = (existing is null ? "Primera clave confiable guardada" : "Clave reemplazada tras revisión")
+            + " para " + observed.Host + ":" + observed.Port + ".";
+        return true;
+    }
+
+    private async void DiscoverHostKeyClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_busy) return;
+        try
+        {
+            var probe = new SshProfile
+            {
+                Host = HostInput.Text?.Trim() ?? "",
+                Port = int.TryParse(PortInput.Text, out var port) ? port : 0,
+                HostKeySha256 = FingerprintInput.Text?.Trim() ?? ""
+            };
+            DisconnectSession();
+            _busy = true;
+            if (await EnsureServerKeyAsync(probe, forceDiscovery: true))
+                AuthStatus.Text = "Clave SSH revisada. Ya podés autenticarte con tus credenciales.";
+            else
+                AuthStatus.Text = "Operación cancelada. No se enviaron credenciales.";
+        }
+        catch (Exception ex)
+        {
+            AuthStatus.Text = "No se pudo verificar la clave del servidor: " + ex.Message;
+        }
+        finally { FinishOperation(); }
     }
 
     private async void ConnectClicked(object? sender, RoutedEventArgs e)
@@ -304,12 +418,16 @@ public partial class SessionView : UserControl, IDisposable
             var profile = FormProfile();
             if (string.IsNullOrWhiteSpace(profile.Host) || profile.Port is < 1 or > 65535)
                 throw new InvalidOperationException("Ingresá un host y un puerto SSH válidos.");
-            if (string.IsNullOrWhiteSpace(profile.HostKeySha256))
-                throw new InvalidOperationException("Primero verificá y cargá la huella SSH SHA256 del servidor.");
+            _busy = true;
+            if (!await EnsureServerKeyAsync(profile, forceDiscovery: false))
+            {
+                AuthStatus.Text = "Conexión cancelada. La clave pública del servidor no fue aceptada.";
+                return;
+            }
 
+            // Credential resolution starts only AFTER an explicit host-key trust decision.
             credentials = _store.Resolve(profile, UserInput.Text ?? "", PasswordInput.Text ?? "",
                 PassphraseInput.Text ?? "", KeyPathInput.Text);
-            _busy = true;
             AuthStatus.Text = "Verificando clave pública del servidor, credenciales y sistema remoto...";
             var detectedOs = await _ssh.AuthenticateAsync(profile, credentials);
 
