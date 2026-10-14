@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
@@ -6,8 +7,9 @@ namespace SolarisPKN.AntiCli;
 /// <summary>Per-session dockable console. Input bar remains in row 1 for every mode.</summary>
 public partial class SessionView
 {
-    private enum ConsoleViewMode { Docked, Expanded, Hidden }
+    private enum ConsoleViewMode { Docked, Expanded, Hidden, Detached }
     private ConsoleViewMode _consoleMode = ConsoleViewMode.Docked;
+    private DetachedConsoleWindow? _detachedWindow;
 
     private void ApplyConsoleMode()
     {
@@ -34,12 +36,21 @@ public partial class SessionView
                 ExpandConsoleButton.Content = "Restaurar 25%";
                 ShowConsoleButton.IsVisible = false;
                 break;
+            case ConsoleViewMode.Detached:
+                CommandsWorkspace.ColumnDefinitions = new ColumnDefinitions("*,0");
+                BrowsePane.IsVisible = true;
+                SideConsolePane.IsVisible = false;
+                Grid.SetColumnSpan(CommandBar, 2);
+                ShowConsoleButton.IsVisible = true;
+                ShowConsoleButton.Content = "Acoplar consola ↙";
+                break;
             default:
                 CommandsWorkspace.ColumnDefinitions = new ColumnDefinitions("*,0");
                 BrowsePane.IsVisible = true;
                 SideConsolePane.IsVisible = false;
                 Grid.SetColumnSpan(CommandBar, 2);
                 ShowConsoleButton.IsVisible = true;
+                ShowConsoleButton.Content = "Mostrar consola";
                 break;
         }
     }
@@ -59,6 +70,11 @@ public partial class SessionView
 
     private void ShowConsoleClicked(object? sender, RoutedEventArgs e)
     {
+        if (_consoleMode == ConsoleViewMode.Detached && _detachedWindow is not null)
+        {
+            _detachedWindow.Close(); // Closing the detached view re-docks the console.
+            return;
+        }
         _consoleMode = ConsoleViewMode.Docked;
         ApplyConsoleMode();
     }
@@ -72,4 +88,79 @@ public partial class SessionView
             ApplyConsoleMode();
         }
     }
+    private void DetachConsoleClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_detachedWindow is not null)
+        {
+            _detachedWindow.Activate();
+            return;
+        }
+        if (!IsAuthenticated)
+        {
+            ExecutionStatus.Text = "Autenticá SSH antes de desacoplar la consola.";
+            return;
+        }
+
+        var window = new DetachedConsoleWindow(RunFromDetachedConsoleAsync, DetachedWindowClosed);
+        _detachedWindow = window;
+        window.SetInitialInput(AssistedCommand.Text ?? "", UseSudoToggle.IsChecked == true);
+        _consoleMode = ConsoleViewMode.Detached;
+        ApplyConsoleMode();
+        SyncDetachedConsole();
+        window.Show(); // Unowned: can be moved/maximized on a second monitor independently.
+        window.Activate();
+    }
+
+    private async Task RunFromDetachedConsoleAsync(string command, bool sudo)
+    {
+        if (_disposed) return;
+        if (_busy)
+        {
+            ExecutionStatus.Text = "La sesión tiene otra operación SSH en curso.";
+            return;
+        }
+        AssistedCommand.Text = command;
+        UseSudoToggle.IsChecked = sudo && _connectedProfile?.Platform != Models.TargetPlatform.Windows;
+        await ExecuteApprovedCommandAsync(command);
+    }
+
+    private void DetachedWindowClosed()
+    {
+        _detachedWindow = null;
+        if (_consoleMode == ConsoleViewMode.Detached)
+        {
+            _consoleMode = ConsoleViewMode.Docked;
+            ApplyConsoleMode();
+        }
+    }
+
+    private void CloseDetachedConsoleForDisposal()
+    {
+        // Closing the original tab/window must not leave a detached shell or
+        // stale callback retaining the session's SSH credentials in memory.
+        _detachedWindow?.Close();
+    }
+
+    private void ConsoleSourcePropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == TextBox.TextProperty || e.Property == TextBlock.TextProperty)
+            SyncDetachedConsole();
+    }
+
+    private void SyncDetachedConsole()
+    {
+        if (_detachedWindow is null) return;
+        var platform = _connectedProfile?.Platform ?? Models.TargetPlatform.OtherLinux;
+        var endpoint = _connectedProfile is null
+            ? "Sesión SSH desconectada"
+            : _connectedProfile.Name + " · " + _connectedProfile.Host + ":" +
+              _connectedProfile.Port;
+        _detachedWindow.UpdateSnapshot(
+            endpoint,
+            Output.Text ?? "",
+            CommandHistoryLog.Text ?? "",
+            ExecutionStatus.Text ?? "",
+            IsAuthenticated, platform, _busy);
+    }
+
 }
