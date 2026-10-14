@@ -171,6 +171,8 @@ public partial class SessionView
         var p = e.GetPosition(FlowCanvas);
         Canvas.SetLeft(border, Math.Clamp(_flowNodeStart.X + p.X - _flowPointerStart.X, 0, 4000));
         Canvas.SetTop(border, Math.Clamp(_flowNodeStart.Y + p.Y - _flowPointerStart.Y, 0, 4000));
+        FlowCanvas.Width = Math.Max(1200, Canvas.GetLeft(border) + 260);
+        FlowCanvas.Height = Math.Max(900, Canvas.GetTop(border) + 160);
     }
 
     private void FlowNodeReleased(Border border, PointerReleasedEventArgs e)
