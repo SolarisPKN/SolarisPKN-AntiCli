@@ -40,6 +40,13 @@ También podés ejecutar `COMPILAR_ANTICLI.cmd`. La publicación local queda en 
 
 **Uso básico:** creá una pestaña, elegí plataforma y completá host, usuario, puerto y credenciales. Pulsá **Autenticar**: si es un servidor nuevo, AntiCLI detecta la huella SHA256 y pide que la revises y aceptes antes del inicio de sesión. Para una clave que cambió, usá **Detectar / revisar clave del servidor** y verificá el cambio con el proveedor. Solo al validar identidad, credenciales y sistema aparecen los paneles de comandos y creación de módulos.
 
+
+## Consola directa e historial
+
+Podés escribir y ejecutar comandos SSH sin el asistente. Incluye **Copiar comando**, **Pegar comando** y **Copiar salida**. También tiene un historial de la sesión con fecha, destino, comando, código de salida y resultado. Podés editar el texto antes de copiarlo o exportarlo para compartirlo con tu equipo; no se comparte automáticamente.
+
+**Importante:** los resultados SSH pueden contener contraseñas o tokens. Revisá el registro y quitá información sensible antes de distribuirlo.
+
 ## Seguridad y privacidad
 
 - No se guardan credenciales en el repositorio. Los perfiles, configuraciones y logs se almacenan en `%APPDATA%\SolarisPKN\AntiCLI\`.
