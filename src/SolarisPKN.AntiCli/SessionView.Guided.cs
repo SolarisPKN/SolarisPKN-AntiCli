@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using SolarisPKN.AntiCli.Modules;
+using SolarisPKN.AntiCli.Services;
 
 namespace SolarisPKN.AntiCli;
 
@@ -69,7 +70,12 @@ public partial class SessionView
             return;
         }
 
+        definition = GuidedHelpStore.Enrich(definition, _connectedProfile.Host,
+            _connectedProfile.Port);
         _activeGuide = definition;
+        HelpImportStatus.Text = "Ficha: " + definition.Id +
+            " · flags: " + definition.Flags.Count +
+            " · datos JSON + opciones importadas de este servidor, si existen.";
         _activePlan = null;
         _orderedGuideFlags.Clear();
         foreach (var flag in definition.Flags.Where(x => x.SelectedByDefault))
@@ -279,6 +285,42 @@ public partial class SessionView
             AssistedCommand.Text = "";
             UpdateRiskDisplay();
         }
+    }
+
+    private async void ImportGuidedHelpClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_busy || _activeGuide is null ||
+            _connectedProfile is null || _connectedCredentials is null) return;
+        var guide = _activeGuide;
+        var endpoint = _connectedProfile.Host;
+        var port = _connectedProfile.Port;
+        try
+        {
+            var command = GuidedHelpStore.ProbeCommand(guide.Executable);
+            _busy = true;
+            HelpImportStatus.Text = "Consultando " + command + " sin sudo (máximo 20 segundos)...";
+            var result = await _ssh.ExecuteAsync(
+                _connectedProfile, _connectedCredentials, command, TimeSpan.FromSeconds(20));
+            var help = result.StdOut + "\n" + result.StdErr;
+            var flags = GuidedHelpStore.Parse(help);
+            if (flags.Count == 0)
+                throw new InvalidOperationException(
+                    "La ayuda no contiene flags reconocibles. Podés seguir usando el comando manualmente.");
+            if (_invalidateAfterBusy || _activeGuide.Id != guide.Id)
+                throw new InvalidOperationException("Cambió el destino o el módulo durante la consulta.");
+            GuidedHelpStore.Save(endpoint, port, guide.Executable, help);
+            _activeGuide = GuidedHelpStore.Enrich(guide, endpoint, port);
+            RebuildGuidedFlags();
+            RecomputeGuidedPreview();
+            HelpImportStatus.Text = "Importadas " + flags.Count +
+                " flags desde la ayuda. Guardadas en AppData para este host:puerto. " +
+                "Las descripciones importadas pueden necesitar revisión.";
+        }
+        catch (Exception ex)
+        {
+            HelpImportStatus.Text = "No se pudieron importar opciones: " + ex.Message;
+        }
+        finally { FinishOperation(); }
     }
 
     private void CloseGuidedClicked(object? sender, RoutedEventArgs e) =>
