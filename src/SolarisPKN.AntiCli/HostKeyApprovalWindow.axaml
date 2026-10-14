@@ -1,0 +1,40 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="SolarisPKN.AntiCli.HostKeyApprovalWindow"
+        Title="Identidad del servidor SSH"
+        Width="710" Height="505" MinWidth="550" MinHeight="450"
+        WindowStartupLocation="CenterOwner" CanResize="True">
+  <Grid Margin="19" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+    <StackPanel Grid.Row="0" Spacing="5">
+      <TextBlock x:Name="Heading" Text="🛡️ Verificar servidor SSH" FontSize="21" FontWeight="SemiBold"/>
+      <TextBlock Text="El servidor presentó una clave pública. La huella identifica esa clave, pero no demuestra por sí sola que el servidor sea legítimo."
+                 TextWrapping="Wrap"/>
+    </StackPanel>
+    <ScrollViewer Grid.Row="1">
+      <StackPanel Spacing="8">
+        <TextBlock Text="Host / puerto" FontWeight="SemiBold"/>
+        <TextBox x:Name="Endpoint" IsReadOnly="True"/>
+        <TextBlock Text="Algoritmo SSH" FontWeight="SemiBold"/>
+        <TextBox x:Name="Algorithm" IsReadOnly="True"/>
+        <TextBlock Text="Huella recibida (SHA256)" FontWeight="SemiBold"/>
+        <TextBox x:Name="Fingerprint" IsReadOnly="True" TextWrapping="Wrap"/>
+        <TextBlock x:Name="PreviousLabel" Text="Huella guardada anteriormente" FontWeight="SemiBold" IsVisible="False"/>
+        <TextBox x:Name="PreviousFingerprint" IsReadOnly="True" TextWrapping="Wrap" IsVisible="False"/>
+        <Border Padding="10" CornerRadius="6" Background="#3B3030">
+          <TextBlock x:Name="WarningText" TextWrapping="Wrap" Foreground="White"
+                     Text="Primera conexión: compará esta huella con la consola o panel de tu proveedor VPS. Si elegís confiar sin comprobarla, aceptás el riesgo de suplantación en esta primera conexión (TOFU)."/>
+        </Border>
+        <CheckBox x:Name="Acknowledged" Content="Entiendo que esta clave aún no está verificada por un canal independiente."
+                  Checked="AcknowledgementChanged" Unchecked="AcknowledgementChanged"
+                  Content="{x:Null}"/>
+        <TextBlock Text="Podés cancelar sin guardar nada. Ninguna contraseña ni clave privada se envió durante esta detección."
+                   FontSize="12" TextWrapping="Wrap" Opacity="0.8"/>
+      </StackPanel>
+    </ScrollViewer>
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+      <Button Content="Cancelar" Click="CancelClicked"/>
+      <Button x:Name="ConfirmButton" Content="Confiar y guardar clave" Click="ConfirmClicked"
+              IsEnabled="False" Background="{DynamicResource AntiCliAccentBrush}" Foreground="White"/>
+    </StackPanel>
+  </Grid>
+</Window>
