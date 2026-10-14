@@ -93,6 +93,7 @@ public partial class SessionView : UserControl, IDisposable
             AuthStatus.Text = "Perfil reutilizado en una pestaña independiente. Cada comando abre su propia conexión SSH con huella verificada.";
             RemoteInfo.Text = "Clon de " + profile.Name + " · " + profile.Host + " · " + profile.Platform;
             BuildActionButtons();
+            RefreshModuleEditorSources();
             ReloadSuggestions();
             MainTabs.SelectedIndex = 1;
         }
@@ -785,6 +786,7 @@ public partial class SessionView : UserControl, IDisposable
         {
             _busy = true;
             ExecutionStatus.Text = "Ejecutando por SSH " + (useSudo ? "con sudo -n..." : "...");
+            // Side log is already docked; do not steal focus from the fixed command bar.
             Output.Text = "$ " + remoteCommand + "\n";
             var timeoutSeconds = _activePlan is not null &&
                 string.Equals(command, _activePlan.Command, StringComparison.Ordinal)
