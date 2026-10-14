@@ -14,6 +14,18 @@ Salt emplea diferentes ejecutables: `salt`, `salt-call`, `salt-run`, `salt-key`,
 
 El catálogo inicial incluye [17 módulos y 146 comandos documentados](COMMAND_MODULES.es.md). **Fichas JSON:** `src/SolarisPKN.AntiCli/Data/guided-commands.json` (definiciones detalladas) y `src/SolarisPKN.AntiCli/Data/admin-commands.json` (catálogo base). La aplicación permite incorporar ficheros `*.json` del usuario bajo `%APPDATA%\SolarisPKN\AntiCLI\modules\` para ampliar los formularios sin recompilar; no sustituyen automáticamente las definiciones integradas. Cada esquema describe: nombre, búsqueda, flags, tipo de valor, operandos, plantilla, riesgo, compatibilidad, lote y timeout. Para una explicación del contrato, ver [FORMULARIOS_DINAMICOS.md](FORMULARIOS_DINAMICOS.md). Véase también [SKILL.md](../SKILL.md).
 
+## Diccionario por servidor y corrección inteligente (Tab)
+
+Al autenticar por SSH, AntiCLI toma los nombres de ejecutables del catálogo JSON y de las fichas guiadas y comprueba su presencia en el `PATH` de **esa cuenta remota**. Linux utiliza `command -v` (sin ejecutar las aplicaciones); Windows utiliza `Get-Command` mediante PowerShell. La consulta se ejecuta como el usuario conectado, **sin sudo y sin instalar paquetes**. Se guarda solo en memoria, de manera independiente por pestaña. Podés repetirla con **Actualizar herramientas**.
+
+- **✓** Comando detectado en el `PATH` de esa sesión.
+- **○** No detectado en el `PATH` actual: quizá no esté instalado, falte iniciar el entorno de Yocto (`oe-init-build-env`), o esté disponible con otro usuario/shell.
+- **?** Detección no realizada o estado desconocido.
+
+El buscador del catálogo y el de autocompletado pueden usar estas señales para priorizar opciones disponibles. Los nombres de comandos y flags vienen de JSON, complementados por ayudas `--help` previamente importadas desde ese servidor. El motor usa búsqueda por prefijos y distancia Damerau-Levenshtein acotada para **sugerir errores tipográficos**, por ejemplo `umame` → `uname` o `aof-ghet` → `apt-get`. **Tab o un clic** aplican la sugerencia elegida, sin ejecutar el comando. Los argumentos existentes no se descartan al corregir el ejecutable; las flags documentadas también se completan. No hay corrección silenciosa al pulsar Ejecutar.
+
+**Limitaciones:** esto es una detección acotada de ejecutables conocidos por el catálogo, **no** un inventario de todos los paquetes ni todas las funciones/shell aliases del servidor. Un ejecutable que no aparece no queda prohibido. La existencia de la herramienta no certifica permisos, compatibilidad de flags ni ausencia de riesgos. La corrección no sustituye la comprobación del riesgo ni la revisión de la línea antes de ejecutarla.
+
 ## Consola directa e historial de operaciones
 
 El mismo panel permite escribir cualquier comando SSH directamente. **Copiar comando**, **Pegar comando** y **Copiar salida** usan el portapapeles de Windows, sin necesidad de abrir un navegador. El botón de ejecución respeta la clasificación visual de riesgo y la casilla sudo.
