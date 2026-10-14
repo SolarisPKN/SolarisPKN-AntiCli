@@ -100,6 +100,14 @@ public static class AutomationGraphScriptExporter
             throw new InvalidDataException(
                 "Hay nodos o flechas desconectadas, o conexiones sin una semántica de ejecución definida.");
 
+        // Guard against multiplication of many rows and large loops, even
+        // though each individual loop already has a finite iteration cap.
+        var worstCaseOperations = (long)workflow.Rows.Count * instructions.Sum(item =>
+            item.Body is null ? 1L : (long)item.Body.Count * item.Node.MaxIterations);
+        if (worstCaseOperations > 20_000)
+            throw new InvalidDataException(
+                "Este lote podría ejecutar más de 20.000 comandos. Reducí filas, pasos o iteraciones.");
+
         var output = new StringBuilder("#!/bin/sh\n");
         output.AppendLine("# AntiCLI · Diagrama estructurado con bucles limitados");
         output.AppendLine("# Los pasos pueden modificar el servidor. Revisar antes de ejecutar.");
