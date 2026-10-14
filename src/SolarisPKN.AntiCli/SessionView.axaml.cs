@@ -528,6 +528,7 @@ public partial class SessionView : UserControl, IDisposable
         ModuleGroupSelector.SelectedIndex = 0;
         UseSudoToggle.IsVisible = _connectedProfile.Platform != TargetPlatform.Windows;
         PopulateActionButtons();
+        PopulateUniversalResults();
         UpdateRiskDisplay();
     }
 
@@ -577,7 +578,8 @@ public partial class SessionView : UserControl, IDisposable
             return;
         var command = AssistedCommand?.Text?.Trim() ?? "";
         var platform = _connectedProfile?.Platform ?? TargetPlatform.OtherLinux;
-        var risk = AdminCommandCatalog.Classify(platform, command);
+        var risk = TryGetGuidedRisk(command, out var guidedRisk)
+            ? guidedRisk : AdminCommandCatalog.Classify(platform, command);
         var useSudo = UseSudoToggle.IsChecked == true && platform != TargetPlatform.Windows;
         if (useSudo && risk == CommandRisk.Green)
             risk = CommandRisk.Yellow;
@@ -598,24 +600,23 @@ public partial class SessionView : UserControl, IDisposable
 
     private void SelectAction(ReadOnlyAction action)
     {
-        _blocks.Clear();
-        AssistedCommand.Text = "";
-        TokenButtons.Children.Clear();
-        HintDetail.Text = action.Label + " — " + action.Command;
-        UpdateRiskDisplay();
-        foreach (var segment in action.Command.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+        // Match a JSON schema; never manufacture buttons by splitting command text.
+        // Any catalog entry without a detailed schema still has a generic form.
+        var definition = GuidedCommandCatalog.All.FirstOrDefault(x =>
+                x.PresetCommands?.Contains(action.Command, StringComparer.Ordinal) == true)
+            ?? GuidedCommandCatalog.All.FirstOrDefault(x =>
+                string.Equals(x.Template, action.Command, StringComparison.Ordinal));
+        if (definition is not null)
         {
-            var token = segment;
-            var button = new Button { Content = "+ " + token, Margin = new Thickness(0, 0, 8, 8) };
-            button.Click += (_, _) =>
-            {
-                _blocks.Add(token);
-                AssistedCommand.Text = string.Join(" ", _blocks);
-                UpdateBlockPreview();
-            };
-            TokenButtons.Children.Add(button);
+            BeginGuided(definition);
+            HintDetail.Text = action.Label + " — " + definition.ExplanationEs;
+            return;
         }
-        UpdateBlockPreview();
+
+        // Legacy fallback for an action loaded from an older plugin.
+        HideGuidedBuilder();
+        AssistedCommand.Text = action.Command;
+        HintDetail.Text = action.Label + " — " + action.Command;
     }
 
     private void UpdateBlockPreview() =>
@@ -758,8 +759,11 @@ public partial class SessionView : UserControl, IDisposable
             _busy = true;
             ExecutionStatus.Text = "Ejecutando por SSH " + (useSudo ? "con sudo -n..." : "...");
             Output.Text = "$ " + remoteCommand + "\n";
+            var timeoutSeconds = _activePlan is not null &&
+                string.Equals(command, _activePlan.Command, StringComparison.Ordinal)
+                ? _activePlan.TimeoutSeconds : 300;
             var result = await _ssh.ExecuteAsync(_connectedProfile, _connectedCredentials,
-                remoteCommand, TimeSpan.FromMinutes(5));
+                remoteCommand, TimeSpan.FromSeconds(timeoutSeconds));
             Output.Text = "$ " + remoteCommand + "\n\n" + result.StdOut
                 + (string.IsNullOrWhiteSpace(result.StdErr) ? "" : "\n[STDERR]\n" + result.StdErr);
             ExecutionStatus.Text = "Comando completado. Código de salida: " + result.ExitCode +
