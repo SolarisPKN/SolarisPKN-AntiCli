@@ -38,8 +38,7 @@ public partial class SessionView
         // Reserved bottom row — stays on screen when upper panels scroll.
         AssistedCommand.TextChanged += AssistedTextChanged;
         AssistedCommand.KeyDown += AssistedKeyDown;
-        UseSudoToggle.Checked += SudoToggleChanged;
-        UseSudoToggle.Unchecked += SudoToggleChanged;
+        UseSudoToggle.IsCheckedChanged += SudoToggleChanged;
         RunAssistedButton.Click += RunAssistedClicked;
         ShowConsoleButton.Click += ShowConsoleClicked;
         CommandBar.CopyCommandButtonRef.Click += CopyCommandClicked;
