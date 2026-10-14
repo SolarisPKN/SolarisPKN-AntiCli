@@ -26,7 +26,7 @@
         </Border>
         <CheckBox x:Name="Acknowledged" Content="Entiendo que esta clave aún no está verificada por un canal independiente."
                   Checked="AcknowledgementChanged" Unchecked="AcknowledgementChanged"
-                  Content="{x:Null}"/>
+                  />
         <TextBlock Text="Podés cancelar sin guardar nada. Ninguna contraseña ni clave privada se envió durante esta detección."
                    FontSize="12" TextWrapping="Wrap" Opacity="0.8"/>
       </StackPanel>
