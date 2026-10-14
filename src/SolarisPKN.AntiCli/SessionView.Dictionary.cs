@@ -63,6 +63,7 @@ public partial class SessionView
             PopulateActionButtons();
             ReloadSuggestions();
             PopulateUniversalResults();
+            UpdateMissingToolPrompt();
         }
     }
 
