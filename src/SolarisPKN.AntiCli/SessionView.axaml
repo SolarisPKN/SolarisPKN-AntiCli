@@ -94,7 +94,7 @@
               </StackPanel>
             </ScrollViewer>
             <Border x:Name="GuidedPanel" IsVisible="False" CornerRadius="8"
-                    BorderThickness="2" BorderBrush="#8794BA" Background="#242D3A" Padding="12" Panel.ZIndex="10">
+                    BorderThickness="2" BorderBrush="#8794BA" Background="#242D3A" Padding="12">
               <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Spacing="9">
                 <TextBlock x:Name="GuidedTitle" FontSize="18" FontWeight="SemiBold" Text="Operación guiada"/>
                 <TextBlock x:Name="GuidedDescription" TextWrapping="Wrap"/>
