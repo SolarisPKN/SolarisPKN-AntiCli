@@ -793,7 +793,7 @@ public partial class SessionView : UserControl, IDisposable
                 ToolToDiscover.Text ?? "", message => Dispatcher.UIThread.Post(() => ScanStatus.Text = message));
             ScanOutput.Text = "Borrador: " + result.Draft.Id + "\nConsultas: "
                 + result.Draft.Commands.Count + "\nRuta: " + result.DraftPath
-                + "\n\nLos comandos quedan SIN autorización de ejecución.";
+                + "\n\nComandos agregados como sugerencias. Podés ejecutarlos desde la consola (riesgo desconocido: rojo).";
             ReloadSuggestions();
         }
         catch (Exception ex) { ScanStatus.Text = "No se pudo explorar: " + ex.Message; }
