@@ -74,10 +74,9 @@ public static class AutomationGraphRouter
                     break;
                 case FlowNodeKind.If:
                     if (edges.Any(e => e.Kind is not (FlowEdgeKind.True or FlowEdgeKind.False)) ||
-                        Next(node, FlowEdgeKind.True) is null ||
-                        edges.Length > 2)
+                        edges.Length is < 1 or > 2)
                         throw new InvalidDataException(
-                            "IF necesita una salida Verdadero y, opcionalmente, Falso: " + node.Label);
+                            "IF necesita al menos una salida Verdadero o Falso: " + node.Label);
                     break;
                 case FlowNodeKind.Loop:
                     if (edges.Any(e => e.Kind is not (FlowEdgeKind.LoopBody or FlowEdgeKind.Next)) ||
