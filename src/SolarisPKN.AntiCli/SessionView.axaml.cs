@@ -790,7 +790,9 @@ public partial class SessionView : UserControl, IDisposable
             Output.Text = "$ " + remoteCommand + "\n";
             var timeoutSeconds = _activePlan is not null &&
                 string.Equals(command, _activePlan.Command, StringComparison.Ordinal)
-                ? _activePlan.TimeoutSeconds : 300;
+                ? _activePlan.TimeoutSeconds :
+                command.Contains("apt-get install", StringComparison.Ordinal)
+                    ? 1200 : 300;
             var result = await _ssh.ExecuteAsync(_connectedProfile, _connectedCredentials,
                 remoteCommand, TimeSpan.FromSeconds(timeoutSeconds));
             Output.Text = "$ " + remoteCommand + "\n\n" + result.StdOut
