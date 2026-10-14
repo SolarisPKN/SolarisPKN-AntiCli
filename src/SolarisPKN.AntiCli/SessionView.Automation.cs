@@ -47,6 +47,30 @@ public partial class SessionView
         AutomationAddStepClicked(sender, e);
     }
 
+    private void AutomationEditStepClicked(object? sender, RoutedEventArgs e)
+    {
+        var index = AutomationStepsList.SelectedIndex;
+        if (index >= 0 && index < _automationSteps.Count)
+            AutomationStepInput.Text = _automationSteps[index];
+    }
+
+    private void AutomationReplaceStepClicked(object? sender, RoutedEventArgs e)
+    {
+        var index = AutomationStepsList.SelectedIndex;
+        var command = (AutomationStepInput.Text ?? "").Trim();
+        if (index < 0 || index >= _automationSteps.Count ||
+            command.Length == 0 || command.Length > 3000 ||
+            command.Any(c => c is '\n' or '\r' or '\0'))
+        {
+            AutomationStatus.Text = "Seleccioná un paso e ingresá una plantilla de una línea.";
+            return;
+        }
+        _automationSteps[index] = command;
+        RefreshAutomationSteps(index);
+        AutomationStatus.Text = "Paso actualizado. Revisá el script antes de exportar.";
+        OnAutomationStepsChanged();
+    }
+
     private void AutomationMoveUpClicked(object? sender, RoutedEventArgs e) => MoveAutomation(-1);
     private void AutomationMoveDownClicked(object? sender, RoutedEventArgs e) => MoveAutomation(1);
 
