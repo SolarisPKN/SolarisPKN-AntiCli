@@ -6,8 +6,49 @@ namespace SolarisPKN.AntiCli.Services;
 
 public sealed record RemoteCommandResult(string StdOut, string StdErr, int ExitCode);
 
+/// <summary>The host key presented during an unauthenticated SSH key exchange.</summary>
+public sealed record DiscoveredHostKey(string Host, int Port, string Algorithm, string Sha256);
+
 public sealed class SshProbe
 {
+    /// <summary>
+    /// Collect ONLY the public host key. Reject the key-exchange result unconditionally;
+    /// hence SSH user authentication is never attempted and no credentials are transmitted.
+    /// </summary>
+    public Task<DiscoveredHostKey> DiscoverHostKeyAsync(string host, int port) => Task.Run(() =>
+    {
+        if (string.IsNullOrWhiteSpace(host) || port is < 1 or > 65535)
+            throw new ArgumentException("Ingresá un host y un puerto SSH válidos.");
+        var endpoint = host.Trim();
+        // A fabricated fixed username, with NO password, key or user-provided credentials.
+        const string probeUser = "anticli-hostkey-discovery";
+        var info = new ConnectionInfo(endpoint, port, probeUser, new NoneAuthenticationMethod(probeUser))
+        {
+            Timeout = TimeSpan.FromSeconds(10)
+        };
+        using var client = new SshClient(info);
+        DiscoveredHostKey? discovered = null;
+        client.HostKeyReceived += (_, e) =>
+        {
+            var digest = SHA256.HashData(e.HostKey);
+            discovered = new DiscoveredHostKey(endpoint, port, e.HostKeyName,
+                "SHA256:" + Convert.ToBase64String(digest).TrimEnd('='));
+            // CRITICAL: Do not accept even if the SSH library would otherwise allow it.
+            // This aborts the handshake before ANY authentication method is attempted.
+            e.CanTrust = false;
+        };
+        try { client.Connect(); }
+        catch (Exception) when (discovered is not null)
+        {
+            // The rejection after HostKeyReceived is EXPECTED; report only the observed key.
+        }
+        if (discovered is null)
+            throw new InvalidOperationException(
+                "El servidor no entregó una clave SSH. Comprobá IP, puerto y servicio SSH.");
+        return discovered;
+    });
+
+
     public Task<string> AuthenticateAsync(SshProfile profile, SshCredentials credentials) =>
         Task.Run(() => WithConnection(profile, credentials, client =>
         {
@@ -45,6 +86,16 @@ public sealed class SshProbe
 
     private static T WithConnection<T>(SshProfile profile, SshCredentials credentials, Func<SshClient, T> execute)
     {
+        // A previously trusted key is authoritative and cannot be bypassed by changing
+        // the editable fingerprint field, a cloned tab, or an old saved profile.
+        var trusted = new TrustedHostKeyStore().Find(profile.Host, profile.Port);
+        if (trusted is not null &&
+            !string.Equals(trusted.Sha256, profile.HostKeySha256, StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                "La huella del perfil difiere de la clave confiable para este host:puerto. " +
+                "Revisá el cambio desde el botón SSH antes de autenticar.");
+        if (string.IsNullOrWhiteSpace(profile.HostKeySha256))
+            throw new InvalidOperationException("Antes de autenticar, verificá la clave SSH del servidor.");
         using var keyStream = credentials.KeyBytes is null ? null : new MemoryStream(credentials.KeyBytes, false);
         AuthenticationMethod auth = profile.AuthMode switch
         {
@@ -68,7 +119,8 @@ public sealed class SshProbe
         {
             var digest = SHA256.HashData(e.HostKey);
             fingerprint = "SHA256:" + Convert.ToBase64String(digest).TrimEnd('=');
-            verified = MatchesPin(profile.HostKeySha256, digest);
+            verified = MatchesPin(profile.HostKeySha256, digest) &&
+                (trusted is null || string.Equals(trusted.Algorithm, e.HostKeyName, StringComparison.Ordinal));
             e.CanTrust = verified;
         };
         try { client.Connect(); }
