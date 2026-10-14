@@ -1,6 +1,7 @@
 using System.Text;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Input.Platform;
 using Avalonia.Platform.Storage;
 
 namespace SolarisPKN.AntiCli;
@@ -78,7 +79,7 @@ public partial class SessionView
         {
             var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
             if (clipboard is null) return;
-            var text = await clipboard.GetTextAsync();
+            var text = await clipboard.TryGetTextAsync();
             if (!string.IsNullOrEmpty(text))
             {
                 AssistedCommand.Text = text.TrimEnd('\r', '\n');
