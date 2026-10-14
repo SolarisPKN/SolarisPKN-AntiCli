@@ -34,6 +34,10 @@ jobs:
         shell: pwsh
         run: dotnet build ./src/SolarisPKN.AntiCli/SolarisPKN.AntiCli.csproj -c Release --no-restore --nologo
 
+      - name: Validate command schemas and conditional flow retries
+        shell: pwsh
+        run: dotnet run --project ./tests/AntiCli.SchemaSmokeTests/AntiCli.SchemaSmokeTests.csproj -c Release --no-launch-profile
+
       - name: Publish self-contained Windows executable
         shell: pwsh
         run: |
