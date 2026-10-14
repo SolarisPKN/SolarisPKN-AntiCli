@@ -103,11 +103,21 @@ public sealed class ProfileStore
         finally { CryptographicOperations.ZeroMemory(bytes); }
     }
 
-    private static string Protect(byte[] bytes) =>
-        Convert.ToBase64String(ProtectedData.Protect(bytes, null, DataProtectionScope.CurrentUser));
+    private static string Protect(byte[] bytes)
+    {
+        // This explicit guard is required by CA1416: these helpers are also
+        // reachable through Load/Resolve without first calling Save().
+        if (!OperatingSystem.IsWindows())
+            throw new PlatformNotSupportedException("El cifrado DPAPI de credenciales requiere Windows.");
+        return Convert.ToBase64String(ProtectedData.Protect(bytes, null, DataProtectionScope.CurrentUser));
+    }
 
-    private static byte[] Unprotect(string base64) =>
-        ProtectedData.Unprotect(Convert.FromBase64String(base64), null, DataProtectionScope.CurrentUser);
+    private static byte[] Unprotect(string base64)
+    {
+        if (!OperatingSystem.IsWindows())
+            throw new PlatformNotSupportedException("El descifrado DPAPI de credenciales requiere Windows.");
+        return ProtectedData.Unprotect(Convert.FromBase64String(base64), null, DataProtectionScope.CurrentUser);
+    }
 
     private static void Validate(SshProfile profile, string user)
     {
