@@ -9,6 +9,10 @@ namespace SolarisPKN.AntiCli;
 /// </summary>
 public partial class SessionView
 {
+    private Button RefreshDictionaryButton => BrowsePane.RefreshDictionaryButtonRef;
+    private Button ImportGuidedHelpButton => BrowsePane.ImportGuidedHelpButtonRef;
+    private Button CheckPackageRequirementsButton => BrowsePane.CheckPackageRequirementsButtonRef;
+    private Button CloseGuidedButton => BrowsePane.CloseGuidedButtonRef;
     private TextBlock RemoteInfo => BrowsePane.RemoteInfoRef;
     private TextBox UniversalSearch => BrowsePane.UniversalSearchRef;
     private WrapPanel UniversalResults => BrowsePane.UniversalResultsRef;
