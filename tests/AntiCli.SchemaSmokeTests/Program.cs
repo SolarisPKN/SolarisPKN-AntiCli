@@ -221,4 +221,44 @@ catch (InvalidDataException)
     Console.WriteLine("[PASS] Duplicate IF true branch is rejected on export");
 }
 
+var completeProject = new AutomationProject(1, retryWorkflow, retryUntilOk);
+var savedProject = AutomationProjectFile.Serialize(completeProject);
+var loadedProject = AutomationProjectFile.Parse(savedProject);
+Verify(loadedProject.Workflow.Name == retryWorkflow.Name &&
+       loadedProject.Diagram?.StartNodeId == "c1" &&
+       loadedProject.Diagram.Edges.Count == 4 &&
+       loadedProject.Diagram.Nodes[0].X == 10 &&
+       loadedProject.Diagram.Edges.Any(e =>
+           e.Kind == FlowEdgeKind.LoopBack && e.FromId == "c4" && e.ToId == "c1"),
+    "Full JSON project preserves the conditional retry graph, layout and explicit entry");
+
+var legacyProject = AutomationProjectFile.Parse(AutomationWorkflowFile.Serialize(retryWorkflow));
+Verify(legacyProject.Diagram is null &&
+       legacyProject.Workflow.Name == retryWorkflow.Name,
+    "Old workflow-only JSON can still be opened without inventing graph edges");
+
+try
+{
+    _ = AutomationProjectFile.Serialize(completeProject with { ProjectVersion = 2 });
+    throw new InvalidOperationException("Unsupported project version was accepted.");
+}
+catch (InvalidDataException)
+{
+    Console.WriteLine("[PASS] Unknown project schema version is rejected");
+}
+
+try
+{
+    var brokenGraph = retryGraph with
+    {
+        Edges = retryGraph.Edges.Append(new FlowEdge("c4", "missing")).ToArray()
+    };
+    _ = AutomationProjectFile.Serialize(completeProject with { Diagram = brokenGraph });
+    throw new InvalidOperationException("Invalid graph edge was accepted.");
+}
+catch (InvalidDataException)
+{
+    Console.WriteLine("[PASS] Invalid graph links cannot be saved as project JSON");
+}
+
 Console.WriteLine("ALL SCHEMA SMOKE TESTS PASSED.");
