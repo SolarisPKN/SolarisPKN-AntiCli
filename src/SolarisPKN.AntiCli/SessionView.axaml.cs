@@ -878,6 +878,7 @@ public partial class SessionView : UserControl, IDisposable
         if (_disposed) return;
         _disposed = true;
         CloseDetachedConsoleForDisposal();
+        CloseFlowWindowForDisposal();
         // Do not clear key bytes while an SSH operation is still using them.
         if (_busy)
         {
