@@ -73,8 +73,8 @@ public partial class SessionView
                 if (parts.Length >= 2 && parts[1].StartsWith("ii", StringComparison.Ordinal))
                     installed.Add(parts[0].Trim());
             }
-            if (installed.Count == 0 && result.ExitCode != 0 &&
-                result.StdErr.Contains("command not found", StringComparison.OrdinalIgnoreCase))
+            if (result.ExitCode == 127 || (installed.Count == 0 && result.ExitCode != 0 &&
+                result.StdErr.Contains("not found", StringComparison.OrdinalIgnoreCase)))
                 throw new InvalidOperationException("dpkg-query no está disponible en el servidor.");
             var missing = packages.Where(x => !installed.Contains(x)).ToArray();
             _pendingRequiredPackages = missing;
