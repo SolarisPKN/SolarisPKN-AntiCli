@@ -64,7 +64,7 @@ El editor del diagrama permite modificar nombre y comando de cada bloque, borrar
 - Definir AND/OR como condiciones booleanas y XOR como exclusión lógica con operandos claros; no son simplemente conectores.
 - Paralelismo real: máximo de ejecuciones simultáneas, sincronización en un nodo de unión y política de fallos parciales.
 - Gestión de variables entre nodos, salidas de procesos, temporizadores, reintentos, acciones de reversión cuando correspondan y control de secretos.
-- Guardar diagrama y tabla de variables en un único proyecto versionado; ejecución/scheduler SSH opcionales y con autorización explícita.
+- Ejecución/scheduler SSH opcionales y con autorización explícita. La persistencia unificada del proyecto y su diagrama ya está incorporada; falta comprobar la UX de Windows.
 
 **La compilación CI no valida arrastres, UX o lógica de ejecución real**. Probar visualmente la pantalla en Windows, cargar/guardar un grafo, mover nodos y verificar que no se exporten ramas incompletas.
 
@@ -75,3 +75,11 @@ El editor del diagrama permite modificar nombre y comando de cada bloque, borrar
 3. Agregá IF con **Verdadero → Comando 4 → Retorno ↺ Comando 1**, y Falso sin conectar: el script debe exportarse y terminar al salir por Falso.
 4. Guardá el grafo JSON, cerralo, abrilo nuevamente y verificá posiciones y conexiones.
 5. Armá 20 filas numeradas con dos columnas y revisá el script sin ejecutarlo.
+
+## Proyecto JSON completo (versión 1)
+
+**Guardar proyecto JSON** ahora guarda la definición de automatización **y**, cuando existe, el grafo visual: tipos de nodos, flechas, condiciones, coordenadas e identificador de inicio. **Abrir proyecto JSON** restaura ambas partes y borra el diagrama anterior de la sesión para evitar mezclar dos proyectos. Esto permite conservar ciclos como `Comando 4 → Comando 1` sin tener que guardar un segundo archivo manualmente.
+
+El formato de proyecto usa `ProjectVersion: 1` y contiene `Workflow` y `Diagram` (opcional). Los archivos antiguos con solo los campos de `AutomationWorkflow` **siguen abriendo**; en ese caso AntiCLI reconstruye un diagrama lineal a partir de sus pasos. El botón **Guardar JSON** dentro del diseñador sigue permitiendo exportar solo el grafo.
+
+No se incluyen credenciales SSH en el proyecto, pero **los comandos y variables pueden contener contraseñas escritas por el operador**: revisalos antes de compartir el archivo. Guardar o cargar no ejecuta nada por SSH.

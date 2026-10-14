@@ -249,8 +249,22 @@ public partial class SessionView
     {
         try
         {
-            var json = AutomationWorkflowFile.Serialize(ComposeAutomation());
-            await SaveAutomationText(json, "anti-cli-workflow.json", "*.json");
+            var workflow = ComposeAutomation();
+            // Edited diagrams are the source of truth; preserve all graph nodes,
+            // edges, coordinates and explicit start, not just linear steps.
+            if (_flowEdited && _flowNodes.Count > 0)
+            {
+                workflow = workflow with
+                {
+                    Steps = _flowNodes.Where(n => n.Kind == FlowNodeKind.Command)
+                        .Select((n, i) => new AutomationStep(
+                            "graph-" + i, n.Label, n.CommandTemplate)).ToArray()
+                };
+            }
+            var diagram = _flowNodes.Count > 0 ? CurrentFlowGraph() : null;
+            var json = AutomationProjectFile.Serialize(
+                new AutomationProject(1, workflow, diagram));
+            await SaveAutomationText(json, "anti-cli-project.json", "*.json");
         }
         catch (Exception ex) { AutomationStatus.Text = "No se pudo guardar: " + ex.Message; }
     }
@@ -292,7 +306,16 @@ public partial class SessionView
             if (files.Count == 0) return;
             await using var stream = await files[0].OpenReadAsync();
             using var reader = new StreamReader(stream);
-            var workflow = AutomationWorkflowFile.Parse(await reader.ReadToEndAsync());
+            var project = AutomationProjectFile.Parse(await reader.ReadToEndAsync());
+            var workflow = project.Workflow;
+            // Reset stale graph state before populating steps. Without this, a
+            // previously edited diagram can survive loading an old linear file.
+            _flowEdited = false;
+            _flowNodes.Clear();
+            _flowEdges.Clear();
+            _flowStartId = null;
+            _flowSelected = null;
+            _flowSerial = 0;
             AutomationName.Text = workflow.Name;
             _automationSteps.Clear();
             _automationSteps.AddRange(workflow.Steps.Where(x => x.Enabled)
@@ -308,9 +331,23 @@ public partial class SessionView
                         row.TryGetValue(key, out var value) ? value : ""))));
             AutomationStepMajor.IsChecked = workflow.Order == AutomationOrder.PerStep;
             AutomationContinueOnError.IsChecked = !workflow.StopOnError;
+            if (project.Diagram is { } diagram)
+            {
+                _flowNodes.Clear();
+                _flowNodes.AddRange(diagram.Nodes);
+                _flowEdges.Clear();
+                _flowEdges.AddRange(diagram.Edges);
+                _flowStartId = diagram.StartNodeId ?? diagram.Nodes.FirstOrDefault()?.Id;
+                _flowSelected = null;
+                _flowSerial = _flowNodes.Count;
+                _flowEdited = _flowNodes.Count > 0;
+                RenderFlowDiagram();
+            }
             AutomationScriptPreview.Text = "";
-            AutomationStatus.Text = "Proyecto cargado. Revisá y generá la vista previa.";
-            OnAutomationStepsChanged();
+            AutomationStatus.Text = project.Diagram is null
+                ? "Proyecto anterior cargado (pasos lineales). Revisá la vista previa."
+                : "Proyecto y diagrama restaurados: nodos, flechas, posiciones e inicio.";
+            if (project.Diagram is null) OnAutomationStepsChanged();
         }
         catch (Exception ex) { AutomationStatus.Text = "No se pudo abrir: " + ex.Message; }
     }
