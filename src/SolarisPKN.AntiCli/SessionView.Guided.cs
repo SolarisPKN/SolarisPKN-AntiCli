@@ -2,21 +2,21 @@ using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using SolarisPKN.AntiCli.Models;
 using SolarisPKN.AntiCli.Modules;
 
 namespace SolarisPKN.AntiCli;
 
 /// <summary>
-/// Forms are derived from typed command schemas rather than hard-coded shell
-/// fragments. A user can always edit the preview to issue a custom command.
+/// ONE renderer for every command defined in JSON, whether uname, adduser,
+/// apt-get, Yocto/BitBake or the long tail of imported Linux tools.
+/// No UI code may branch on the name/ID of a command.
 /// </summary>
 public partial class SessionView
 {
     private GuidedCommand? _activeGuide;
     private GuidedPlan? _activePlan;
     private readonly List<GuidedFlagChoice> _orderedGuideFlags = [];
-    private TextBox? _accountNameBox;
+    private readonly Dictionary<string, TextBox> _guideFields = new(StringComparer.Ordinal);
     private TextBox? _batchCountBox;
     private TextBox? _batchStartBox;
     private TextBox? _batchDigitsBox;
@@ -34,49 +34,25 @@ public partial class SessionView
         UniversalResults.Children.Clear();
         if (_connectedProfile is null) return;
 
-        var text = (UniversalSearch.Text ?? "").Trim();
-        var normalized = Regex.Replace(text, @"\b\d+\b", "").Trim();
-        var guides = GuidedCommandCatalog.Search(normalized);
-        foreach (var guide in guides.Take(4))
+        var query = (UniversalSearch.Text ?? "").Trim();
+        var stripped = Regex.Replace(query, @"\b\d+\b", "").Trim();
+        var countMatch = Regex.Match(query,
+            @"\b(?<count>\d{1,3})\s+(?:usuarios|cuentas|alumnos)\b",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        var suggestedCount = countMatch.Success
+            ? Math.Clamp(int.Parse(countMatch.Groups["count"].Value), 1, 100) : 1;
+        var candidates = GuidedCommandCatalog.Search(stripped);
+        foreach (var guide in candidates.Take(query.Length == 0 ? 6 : 12))
         {
-            var selected = guide;
+            var item = guide;
             var button = new Button
             {
-                Content = AdminCommandCatalog.Dot(selected.Risk) + " " +
-                    (selected.Id == "adduser" ? "Crear usuario(s)" : selected.TitleEs) +
-                    " · asistente",
+                Content = AdminCommandCatalog.Dot(item.Risk) + " " + item.TitleEs,
                 Margin = new Thickness(0, 0, 8, 8)
             };
-            ToolTip.SetTip(button, guide.ExplanationEs);
+            ToolTip.SetTip(button, item.ExplanationEs);
             button.Click += (_, _) =>
-            {
-                var countMatch = Regex.Match(text, @"\b(?<num>\d{1,3})\s+(?:usuarios|cuentas|alumnos)\b",
-                    RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-                var count = selected.SupportsBatch && countMatch.Success
-                    ? Math.Clamp(int.Parse(countMatch.Groups["num"].Value), 1, 100) : 1;
-                BeginGuided(selected, count);
-            };
-            UniversalResults.Children.Add(button);
-        }
-
-        if (text.Length == 0) return;
-        var searchTerms = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var matches = AdminCommandCatalog.For(_connectedProfile.Platform)
-            .Where(x => searchTerms.All(word =>
-                (x.LabelEs + " " + x.DescriptionEs + " " + x.GroupName +
-                 " " + x.Command).Contains(word, StringComparison.OrdinalIgnoreCase)))
-            .Take(8);
-        foreach (var action in matches)
-        {
-            var found = action;
-            var button = new Button
-            {
-                Content = AdminCommandCatalog.Dot(found.Risk) + " " + found.LabelEs,
-                Margin = new Thickness(0, 0, 8, 8)
-            };
-            ToolTip.SetTip(button, action.DescriptionEs + " — " + action.Command);
-            button.Click += (_, _) => SelectAction(
-                new ReadOnlyAction(found.Id, found.LabelEs, found.Command));
+                BeginGuided(item, item.SupportsBatch ? suggestedCount : 1);
             UniversalResults.Children.Add(button);
         }
     }
@@ -84,16 +60,19 @@ public partial class SessionView
     private void BeginGuided(GuidedCommand definition, int quantity = 1)
     {
         if (_connectedProfile is null) return;
-        if (_connectedProfile.Platform == TargetPlatform.Windows)
+        if (_connectedProfile.Platform == Models.TargetPlatform.Windows &&
+            definition.Executable is not ("cmd" or "cmd.exe" or "whoami" or
+                "hostname" or "ipconfig" or "tasklist" or "sc.exe" or "netstat"))
         {
-            ExecutionStatus.Text = "El constructor guiado Linux no corresponde a Windows.";
+            ExecutionStatus.Text = "Este módulo es para Linux. Seleccioná un servidor Linux.";
             return;
         }
+
         _activeGuide = definition;
         _activePlan = null;
         _orderedGuideFlags.Clear();
-        foreach (var option in definition.Flags.Where(x => x.SelectedByDefault))
-            _orderedGuideFlags.Add(new GuidedFlagChoice(option.Token, option.InitialValue));
+        foreach (var flag in definition.Flags.Where(x => x.SelectedByDefault))
+            _orderedGuideFlags.Add(new GuidedFlagChoice(flag.Token, flag.InitialValue));
 
         GuidedPanel.IsVisible = true;
         GuidedTitle.Text = AdminCommandCatalog.Dot(definition.Risk) + " " + definition.TitleEs +
@@ -101,75 +80,82 @@ public partial class SessionView
         GuidedDescription.Text = definition.ExplanationEs;
         GuidedError.Text = "";
         _batchEnabled = definition.SupportsBatch && quantity > 1;
-        CreateGuidedArguments(quantity);
+        BuildOperandInputs(quantity);
         RebuildGuidedFlags();
         RecomputeGuidedPreview();
     }
 
-    private void CreateGuidedArguments(int quantity)
+    private void BuildOperandInputs(int initialQuantity)
     {
         GuidedArguments.Children.Clear();
-        _accountNameBox = _batchCountBox = _batchStartBox = _batchDigitsBox = null;
-        if (_activeGuide?.Id != "adduser") return;
-        GuidedArguments.Children.Add(new TextBlock
-        {
-            Text = "Nombre de usuario o prefijo del lote", FontWeight = Avalonia.Media.FontWeight.SemiBold
-        });
-        _accountNameBox = new TextBox { Watermark = "Ej.: alumno", Text = "" };
-        _accountNameBox.TextChanged += (_, _) => RecomputeGuidedPreview();
-        GuidedArguments.Children.Add(_accountNameBox);
+        _guideFields.Clear();
+        _batchCountBox = _batchStartBox = _batchDigitsBox = null;
+        if (_activeGuide is null) return;
 
-        var batchSwitch = new CheckBox
+        foreach (var definition in _activeGuide.Operands)
         {
-            Content = "Crear varios usuarios con un solo comando (ej.: alumno01…alumno20)",
+            var field = definition;
+            GuidedArguments.Children.Add(new TextBlock
+            {
+                Text = definition.LabelEs + (definition.Required ? " *" : ""),
+                FontWeight = Avalonia.Media.FontWeight.SemiBold
+            });
+            GuidedArguments.Children.Add(new TextBlock
+            {
+                Text = definition.DescriptionEs,
+                Opacity = 0.7,
+                TextWrapping = Avalonia.Media.TextWrapping.Wrap
+            });
+            var input = new TextBox
+            {
+                Text = definition.InitialValue,
+                Watermark = definition.Placeholder
+            };
+            input.TextChanged += (_, _) => RecomputeGuidedPreview();
+            _guideFields.Add(field.Name, input);
+            GuidedArguments.Children.Add(input);
+        }
+
+        if (!_activeGuide.SupportsBatch) return;
+        var batchToggle = new CheckBox
+        {
+            Content = "Crear un lote con nombres o valores numerados",
             IsChecked = _batchEnabled
         };
-        GuidedArguments.Children.Add(batchSwitch);
-        var batchFields = new StackPanel { Spacing = 6, IsVisible = _batchEnabled };
-        GuidedArguments.Children.Add(batchFields);
-        batchFields.Children.Add(new TextBlock
+        GuidedArguments.Children.Add(batchToggle);
+        var fields = new StackPanel { Spacing = 6, IsVisible = _batchEnabled };
+        GuidedArguments.Children.Add(fields);
+        fields.Children.Add(new TextBlock { Text = "Cantidad (1–100)" });
+        _batchCountBox = new TextBox { Text = initialQuantity.ToString(), Width = 110,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left };
+        fields.Children.Add(_batchCountBox);
+        fields.Children.Add(new TextBlock { Text = "Número inicial" });
+        _batchStartBox = new TextBox { Text = "1", Width = 110,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left };
+        fields.Children.Add(_batchStartBox);
+        fields.Children.Add(new TextBlock { Text = "Mínimo de dígitos" });
+        _batchDigitsBox = new TextBox { Text = "2", Width = 110,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left };
+        fields.Children.Add(_batchDigitsBox);
+        fields.Children.Add(new TextBlock
         {
-            Text = "Cantidad de usuarios (1–100)"
-        });
-        _batchCountBox = new TextBox
-        {
-            Text = Math.Max(1, quantity).ToString(),
-            Watermark = "20", Width = 120, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left
-        };
-        batchFields.Children.Add(_batchCountBox);
-        batchFields.Children.Add(new TextBlock { Text = "Número inicial" });
-        _batchStartBox = new TextBox
-        {
-            Text = "1", Watermark = "1", Width = 120,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left
-        };
-        batchFields.Children.Add(_batchStartBox);
-        batchFields.Children.Add(new TextBlock { Text = "Dígitos mínimos del sufijo" });
-        _batchDigitsBox = new TextBox
-        {
-            Text = "2", Watermark = "2", Width = 120,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left
-        };
-        batchFields.Children.Add(_batchDigitsBox);
-        batchFields.Children.Add(new TextBlock
-        {
-            Text = "Ejemplo: prefijo alumno, cantidad 20, inicio 1, dígitos 2 → alumno01…alumno20. " +
-                   "Si un usuario falla, el lote se detiene con el código de error.",
+            Text = "Ej.: prefijo alumno, cantidad 20, número inicial 1 → alumno01…alumno20. " +
+                "Se detiene en el primer error.",
             TextWrapping = Avalonia.Media.TextWrapping.Wrap
         });
         _batchCountBox.TextChanged += (_, _) => RecomputeGuidedPreview();
         _batchStartBox.TextChanged += (_, _) => RecomputeGuidedPreview();
         _batchDigitsBox.TextChanged += (_, _) => RecomputeGuidedPreview();
-        batchSwitch.Checked += (_, _) =>
+        batchToggle.Checked += (_, _) =>
         {
             _batchEnabled = true;
-            batchFields.IsVisible = true;
+            fields.IsVisible = true;
             RecomputeGuidedPreview();
         };
-        batchSwitch.Unchecked += (_, _) =>
+        batchToggle.Unchecked += (_, _) =>
         {
             _batchEnabled = false;
-            batchFields.IsVisible = false;
+            fields.IsVisible = false;
             RecomputeGuidedPreview();
         };
     }
@@ -179,93 +165,93 @@ public partial class SessionView
         GuidedOptions.Children.Clear();
         if (_activeGuide is null) return;
         var selected = _activeGuide.Flags
-            .Where(o => _orderedGuideFlags.Any(x => x.Token == o.Token))
-            .OrderBy(o => _orderedGuideFlags.FindIndex(x => x.Token == o.Token));
+            .Where(x => _orderedGuideFlags.Any(c => c.Token == x.Token))
+            .OrderBy(x => _orderedGuideFlags.FindIndex(c => c.Token == x.Token));
         var unselected = _activeGuide.Flags
-            .Where(o => !_orderedGuideFlags.Any(x => x.Token == o.Token));
-        foreach (var option in selected.Concat(unselected))
+            .Where(x => !_orderedGuideFlags.Any(c => c.Token == x.Token));
+
+        foreach (var flag in selected.Concat(unselected))
         {
-            var item = option;
-            var position = _orderedGuideFlags.FindIndex(x => x.Token == item.Token);
+            var choice = flag;
+            var position = _orderedGuideFlags.FindIndex(x => x.Token == choice.Token);
             var enabled = position >= 0;
-            var outer = new StackPanel { Spacing = 3 };
-            var top = new StackPanel
+            var container = new StackPanel { Spacing = 3 };
+            var controls = new StackPanel
             {
                 Orientation = Avalonia.Layout.Orientation.Horizontal,
-                Spacing = 8
+                Spacing = 7
             };
-            var check = new CheckBox
+            var toggle = new CheckBox
             {
                 IsChecked = enabled,
-                Content = item.LabelEs + "  (" + item.Token + ")",
+                Content = choice.LabelEs + " (" + choice.Token + ")",
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
             };
-            ToolTip.SetTip(check, item.DescriptionEs);
-            top.Children.Add(check);
+            ToolTip.SetTip(toggle, choice.DescriptionEs);
+            controls.Children.Add(toggle);
             if (enabled)
             {
-                var up = new Button
-                {
-                    Content = "↑", IsEnabled = position > 0, MinWidth = 33
-                };
-                var down = new Button
-                {
-                    Content = "↓", IsEnabled = position < _orderedGuideFlags.Count - 1, MinWidth = 33
-                };
-                up.Click += (_, _) => MoveGuidedOption(item.Token, -1);
-                down.Click += (_, _) => MoveGuidedOption(item.Token, 1);
-                top.Children.Add(up);
-                top.Children.Add(down);
+                var up = new Button { Content = "↑", IsEnabled = position > 0 };
+                var down = new Button { Content = "↓",
+                    IsEnabled = position < _orderedGuideFlags.Count - 1 };
+                up.Click += (_, _) => MoveGuidedOption(choice.Token, -1);
+                down.Click += (_, _) => MoveGuidedOption(choice.Token, 1);
+                controls.Children.Add(up);
+                controls.Children.Add(down);
             }
-            outer.Children.Add(top);
-            outer.Children.Add(new TextBlock
+            container.Children.Add(controls);
+            container.Children.Add(new TextBlock
             {
-                Text = item.DescriptionEs, Opacity = 0.75,
+                Text = choice.DescriptionEs,
+                Opacity = 0.75,
                 TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-                Margin = new Thickness(22, 0, 0, 0)
+                Margin = new Thickness(20, 0, 0, 0)
             });
-            if (enabled && item.ValueKind != GuidedValueKind.None)
+            if (enabled && choice.ValueKind != GuidedValueKind.None)
             {
-                var input = new TextBox
+                var valueInput = new TextBox
                 {
-                    Watermark = item.Placeholder,
+                    Watermark = choice.Placeholder,
                     Text = _orderedGuideFlags[position].Value,
-                    Margin = new Thickness(22, 0, 0, 0)
+                    Margin = new Thickness(20, 0, 0, 0)
                 };
-                input.TextChanged += (_, _) =>
+                valueInput.TextChanged += (_, _) =>
                 {
-                    var index = _orderedGuideFlags.FindIndex(x => x.Token == item.Token);
-                    if (index < 0) return;
-                    _orderedGuideFlags[index] =
-                        _orderedGuideFlags[index] with { Value = input.Text ?? "" };
+                    var idx = _orderedGuideFlags.FindIndex(x => x.Token == choice.Token);
+                    if (idx < 0) return;
+                    _orderedGuideFlags[idx] = _orderedGuideFlags[idx] with
+                    {
+                        Value = valueInput.Text ?? ""
+                    };
                     RecomputeGuidedPreview();
                 };
-                outer.Children.Add(input);
+                container.Children.Add(valueInput);
             }
-            check.Checked += (_, _) =>
+            toggle.Checked += (_, _) =>
             {
-                if (_orderedGuideFlags.All(x => x.Token != item.Token))
-                    _orderedGuideFlags.Add(new GuidedFlagChoice(item.Token, item.InitialValue));
+                if (_orderedGuideFlags.All(x => x.Token != choice.Token))
+                    _orderedGuideFlags.Add(
+                        new GuidedFlagChoice(choice.Token, choice.InitialValue));
                 RebuildGuidedFlags();
                 RecomputeGuidedPreview();
             };
-            check.Unchecked += (_, _) =>
+            toggle.Unchecked += (_, _) =>
             {
-                _orderedGuideFlags.RemoveAll(x => x.Token == item.Token);
+                _orderedGuideFlags.RemoveAll(x => x.Token == choice.Token);
                 RebuildGuidedFlags();
                 RecomputeGuidedPreview();
             };
-            GuidedOptions.Children.Add(outer);
+            GuidedOptions.Children.Add(container);
         }
     }
 
-    private void MoveGuidedOption(string token, int step)
+    private void MoveGuidedOption(string token, int direction)
     {
-        var index = _orderedGuideFlags.FindIndex(x => x.Token == token);
-        var other = index + step;
-        if (index < 0 || other < 0 || other >= _orderedGuideFlags.Count) return;
-        (_orderedGuideFlags[index], _orderedGuideFlags[other]) =
-            (_orderedGuideFlags[other], _orderedGuideFlags[index]);
+        var current = _orderedGuideFlags.FindIndex(x => x.Token == token);
+        var next = current + direction;
+        if (current < 0 || next < 0 || next >= _orderedGuideFlags.Count) return;
+        (_orderedGuideFlags[current], _orderedGuideFlags[next]) =
+            (_orderedGuideFlags[next], _orderedGuideFlags[current]);
         RebuildGuidedFlags();
         RecomputeGuidedPreview();
     }
@@ -276,23 +262,24 @@ public partial class SessionView
         try
         {
             var quantity = _batchEnabled ? ParsePositive(_batchCountBox?.Text, -1) : 1;
-            var first = _batchEnabled ? ParsePositive(_batchStartBox?.Text, -1) : 1;
+            var start = _batchEnabled ? ParsePositive(_batchStartBox?.Text, -1) : 1;
             var digits = _batchEnabled ? ParsePositive(_batchDigitsBox?.Text, -1) : 2;
+            var values = _guideFields.ToDictionary(x => x.Key,
+                x => x.Value.Text ?? "", StringComparer.Ordinal);
             _activePlan = GuidedCommandCatalog.Build(
-                _activeGuide, _orderedGuideFlags,
-                _accountNameBox?.Text, quantity, first, digits);
+                _activeGuide, _orderedGuideFlags, values, quantity, start, digits);
             GuidedError.Text = "";
             GuidedPlanInfo.Text = _activePlan.Note +
                 " · Operaciones previstas: " + _activePlan.Operations +
-                ". El comando es editable abajo; los cambios manuales se clasificarán en rojo.";
+                ". Podés editar el comando antes de ejecutarlo.";
             AssistedCommand.Text = _activePlan.Command;
             UpdateRiskDisplay();
         }
         catch (Exception ex) when (ex is ArgumentException or NotSupportedException)
         {
             _activePlan = null;
-            GuidedError.Text = "Completá o corregí el formulario: " + ex.Message;
-            GuidedPlanInfo.Text = "No hay comando válido para ejecutar.";
+            GuidedError.Text = "Completá el formulario: " + ex.Message;
+            GuidedPlanInfo.Text = "No hay un comando válido para ejecutar.";
             AssistedCommand.Text = "";
             UpdateRiskDisplay();
         }
@@ -306,6 +293,7 @@ public partial class SessionView
         _activeGuide = null;
         _activePlan = null;
         _orderedGuideFlags.Clear();
+        _guideFields.Clear();
         GuidedPanel.IsVisible = false;
         GuidedError.Text = "";
     }
