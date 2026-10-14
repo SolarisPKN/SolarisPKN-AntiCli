@@ -94,6 +94,12 @@ public partial class SessionView
     {
         if (_flowNodes.Count >= 100) { FlowStatus.Text = "Máximo 100 bloques."; return; }
         var command = (AutomationStepInput.Text ?? "").Trim();
+        if (command.Length == 0 &&
+            AutomationStepsList.SelectedIndex is >= 0 and var index &&
+            index < _automationSteps.Count)
+            command = _automationSteps[index];
+        if (command.Length == 0)
+            command = (AssistedCommand.Text ?? "").Trim();
         if (command.Length == 0) command = kind == FlowNodeKind.Command
             ? "echo 'configurar paso'" : "test -f /etc/os-release";
         var id = "flow-" + (++_flowSerial) + "-" + Guid.NewGuid().ToString("N")[..6];
