@@ -34,6 +34,7 @@ public partial class SessionView
             var graph = AutomationGraphFile.Parse(await reader.ReadToEndAsync());
             _flowNodes.Clear(); _flowNodes.AddRange(graph.Nodes);
             _flowEdges.Clear(); _flowEdges.AddRange(graph.Edges);
+            _flowStartId = graph.StartNodeId ?? graph.Nodes.FirstOrDefault()?.Id;
             _flowSelected = null;
             _flowEdited = true;
             RenderFlowDiagram();
