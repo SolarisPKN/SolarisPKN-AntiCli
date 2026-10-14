@@ -229,6 +229,11 @@ public static class GuidedCommandCatalog
             throw new ArgumentException("Numeración de lote inválida.");
         if (orderedChoices.DistinctBy(x => x.Token).Count() != orderedChoices.Count)
             throw new ArgumentException("No repitas una opción en el mismo comando.");
+        if (orderedChoices.Count > 0 && !guide.Template.Contains("{flags}", StringComparison.Ordinal))
+            throw new ArgumentException("La plantilla de este comando no admite flags: no se pueden agregar al final.");
+        if (orderedChoices.Any(x => x.Token is "--help" or "--version") &&
+            (orderedChoices.Count > 1 || guide.Operands.Count > 0))
+            throw new ArgumentException("Las opciones --help y --version se ejecutan solas, sin archivos ni otras flags.");
         if (guide.RequiredAnyFlags is { Length: > 0 } mandatory &&
             !orderedChoices.Any(x => mandatory.Contains(x.Token)))
             throw new ArgumentException("El módulo necesita una de estas opciones: " + string.Join(", ", mandatory));
