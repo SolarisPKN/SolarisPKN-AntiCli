@@ -1,3 +1,20 @@
+## Bucles controlados en el diagrama (FOR, WHILE, UNTIL)
+
+El editor del diagrama ahora incluye el bloque **«+ Bucle ↺»**. Es un control reutilizable para **cualquier comando**, no solo `adduser`. Seleccioná el bloque y configurá:
+
+- **FOR:** ejecuta el cuerpo hasta una cantidad fija de veces.
+- **WHILE:** antes de cada repetición, ejecuta el comando de condición y sigue mientras devuelva código `0`.
+- **UNTIL:** antes de cada repetición, ejecuta el comando de condición y sigue mientras NO devuelva código `0`.
+- **Máximo de iteraciones:** valor obligatorio entre **1 y 1000**, también para WHILE y UNTIL. Evita repetir indefinidamente por una condición que nunca cambie.
+
+**Cómo unir los bloques:** desde **Bucle ↺**, usá la flecha **«Cuerpo del bucle»** hacia el primer bloque de comando. Encadená otros comandos del cuerpo con **«Conectar →»**. Desde el último comando, usá **«Retorno ↺»** hacia el mismo bloque Bucle. Para continuar después de las repeticiones, conectá una flecha normal **«Conectar →» desde el bloque Bucle** hacia el siguiente paso.
+
+Ejemplo de bucle `FOR` (tres repeticiones): `Bucle FOR 3 →(Cuerpo) echo 'hola' →(Retorno) Bucle` y `Bucle →(Siguiente) Fin`. Para WHILE y UNTIL, el campo de comando del bloque Bucle contiene la condición (p.ej. `test -f /tmp/seguir`); el código de salida se interpreta sin ejecutar el cuerpo si no se cumple la regla.
+
+**Exportación real:** una cadena lineal que contenga bucles estructurados como los descritos puede convertirse en un script POSIX `.sh`, respetando las variables de la tabla del automatizador. Los límites se comprueban también en el script generado. La exportación no ejecuta el script ni abre SSH.
+
+**Restricciones actuales:** los bucles deben tener un cuerpo de comandos conectado y retorno al mismo bloque, **sin anidamiento, ramificaciones IF/OR/XOR ni paralelismo interno**. Pueden existir varios bucles independientes y consecutivos dentro de una cadena. El guardado de JSON permite diseños con conexiones pendientes; solo se exportan los diagramas cuya ejecución sea inequívoca. Los ciclos arbitrarios entre bloques siguen prohibidos. No hay todavía simulación visual de pasos, depuración ni ejecución remota del script desde esta pantalla. Si un comando de cuerpo falla y está activada la política predeterminada de detener al primer error, el script termina.
+
 ## Editor de diagrama en ventana externa
 
 La vista de diagrama **no ocupa espacio al abrir la pestaña Automatizaciones**. Para visualizarla, pulsá **«Abrir diagrama ↗»**, junto a la vista previa y exportación. Aparece una ventana independiente que se puede mover a otro monitor, maximizar con su botón o con `F11`, restaurar y cerrar con **«Volver a AntiCLI ↙»**.
