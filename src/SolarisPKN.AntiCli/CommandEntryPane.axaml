@@ -1,11 +1,15 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="SolarisPKN.AntiCli.CommandEntryPane">
-<Border BorderBrush="#777777" BorderThickness="1" CornerRadius="7" Padding="8">
- <StackPanel Spacing="4">
-  <StackPanel Orientation="Horizontal" Spacing="8">
+<Border BorderBrush="#777777" BorderThickness="1" CornerRadius="7" Padding="8" MinHeight="0">
+ <Grid RowDefinitions="Auto,Auto,*" RowSpacing="5" MinHeight="0">
+  <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
    <TextBlock Text="Comandos manuales · entrada fija" FontWeight="SemiBold" VerticalAlignment="Center"/>
    <Button x:Name="ShowConsoleButton" Content="Mostrar consola" IsVisible="False"/>
   </StackPanel>
-  <TextBox x:Name="AssistedCommand" Watermark="Escribí aquí cualquier comando SSH o usá un formulario"/>
+  <TextBox x:Name="AssistedCommand" Grid.Row="1"
+           Watermark="Escribí aquí cualquier comando SSH o usá un formulario"/>
+  <ScrollViewer Grid.Row="2" MinHeight="0" VerticalScrollBarVisibility="Auto"
+                HorizontalScrollBarVisibility="Auto">
+   <StackPanel Spacing="5">
   <WrapPanel Orientation="Horizontal" ItemSpacing="6" LineSpacing="4">
    <Button x:Name="CopyCommandButton" Content="Copiar"/>
    <Button x:Name="PasteCommandButton" Content="Pegar"/>
@@ -18,6 +22,8 @@
   <TextBlock x:Name="ExecutionStatus" Text="Sin comandos ejecutados." TextWrapping="Wrap" FontSize="11"/>
   <WrapPanel x:Name="TokenButtons" IsVisible="False"/>
   <TextBlock x:Name="BlockPreview" IsVisible="False" Text="Bloques: (vacío)"/>
- </StackPanel>
+   </StackPanel>
+  </ScrollViewer>
+ </Grid>
 </Border>
 </UserControl>
