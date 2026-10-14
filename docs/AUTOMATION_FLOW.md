@@ -1,3 +1,11 @@
+## Retorno condicional a un comando anterior
+
+Podés crear **Comando 1 → Comando 2 → IF 3**. Si el test del IF devuelve código **0 (verdadero)**, toma **Verdadero → Comando 4**, y desde el 4 usás **Retorno ↺ → Comando 1**. La salida Falso, si no está conectada, termina el flujo. **No hay contador ni límite obligatorio**: repetirá hasta que cambie la condición.
+
+Para un diagrama cíclico sin nodo de entrada evidente, elegí Comando 1 y pulsá **«▶ Marcar inicio»**. El nodo inicial se guarda en el JSON. También podés usar la flecha normal «Conectar →» de 4 a 1.
+
+La vista previa traduce el diagrama a una máquina de estados POSIX (case/while) con las flechas explícitas. AntiCLI **no ejecuta scripts desde esta pantalla**. Para detener el proceso, usá **Ctrl+C / SIGINT** en la terminal que lo controla, o gestioná el proceso desde el sistema si quedó en segundo plano. Cuando corresponda, agregá un paso `sleep 1` para no saturar CPU, red ni logs.
+
 ## Bucles controlados en el diagrama (FOR, WHILE, UNTIL)
 
 El editor del diagrama ahora incluye el bloque **«+ Bucle ↺»**. Es un control reutilizable para **cualquier comando**, no solo `adduser`. Seleccioná el bloque y configurá:
@@ -5,15 +13,15 @@ El editor del diagrama ahora incluye el bloque **«+ Bucle ↺»**. Es un contro
 - **FOR:** ejecuta el cuerpo hasta una cantidad fija de veces.
 - **WHILE:** antes de cada repetición, ejecuta el comando de condición y sigue mientras devuelva código `0`.
 - **UNTIL:** antes de cada repetición, ejecuta el comando de condición y sigue mientras NO devuelva código `0`.
-- **Máximo de iteraciones:** valor obligatorio entre **1 y 1000**, también para WHILE y UNTIL. Evita repetir indefinidamente por una condición que nunca cambie.
+- **Límite opcional:** FOR requiere 1 a 1000 iteraciones; WHILE y UNTIL aceptan **0 = sin límite**, para comprobar hasta que la condición cambie. Puede interrumpirse manualmente.
 
-**Cómo unir los bloques:** desde **Bucle ↺**, usá la flecha **«Cuerpo del bucle»** hacia el primer bloque de comando. Encadená otros comandos del cuerpo con **«Conectar →»**. Desde el último comando, usá **«Retorno ↺»** hacia el mismo bloque Bucle. Para continuar después de las repeticiones, conectá una flecha normal **«Conectar →» desde el bloque Bucle** hacia el siguiente paso.
+**Cómo unir los bloques:** desde **Bucle ↺**, usá la flecha **«Cuerpo del bucle»** hacia el primer bloque de comando. Encadená otros comandos del cuerpo con **«Conectar →»**. Desde el último comando, usá **«Retorno ↺»** hacia el mismo bloque Bucle; también podés devolverlo a cualquier otro comando anterior sin un bloque Bucle dedicado. Para continuar después de las repeticiones, conectá una flecha normal **«Conectar →» desde el bloque Bucle** hacia el siguiente paso.
 
 Ejemplo de bucle `FOR` (tres repeticiones): `Bucle FOR 3 →(Cuerpo) echo 'hola' →(Retorno) Bucle` y `Bucle →(Siguiente) Fin`. Para WHILE y UNTIL, el campo de comando del bloque Bucle contiene la condición (p.ej. `test -f /tmp/seguir`); el código de salida se interpreta sin ejecutar el cuerpo si no se cumple la regla.
 
 **Exportación real:** una cadena lineal que contenga bucles estructurados como los descritos puede convertirse en un script POSIX `.sh`, respetando las variables de la tabla del automatizador. Los límites se comprueban también en el script generado. La exportación no ejecuta el script ni abre SSH.
 
-**Restricciones actuales:** los bucles deben tener un cuerpo de comandos conectado y retorno al mismo bloque, **sin anidamiento, ramificaciones IF/OR/XOR ni paralelismo interno**. Pueden existir varios bucles independientes y consecutivos dentro de una cadena. El guardado de JSON permite diseños con conexiones pendientes; solo se exportan los diagramas cuya ejecución sea inequívoca. Los ciclos arbitrarios entre bloques siguen prohibidos. No hay todavía simulación visual de pasos, depuración ni ejecución remota del script desde esta pantalla. Si un comando de cuerpo falla y está activada la política predeterminada de detener al primer error, el script termina.
+**Restricciones actuales:** el generador interpreta comandos, IF con ramas Verdadero/Falso y retornos a bloques anteriores, además de bucles FOR/WHILE/UNTIL. Los nodos lógicos independientes AND/OR/XOR, la ejecución paralela y las uniones sincronizadas se bloquean al exportar. No hay simulador visual ni ejecución remota directa del script.
 
 ## Editor de diagrama en ventana externa
 
@@ -48,11 +56,11 @@ En **4 · Automatizaciones** podés alternar entre:
 
 El editor del diagrama permite modificar nombre y comando de cada bloque, borrar nodos y sus conexiones, y guardar/abrir un archivo JSON del grafo con posiciones y flechas. Los nodos de una secuencia simple se crean automáticamente desde los pasos.
 
-**Estado semántico:** la generación de scripts desde una cadena estrictamente lineal de comandos está implementada. Los nodos lógicos, ramificaciones y paralelismo **se pueden diseñar y guardar, pero NO se exportan aún a comandos ejecutables**. Si el grafo se modifica para incluir esas estructuras, la exportación `.sh` se bloquea con un mensaje. No se simula que una flecha IF o una flecha «Paralelo» ejecute el comportamiento requerido.
+**Estado semántico:** se exportan secuencias y **IF con ramas Verdadero/Falso, retornos a cualquier nodo anterior y ciclos condicionales voluntariamente indefinidos**, mediante una máquina de estados POSIX. AND/OR/XOR como nodos separados y ejecución paralela aún no se exportan. Si Falso no tiene salida, termina el flujo para esa fila.
 
 ### ¿Qué faltaría para convertir el diagrama en una automatización real?
 
-- Evaluación explícita del resultado de las condiciones con puertos verdaderos/falsos y control de errores.
+- Depuración paso a paso, reintentos con espera configurable y cancelación directa de procesos remotos desde AntiCLI (actualmente solo se exportan scripts).
 - Definir AND/OR como condiciones booleanas y XOR como exclusión lógica con operandos claros; no son simplemente conectores.
 - Paralelismo real: máximo de ejecuciones simultáneas, sincronización en un nodo de unión y política de fallos parciales.
 - Gestión de variables entre nodos, salidas de procesos, temporizadores, reintentos, acciones de reversión cuando correspondan y control de secretos.
@@ -64,6 +72,6 @@ El editor del diagrama permite modificar nombre y comando de cada bloque, borrar
 
 1. Añadí dos comandos sin valores peligrosos; generá el diagrama lineal, mové los nodos, conectalos con flecha «Después».
 2. Generá un archivo `.sh` y verificá el orden de los dos pasos.
-3. Agregá un nodo IF, enlazá una flecha «Verdadero» y probá exportar: debe **rechazar la exportación**, explicando que la semántica está pendiente.
+3. Agregá IF con **Verdadero → Comando 4 → Retorno ↺ Comando 1**, y Falso sin conectar: el script debe exportarse y terminar al salir por Falso.
 4. Guardá el grafo JSON, cerralo, abrilo nuevamente y verificá posiciones y conexiones.
 5. Armá 20 filas numeradas con dos columnas y revisá el script sin ejecutarlo.
