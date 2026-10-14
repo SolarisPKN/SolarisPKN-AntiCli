@@ -624,9 +624,13 @@ public partial class SessionView : UserControl, IDisposable
     {
         // Match a JSON schema; never manufacture buttons by splitting command text.
         // Any catalog entry without a detailed schema still has a generic form.
-        var definition = GuidedCommandCatalog.All.FirstOrDefault(x =>
+        var admin = _connectedProfile is null ? null :
+            AdminCommandCatalog.Find(_connectedProfile.Platform, action.Command);
+        var definition = admin is not null
+            ? GuidedCommandCatalog.Resolve(admin)
+            : GuidedCommandCatalog.All.FirstOrDefault(x =>
                 x.PresetCommands?.Contains(action.Command, StringComparer.Ordinal) == true)
-            ?? GuidedCommandCatalog.All.FirstOrDefault(x =>
+              ?? GuidedCommandCatalog.All.FirstOrDefault(x =>
                 string.Equals(x.Template, action.Command, StringComparison.Ordinal));
         if (definition is not null)
         {
