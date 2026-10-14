@@ -232,7 +232,7 @@
                   </WrapPanel>
                   <Button Content="Aplicar título/comando al nodo" Click="FlowUpdateNodeClicked"
                           HorizontalAlignment="Left"/>
-                  <TextBlock x:Name="FlowStatus" Text="Podés conectar Retorno ↺ a cualquier comando anterior. IF Verdadero continúa; si no conectás Falso, termina. Marcá ▶ Inicio donde deba comenzar, incluso en un ciclo. Sin límite obligatorio; detené manualmente los flujos indefinidos."
+                  <TextBlock x:Name="FlowStatus" Text="Podés conectar Retorno ↺ a cualquier comando anterior. IF ejecuta el test: 0 = Verdadero, otro código = Falso. Cualquier salida sin conexión termina; conectá Falso → reintento para esperar hasta OK. Marcá ▶ Inicio donde deba comenzar, incluso en un ciclo. Sin límite obligatorio; detené manualmente los flujos indefinidos."
                              TextWrapping="Wrap" FontSize="12"/>
                 </StackPanel>
                 <ScrollViewer Grid.Row="3" MinHeight="0"
