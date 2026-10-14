@@ -72,7 +72,9 @@
         <ScrollViewer>
           <StackPanel Margin="15" Spacing="12">
             <TextBlock x:Name="RemoteInfo" FontWeight="SemiBold" Text="Sesión no autenticada"/>
-            <TextBlock Text="Acciones disponibles para la plataforma elegida (tocá una para ver sus partes)." TextWrapping="Wrap"/>
+            <TextBlock Text="Elegí un módulo o escribí cualquier comando. 🟢 Consulta · 🟡 Precaución · 🔴 Alto riesgo / no catalogado." TextWrapping="Wrap"/>
+            <ComboBox x:Name="ModuleGroupSelector" Width="330" HorizontalAlignment="Left"
+                      SelectionChanged="ModuleGroupChanged" PlaceholderText="Seleccioná módulo"/>
             <WrapPanel x:Name="OptionButtons" Orientation="Horizontal"/>
             <TextBlock FontWeight="SemiBold" Text="Constructor visual: elegí los fragmentos"/>
             <WrapPanel x:Name="TokenButtons" Orientation="Horizontal"/>
@@ -84,6 +86,12 @@
             <TextBlock FontWeight="SemiBold" Text="Consola asistida"/>
             <TextBox x:Name="AssistedCommand" Watermark="Escribí un comando o completalo con los botones"
                      TextChanged="AssistedTextChanged" KeyDown="AssistedKeyDown"/>
+            <TextBlock x:Name="RiskIndicator" FontWeight="SemiBold"
+                       Text="🟢 Riesgo bajo: consulta" TextWrapping="Wrap"/>
+            <CheckBox x:Name="UseSudoToggle" Content="Activar sudo para esta ejecución (Linux)" IsChecked="False"
+                      Checked="SudoToggleChanged" Unchecked="SudoToggleChanged"/>
+            <TextBlock Text="Un clic ejecuta. El color indica riesgo, no solicita confirmación. sudo utiliza modo no interactivo (-n); necesita permisos sudo sin contraseña previa."
+                       FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
             <TextBlock Text="Flechas ↑ ↓: navegar · Tab/Enter: completar · Atajo de ejecución configurable en ⚙ Ajustes"
                        FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
             <WrapPanel x:Name="SuggestionButtons" Orientation="Horizontal"/>
@@ -91,7 +99,8 @@
             <TextBlock x:Name="HintDetail" Text="Elegí una sugerencia para ver la descripción." TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal" Spacing="8">
               <Button Content="Completar sugerencia" Click="UseSuggestionClicked"/>
-              <Button Content="Ejecutar consulta" Click="RunAssistedClicked"/>
+              <Button x:Name="RunAssistedButton" Content="🟢 Ejecutar comando" Click="RunAssistedClicked"
+                      Background="#187E51" Foreground="White"/>
             </StackPanel>
             <TextBlock x:Name="ExecutionStatus" Text="No hay acciones ejecutadas todavía." TextWrapping="Wrap"/>
             <TextBlock Text="Salida remota" FontWeight="SemiBold"/>
