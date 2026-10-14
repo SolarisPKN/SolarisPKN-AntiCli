@@ -3,6 +3,13 @@
 All notable changes to SolarisPKN-AntiCli are documented here.
 The project follows [Semantic Versioning](https://semver.org/) as a goal; early previews may change APIs and profile formats.
 
+## [Unreleased]
+
+### Added
+- First-connection SSH host-key discovery before authentication, with explicit TOFU warning and user acceptance.
+- Persistent host/port/algorithm SHA256 pins under the user's AppData, not in source control.
+- Changed SSH host keys are rejected; an explicit review action can replace them after independent verification.
+
 ## [0.1.0] — 2026-10-14 (first source preview)
 
 ### Added
