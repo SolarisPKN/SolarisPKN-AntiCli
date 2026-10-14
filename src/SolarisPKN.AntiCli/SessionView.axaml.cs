@@ -750,7 +750,7 @@ public partial class SessionView : UserControl, IDisposable
         {
             // Execute the complete shell expression as root, including pipes and
             // redirects. A single-quoted shell argument cannot escape by injecting '.
-            var escaped = command.Replace("'", "'\\"'\\"'", StringComparison.Ordinal);
+            var escaped = command.Replace("'", "'" + '"' + "'" + '"' + "'", StringComparison.Ordinal);
             remoteCommand = "sudo -n -- sh -c '" + escaped + "'";
         }
         try
