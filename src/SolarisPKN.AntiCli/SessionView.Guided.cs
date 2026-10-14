@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using SolarisPKN.AntiCli.Modules;
 
@@ -146,16 +147,11 @@ public partial class SessionView
         _batchCountBox.TextChanged += (_, _) => RecomputeGuidedPreview();
         _batchStartBox.TextChanged += (_, _) => RecomputeGuidedPreview();
         _batchDigitsBox.TextChanged += (_, _) => RecomputeGuidedPreview();
-        batchToggle.Checked += (_, _) =>
+        batchToggle.PropertyChanged += (_, e) =>
         {
-            _batchEnabled = true;
-            fields.IsVisible = true;
-            RecomputeGuidedPreview();
-        };
-        batchToggle.Unchecked += (_, _) =>
-        {
-            _batchEnabled = false;
-            fields.IsVisible = false;
+            if (e.Property != ToggleButton.IsCheckedProperty) return;
+            _batchEnabled = batchToggle.IsChecked == true;
+            fields.IsVisible = _batchEnabled;
             RecomputeGuidedPreview();
         };
     }
@@ -227,17 +223,17 @@ public partial class SessionView
                 };
                 container.Children.Add(valueInput);
             }
-            toggle.Checked += (_, _) =>
+            toggle.PropertyChanged += (_, e) =>
             {
-                if (_orderedGuideFlags.All(x => x.Token != choice.Token))
-                    _orderedGuideFlags.Add(
-                        new GuidedFlagChoice(choice.Token, choice.InitialValue));
-                RebuildGuidedFlags();
-                RecomputeGuidedPreview();
-            };
-            toggle.Unchecked += (_, _) =>
-            {
-                _orderedGuideFlags.RemoveAll(x => x.Token == choice.Token);
+                if (e.Property != ToggleButton.IsCheckedProperty) return;
+                if (toggle.IsChecked == true)
+                {
+                    if (_orderedGuideFlags.All(x => x.Token != choice.Token))
+                        _orderedGuideFlags.Add(
+                            new GuidedFlagChoice(choice.Token, choice.InitialValue));
+                }
+                else
+                    _orderedGuideFlags.RemoveAll(x => x.Token == choice.Token);
                 RebuildGuidedFlags();
                 RecomputeGuidedPreview();
             };
