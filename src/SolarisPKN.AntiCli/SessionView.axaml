@@ -144,6 +144,66 @@
           </StackPanel>
         </ScrollViewer>
       </TabItem>
+      <TabItem x:Name="AutomationTab" Header="4 · Automatizaciones">
+        <Grid Margin="8" ColumnDefinitions="*,*" ColumnSpacing="10" MinHeight="0">
+          <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" MinHeight="0">
+            <StackPanel Margin="5" Spacing="8">
+              <TextBlock Text="Constructor universal de cadenas y lotes" FontWeight="SemiBold" FontSize="19"/>
+              <TextBlock Text="Sumá pasos de cualquier módulo o escribí plantillas con variables {{nombre}}. Las filas comparten variables fijas o tienen valores distintos. Se exporta como script editable; no ejecuta ni instala nada automáticamente."
+                         TextWrapping="Wrap"/>
+              <TextBlock Text="Nombre del flujo"/>
+              <TextBox x:Name="AutomationName" Text="Mi automatización" Watermark="Nombre del flujo"/>
+              <TextBlock Text="Plantilla del siguiente paso" FontWeight="SemiBold"/>
+              <TextBox x:Name="AutomationStepInput" Watermark="Ej.: mkdir -p -- {{carpeta}}"/>
+              <WrapPanel ItemSpacing="6" LineSpacing="5">
+                <Button Content="+ Agregar paso" Click="AutomationAddStepClicked"/>
+                <Button Content="+ Comando actual de AntiCLI" Click="AutomationAddCurrentClicked"/>
+                <Button Content="↑ Subir" Click="AutomationMoveUpClicked"/>
+                <Button Content="↓ Bajar" Click="AutomationMoveDownClicked"/>
+                <Button Content="Quitar paso" Click="AutomationRemoveStepClicked"/>
+              </WrapPanel>
+              <ListBox x:Name="AutomationStepsList" MinHeight="80" MaxHeight="145"/>
+              <TextBlock Text="Variables fijas (nombre=valor, una por línea)" FontWeight="SemiBold"/>
+              <TextBox x:Name="AutomationConstants" AcceptsReturn="True" MinHeight="55" MaxHeight="110"
+                       FontFamily="Consolas,Monospace" Watermark="grupo=estudiantes"/>
+              <TextBlock Text="Tabla de variables por fila (separá columnas con ; o Tab)" FontWeight="SemiBold"/>
+              <TextBox x:Name="AutomationRows" AcceptsReturn="True" MinHeight="115" MaxHeight="230"
+                       FontFamily="Consolas,Monospace" TextWrapping="NoWrap"
+                       Text="usuario;carpeta&#10;alumno01;/home/alumno01&#10;alumno02;/home/alumno02"/>
+              <TextBlock Text="Para generar filas numeradas sin escribirlas una por una:"/>
+              <TextBox x:Name="AutomationColumns" Text="usuario;carpeta" Watermark="Columnas separadas por ;"/>
+              <TextBox x:Name="AutomationPrefixes" Text="alumno{n};/home/alumno{n}"
+                       Watermark="Un prefijo por columna, usando {n} para el número"/>
+              <WrapPanel ItemSpacing="7" LineSpacing="5">
+                <TextBlock Text="Cantidad" VerticalAlignment="Center"/>
+                <TextBox x:Name="AutomationCount" Width="55" Text="20"/>
+                <TextBlock Text="Inicio" VerticalAlignment="Center"/>
+                <TextBox x:Name="AutomationStart" Width="55" Text="1"/>
+                <TextBlock Text="Dígitos" VerticalAlignment="Center"/>
+                <TextBox x:Name="AutomationDigits" Width="55" Text="2"/>
+                <Button Content="Generar filas" Click="AutomationNumberedRowsClicked"/>
+              </WrapPanel>
+              <CheckBox x:Name="AutomationStepMajor" Content="Ejecutar primero un paso para todas las filas (si no, todos los pasos de cada fila)"/>
+              <CheckBox x:Name="AutomationContinueOnError" Content="Continuar con el siguiente paso si falla uno (por defecto se detiene)"/>
+              <TextBlock Text="Variables de plantilla: {{usuario}}, {{carpeta}}, {{grupo}}. Los valores se entrecomillan al generar el script. Revisá especialmente pasos destructivos y secretos." TextWrapping="Wrap" FontSize="12"/>
+            </StackPanel>
+          </ScrollViewer>
+          <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="7" MinHeight="0">
+            <TextBlock Text="Vista previa del script POSIX" FontWeight="SemiBold" FontSize="17"/>
+            <WrapPanel Grid.Row="1" ItemSpacing="6" LineSpacing="5">
+              <Button Content="Generar vista previa" Click="AutomationPreviewClicked"/>
+              <Button Content="Guardar .sh" Click="AutomationSaveScriptClicked"/>
+              <Button Content="Guardar proyecto JSON" Click="AutomationSaveProjectClicked"/>
+              <Button Content="Abrir proyecto JSON" Click="AutomationLoadProjectClicked"/>
+            </WrapPanel>
+            <TextBlock Grid.Row="2" x:Name="AutomationStatus" Text="Prepará los pasos; se podrá exportar sin conexión SSH." TextWrapping="Wrap"/>
+            <TextBox Grid.Row="3" x:Name="AutomationScriptPreview" AcceptsReturn="True" IsReadOnly="True"
+                     FontFamily="Consolas,Monospace" TextWrapping="NoWrap"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+          </Grid>
+        </Grid>
+      </TabItem>
     </TabControl>
   </Grid>
 </UserControl>
