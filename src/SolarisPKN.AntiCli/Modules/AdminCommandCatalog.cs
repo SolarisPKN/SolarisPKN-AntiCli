@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using SolarisPKN.AntiCli.Models;
 
 namespace SolarisPKN.AntiCli.Modules;
@@ -182,6 +181,9 @@ public static class AdminCommandCatalog
         if (text.Length == 0) return CommandRisk.Green;
         var known = Find(platform, text);
         if (known is not null) return known.Risk;
+        if (PlatformReadOnlyActions.For(platform).Any(x =>
+            string.Equals(x.Command, text, StringComparison.Ordinal)))
+            return CommandRisk.Green;
 
         // The conservative default avoids presenting arbitrary shell expressions as safe.
         return CommandRisk.Red;
