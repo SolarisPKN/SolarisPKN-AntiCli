@@ -157,6 +157,8 @@
               <TextBox x:Name="AutomationStepInput" Watermark="Ej.: mkdir -p -- {{carpeta}}"/>
               <WrapPanel ItemSpacing="6" LineSpacing="5">
                 <Button Content="+ Agregar paso" Click="AutomationAddStepClicked"/>
+                <Button Content="Editar paso" Click="AutomationEditStepClicked"/>
+                <Button Content="Reemplazar paso" Click="AutomationReplaceStepClicked"/>
                 <Button Content="+ Comando actual de AntiCLI" Click="AutomationAddCurrentClicked"/>
                 <Button Content="↑ Subir" Click="AutomationMoveUpClicked"/>
                 <Button Content="↓ Bajar" Click="AutomationMoveDownClicked"/>
@@ -188,20 +190,60 @@
               <TextBlock Text="Variables de plantilla: {{usuario}}, {{carpeta}}, {{grupo}}. Los valores se entrecomillan al generar el script. Revisá especialmente pasos destructivos y secretos." TextWrapping="Wrap" FontSize="12"/>
             </StackPanel>
           </ScrollViewer>
-          <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="7" MinHeight="0">
-            <TextBlock Text="Vista previa del script POSIX" FontWeight="SemiBold" FontSize="17"/>
-            <WrapPanel Grid.Row="1" ItemSpacing="6" LineSpacing="5">
-              <Button Content="Generar vista previa" Click="AutomationPreviewClicked"/>
-              <Button Content="Guardar .sh" Click="AutomationSaveScriptClicked"/>
-              <Button Content="Guardar proyecto JSON" Click="AutomationSaveProjectClicked"/>
-              <Button Content="Abrir proyecto JSON" Click="AutomationLoadProjectClicked"/>
-            </WrapPanel>
-            <TextBlock Grid.Row="2" x:Name="AutomationStatus" Text="Prepará los pasos; se podrá exportar sin conexión SSH." TextWrapping="Wrap"/>
-            <TextBox Grid.Row="3" x:Name="AutomationScriptPreview" AcceptsReturn="True" IsReadOnly="True"
-                     FontFamily="Consolas,Monospace" TextWrapping="NoWrap"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
-          </Grid>
+          <TabControl Grid.Column="1" MinHeight="0">
+            <TabItem Header="Diagrama visual">
+              <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="7" Margin="6" MinHeight="0">
+                <TextBlock Text="Bloques y flechas · arrastrá los nodos con el mouse" FontWeight="SemiBold"
+                           FontSize="16" TextWrapping="Wrap"/>
+                <WrapPanel Grid.Row="1" ItemSpacing="5" LineSpacing="5">
+                  <Button Content="+ Comando" Click="FlowAddCommandClicked"/>
+                  <Button Content="+ IF" Click="FlowAddIfClicked"/>
+                  <Button Content="+ AND" Click="FlowAddAndClicked"/>
+                  <Button Content="+ OR" Click="FlowAddOrClicked"/>
+                  <Button Content="+ XOR" Click="FlowAddXorClicked"/>
+                  <Button Content="+ Paralelo" Click="FlowAddParallelClicked"/>
+                  <Button Content="+ Unión" Click="FlowAddJoinClicked"/>
+                </WrapPanel>
+                <StackPanel Grid.Row="2" Spacing="5">
+                  <WrapPanel ItemSpacing="6" LineSpacing="5">
+                    <Button Content="Conectar →" Click="FlowConnectNextClicked"/>
+                    <Button Content="Verdadero" Click="FlowConnectTrueClicked"/>
+                    <Button Content="Falso" Click="FlowConnectFalseClicked"/>
+                    <Button Content="Paralelo" Click="FlowConnectParallelClicked"/>
+                    <Button Content="Quitar bloque" Click="FlowRemoveClicked"/>
+                    <Button Content="Guardar JSON" Click="FlowSaveClicked"/>
+                    <Button Content="Abrir JSON" Click="FlowLoadClicked"/>
+                  </WrapPanel>
+                  <TextBox x:Name="FlowNodeTitle" Watermark="Nombre del nodo seleccionado"/>
+                  <TextBox x:Name="FlowNodeCommand" Watermark="Comando del nodo / prueba del IF, p.ej.: test -f /etc/os-release"/>
+                  <Button Content="Aplicar título/comando al nodo" Click="FlowUpdateNodeClicked"
+                          HorizontalAlignment="Left"/>
+                  <TextBlock x:Name="FlowStatus" Text="Agregá bloques o generá pasos a la izquierda. Seleccioná un nodo para editarlo; para conectar, elegí el tipo de flecha y tocá origen y destino."
+                             TextWrapping="Wrap" FontSize="12"/>
+                </StackPanel>
+                <ScrollViewer Grid.Row="3" MinHeight="0"
+                              HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                  <Canvas x:Name="FlowCanvas" Width="1200" Height="900" Background="#1E2631"/>
+                </ScrollViewer>
+              </Grid>
+            </TabItem>
+            <TabItem Header="Script / proyecto">
+              <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="7" Margin="6" MinHeight="0">
+                <TextBlock Text="Vista previa del script POSIX" FontWeight="SemiBold" FontSize="17"/>
+                <WrapPanel Grid.Row="1" ItemSpacing="6" LineSpacing="5">
+                  <Button Content="Generar vista previa" Click="AutomationPreviewClicked"/>
+                  <Button Content="Guardar .sh" Click="AutomationSaveScriptClicked"/>
+                  <Button Content="Guardar proyecto JSON" Click="AutomationSaveProjectClicked"/>
+                  <Button Content="Abrir proyecto JSON" Click="AutomationLoadProjectClicked"/>
+                </WrapPanel>
+                <TextBlock Grid.Row="2" x:Name="AutomationStatus" Text="Prepará los pasos; se podrá exportar sin conexión SSH." TextWrapping="Wrap"/>
+                <TextBox Grid.Row="3" x:Name="AutomationScriptPreview" AcceptsReturn="True" IsReadOnly="True"
+                         FontFamily="Consolas,Monospace" TextWrapping="NoWrap"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+              </Grid>
+            </TabItem>
+          </TabControl>
         </Grid>
       </TabItem>
     </TabControl>
