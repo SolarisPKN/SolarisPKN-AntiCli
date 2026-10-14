@@ -58,6 +58,7 @@ You can also double-click `COMPILAR_ANTICLI.cmd`. The local published executable
 - [Assisted CLI](docs/ASSISTED_CLI.md)
 - [Administrative command modules: 146 actions](docs/COMMAND_MODULES.md) ([Español](docs/COMMAND_MODULES.es.md))
 - [Universal JSON command engine, Yocto and APT](docs/GENERIC_COMMAND_ENGINE.md) ([Español](docs/GENERIC_COMMAND_ENGINE.es.md))
+- [Visual command chains, batch variables and workflow diagram (Spanish)](docs/AUTOMATION_FLOW.md)
 - [Multiple sessions](docs/MULTI-SESSION.md)
 - [Appearance and keyboard preferences](docs/SETTINGS.md)
 - [Help-discovery security](docs/SCANNER-SECURITY.md)
