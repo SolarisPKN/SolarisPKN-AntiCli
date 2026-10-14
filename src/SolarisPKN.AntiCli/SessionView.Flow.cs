@@ -83,6 +83,7 @@ public partial class SessionView
     }
 
     private void FlowAddCommandClicked(object? s, RoutedEventArgs e) => AddFlow(FlowNodeKind.Command);
+    private void FlowAddLoopClicked(object? s, RoutedEventArgs e) => AddFlow(FlowNodeKind.Loop);
     private void FlowAddIfClicked(object? s, RoutedEventArgs e) => AddFlow(FlowNodeKind.If);
     private void FlowAddAndClicked(object? s, RoutedEventArgs e) => AddFlow(FlowNodeKind.And);
     private void FlowAddOrClicked(object? s, RoutedEventArgs e) => AddFlow(FlowNodeKind.Or);
@@ -100,6 +101,7 @@ public partial class SessionView
             command = _automationSteps[index];
         if (command.Length == 0)
             command = (AssistedCommand.Text ?? "").Trim();
+        if (kind == FlowNodeKind.Loop) command = "true"; // FOR does not evaluate this; WHILE/UNTIL do.
         if (command.Length == 0) command = kind == FlowNodeKind.Command
             ? "echo 'configurar paso'" : "test -f /etc/os-release";
         var id = "flow-" + (++_flowSerial) + "-" + Guid.NewGuid().ToString("N")[..6];
@@ -111,6 +113,8 @@ public partial class SessionView
     }
 
     private void FlowConnectNextClicked(object? s, RoutedEventArgs e) => ConnectFlow(FlowEdgeKind.Next);
+    private void FlowConnectBodyClicked(object? s, RoutedEventArgs e) => ConnectFlow(FlowEdgeKind.LoopBody);
+    private void FlowConnectBackClicked(object? s, RoutedEventArgs e) => ConnectFlow(FlowEdgeKind.LoopBack);
     private void FlowConnectTrueClicked(object? s, RoutedEventArgs e) => ConnectFlow(FlowEdgeKind.True);
     private void FlowConnectFalseClicked(object? s, RoutedEventArgs e) => ConnectFlow(FlowEdgeKind.False);
     private void FlowConnectParallelClicked(object? s, RoutedEventArgs e) => ConnectFlow(FlowEdgeKind.Parallel);
@@ -129,6 +133,17 @@ public partial class SessionView
         if (node is null) return;
         FlowNodeTitle.Text = node.Label;
         FlowNodeCommand.Text = node.CommandTemplate;
+        FlowLoopSettings.IsVisible = node.Kind == FlowNodeKind.Loop;
+        if (node.Kind == FlowNodeKind.Loop)
+        {
+            FlowLoopModeSelector.SelectedIndex = node.LoopMode switch
+            {
+                FlowLoopMode.For => 0,
+                FlowLoopMode.While => 1,
+                _ => 2
+            };
+            FlowLoopMaxCount.Text = node.MaxIterations.ToString();
+        }
         HighlightFlowSelection();
     }
 
@@ -200,9 +215,40 @@ public partial class SessionView
         {
             FlowStatus.Text = "Título o plantilla inválida."; return;
         }
-        _flowNodes[idx] = _flowNodes[idx] with { Label = label, CommandTemplate = command };
+        var existing = _flowNodes[idx];
+        var loopMode = FlowLoopMode.For;
+        var limit = existing.MaxIterations;
+        if (existing.Kind == FlowNodeKind.Loop)
+        {
+            loopMode = FlowLoopModeSelector.SelectedIndex switch
+            {
+                0 => FlowLoopMode.For,
+                1 => FlowLoopMode.While,
+                2 => FlowLoopMode.Until,
+                _ => throw new ArgumentException("Modo de bucle inválido.")
+            };
+            if (!int.TryParse(FlowLoopMaxCount.Text, out limit) || limit is < 1 or > 1000)
+            {
+                FlowStatus.Text = "El límite de repeticiones debe estar entre 1 y 1000.";
+                return;
+            }
+            if (loopMode is FlowLoopMode.While or FlowLoopMode.Until &&
+                string.IsNullOrWhiteSpace(command))
+            {
+                FlowStatus.Text = "WHILE y UNTIL necesitan un comando de condición.";
+                return;
+            }
+        }
+        var updated = existing with { Label = label, CommandTemplate = command,
+            LoopMode = loopMode, MaxIterations = limit };
+        var proposed = _flowNodes.ToArray();
+        proposed[idx] = updated;
+        try { AutomationGraphFile.Validate(new AutomationGraph(1, proposed, _flowEdges.ToArray())); }
+        catch (Exception ex) { FlowStatus.Text = "No se puede guardar el nodo: " + ex.Message; return; }
+        _flowNodes[idx] = updated;
         _flowEdited = true;
         RenderFlowDiagram();
+        FlowStatus.Text = "Nodo actualizado.";
     }
 
     private void FlowRemoveClicked(object? s, RoutedEventArgs e)
@@ -210,6 +256,7 @@ public partial class SessionView
         _flowNodes.RemoveAll(n => n.Id == _flowSelected);
         _flowEdges.RemoveAll(x => x.FromId == _flowSelected || x.ToId == _flowSelected);
         _flowSelected = null; _flowEdited = true;
+        FlowLoopSettings.IsVisible = false;
         RenderFlowDiagram();
     }
 }
