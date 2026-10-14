@@ -111,6 +111,7 @@ public partial class SessionView : UserControl, IDisposable
     public SessionView()
     {
         InitializeComponent();
+        WireCommandPanels();
         PlatformSelector.ItemsSource = new[] { "Debian", "Ubuntu", "Windows", "Otra distribución Linux" };
         PlatformSelector.SelectedIndex = -1; // The user must explicitly choose the target OS.
         AuthModeSelector.ItemsSource = new[] { "Clave privada SSH", "Contraseña SSH" };
