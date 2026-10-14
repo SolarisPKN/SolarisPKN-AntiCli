@@ -43,16 +43,25 @@ public partial class SessionView
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         var suggestedCount = countMatch.Success
             ? Math.Clamp(int.Parse(countMatch.Groups["count"].Value), 1, 100) : 1;
-        var candidates = GuidedCommandCatalog.Search(stripped, _connectedProfile.Platform);
-        foreach (var guide in candidates.Take(query.Length == 0 ? 6 : 12))
+        var candidates = GuidedCommandCatalog.Search(stripped, _connectedProfile.Platform)
+            .OrderBy(x => _remoteDictionary is null || _remoteDictionary.Has(x.Executable) ? 0 : 1)
+            .ThenBy(x => x.Risk == CommandRisk.Green ? 0 : x.Risk == CommandRisk.Yellow ? 1 : 2);
+        foreach (var guide in candidates.Take(query.Length == 0 ? 6 : 14))
         {
             var item = guide;
+            var missing = _remoteDictionary is not null && !_remoteDictionary.Has(item.Executable);
+            var risk = missing ? CommandRisk.Red : item.Risk;
+            var availability = _remoteDictionary is null ? " ? " : missing ? " ○ " : " ✓ ";
             var button = new Button
             {
-                Content = AdminCommandCatalog.Dot(item.Risk) + " " + item.TitleEs,
-                Margin = new Thickness(0, 0, 8, 8)
+                Content = AdminCommandCatalog.Dot(risk) + availability + item.TitleEs,
+                Margin = new Thickness(0, 0, 6, 5),
+                Padding = new Thickness(9, 5)
             };
-            ToolTip.SetTip(button, item.ExplanationEs);
+            ToolTip.SetTip(button, item.ExplanationEs +
+                (missing ? "\nNO encontrado en PATH. Revisá instalación o entorno remoto." :
+                 _remoteDictionary is null ? "\nHerramienta aún no comprobada." :
+                 "\nHerramienta disponible en PATH."));
             button.Click += (_, _) =>
                 BeginGuided(item, item.SupportsBatch ? suggestedCount : 1);
             UniversalResults.Children.Add(button);
