@@ -18,7 +18,7 @@ public partial class SessionView : UserControl, IDisposable
     private readonly SshProbe _ssh = new();
     private readonly TrustedHostKeyStore _hostKeys = new();
     private readonly List<string> _blocks = [];
-    private IReadOnlyList<CommandHint> _matches = [];
+    private IReadOnlyList<SmartCliSuggestion> _matches = [];
     private Guid _editingId = Guid.NewGuid();
     private bool _loadingProfile;
     private bool _busy;
@@ -45,6 +45,11 @@ public partial class SessionView : UserControl, IDisposable
         var clone = new SessionView();
         clone.LoadClonedSession(CloneProfile(previous), new SshCredentials(
             creds.User, creds.Password, creds.Passphrase, creds.KeyBytes?.ToArray()));
+        // A cloned authenticated session targets the same SSH endpoint and user.
+        clone._remoteDictionary = _remoteDictionary;
+        clone.UpdateRemoteDictionaryStatus();
+        clone.PopulateActionButtons();
+        clone.ReloadSuggestions();
         return clone;
     }
 
@@ -143,6 +148,8 @@ public partial class SessionView : UserControl, IDisposable
         _blocks.Clear();
         BlockPreview.Text = "Bloques: (vacío)";
         RemoteInfo.Text = "Sesión no autenticada";
+        _remoteDictionary = null;
+        UpdateRemoteDictionaryStatus();
         UseSudoToggle.IsChecked = false;
         SessionTitleChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -483,6 +490,12 @@ public partial class SessionView : UserControl, IDisposable
             _connectedProfile = profile;
             _connectedCredentials = credentials;
             credentials = null;
+            // Discover PATH availability once per authenticated SSH connection.
+            // Failures are advisory only and never block manual admin commands.
+            await RefreshRemoteDictionaryAsync(profile, _connectedCredentials);
+            if (_invalidateAfterBusy)
+                throw new InvalidOperationException(
+                    "Se cambió el destino durante la detección de herramientas. Reconectá.");
             CommandsTab.IsEnabled = true;
             ModulesTab.IsEnabled = true;
             RemoteInfo.Text = "Conectado: " + profile.Name + " · " + profile.Host + " · " + detectedOs;
@@ -546,7 +559,8 @@ public partial class SessionView : UserControl, IDisposable
                 var actionCopy = action;
                 var button = new Button
                 {
-                    Content = "🟢 " + action.Label, Margin = new Thickness(0, 0, 8, 8)
+                    Content = "🟢 " + AvailabilityMark(action.Command) + " " + action.Label,
+                    Margin = new Thickness(0, 0, 8, 8)
                 };
                 button.Click += (_, _) => SelectAction(actionCopy);
                 OptionButtons.Children.Add(button);
@@ -560,7 +574,8 @@ public partial class SessionView : UserControl, IDisposable
             var captured = cmd;
             var button = new Button
             {
-                Content = AdminCommandCatalog.Dot(cmd.Risk) + " " + cmd.LabelEs,
+                Content = AdminCommandCatalog.Dot(cmd.Risk) + " " +
+                    AvailabilityMark(cmd.Command) + " " + cmd.LabelEs,
                 Margin = new Thickness(0, 0, 8, 8)
             };
             ToolTip.SetTip(button, cmd.Command + " — " + cmd.DescriptionEs);
@@ -639,10 +654,12 @@ public partial class SessionView : UserControl, IDisposable
     private void ReloadSuggestions()
     {
         if (_connectedProfile is null) return;
-        var options = CommandHints.ForPlatform(_connectedProfile.Platform)
-            .Concat(_connectedProfile.Platform == TargetPlatform.Windows
-                ? Enumerable.Empty<CommandHint>() : ModuleDraftStore.LoadHints());
-        _matches = CommandHints.Search(AssistedCommand.Text, options);
+        // Autocomplete uses the local catalog, server-specific help and the
+        // discovered PATH dictionary. Unknown tools remain usable manually.
+        var learned = _connectedProfile.Platform == TargetPlatform.Windows
+            ? Enumerable.Empty<CommandHint>() : ModuleDraftStore.LoadHints();
+        _matches = SmartCliCompletion.Search(
+            AssistedCommand.Text, _connectedProfile.Platform, _remoteDictionary, learned);
         Suggestions.ItemsSource = _matches;
         Suggestions.SelectedIndex = _matches.Count > 0 ? 0 : -1;
         SuggestionButtons.Children.Clear();
@@ -651,22 +668,30 @@ public partial class SessionView : UserControl, IDisposable
             var candidate = hint;
             var choice = new Button
             {
-                Content = AdminCommandCatalog.Dot(
-                    AdminCommandCatalog.Classify(_connectedProfile.Platform, candidate.Command)) +
-                    " " + candidate.Command,
+                Content = (candidate.Installed == true ? "✓ " :
+                           candidate.Installed == false ? "○ " : "? ") +
+                          (candidate.IsCorrection ? "✏ " : "") + candidate.Label,
                 Margin = new Thickness(0, 0, 6, 6)
             };
-            choice.Click += (_, _) =>
-            {
-                AssistedCommand.Text = candidate.Command;
-                AssistedCommand.CaretIndex = candidate.Command.Length;
-                HintDetail.Text = candidate.DescriptionEs + " · " +
-                    AdminCommandCatalog.RiskName(AdminCommandCatalog.Classify(
-                        _connectedProfile.Platform, candidate.Command));
-            };
+            ToolTip.SetTip(choice, candidate.Detail +
+                (candidate.Installed == false ? " · No detectado en el PATH actual." : ""));
+            choice.Click += (_, _) => ApplySmartSuggestion(candidate);
             SuggestionButtons.Children.Add(choice);
         }
-        if (_matches.Count == 0) HintDetail.Text = "No hay sugerencias para este texto.";
+        if (_matches.Count == 0)
+            HintDetail.Text = "Sin sugerencias para este texto. Podés ejecutar el comando manualmente.";
+    }
+
+    private void ApplySmartSuggestion(SmartCliSuggestion suggestion)
+    {
+        AssistedCommand.Text = suggestion.Replacement;
+        AssistedCommand.CaretIndex = suggestion.Replacement.Length;
+        AssistedCommand.Focus();
+        HintDetail.Text = suggestion.Label + " — " + suggestion.Detail +
+            (suggestion.Installed == false
+                ? " · No encontrado en PATH; podría requerir instalación o activar su entorno."
+                : suggestion.Installed == true ? " · Disponible en PATH." :
+                " · Estado no comprobado.");
     }
 
     private void AssistedTextChanged(object? sender, TextChangedEventArgs e)
@@ -677,10 +702,11 @@ public partial class SessionView : UserControl, IDisposable
 
     private void SuggestionSelected(object? sender, SelectionChangedEventArgs e)
     {
-        if (Suggestions.SelectedItem is CommandHint hint)
-            HintDetail.Text = hint.DescriptionEs + " · " +
-                AdminCommandCatalog.RiskName(AdminCommandCatalog.Classify(
-                    _connectedProfile?.Platform ?? TargetPlatform.OtherLinux, hint.Command));
+        if (Suggestions.SelectedItem is SmartCliSuggestion hint)
+            HintDetail.Text = hint.Label + " — " + hint.Detail +
+                (hint.Installed == true ? " · Encontrado en PATH." :
+                 hint.Installed == false ? " · No detectado en PATH." :
+                 " · Estado remoto desconocido.");
     }
 
     private void SessionShortcutKeyDown(object? sender, KeyEventArgs e)
@@ -716,10 +742,8 @@ public partial class SessionView : UserControl, IDisposable
 
     private void UseSelectedSuggestion()
     {
-        if (Suggestions.SelectedItem is not CommandHint hint) return;
-        AssistedCommand.Text = hint.Command;
-        AssistedCommand.CaretIndex = hint.Command.Length;
-        AssistedCommand.Focus();
+        if (Suggestions.SelectedItem is not SmartCliSuggestion hint) return;
+        ApplySmartSuggestion(hint);
     }
 
     private void UseSuggestionClicked(object? sender, RoutedEventArgs e) => UseSelectedSuggestion();
