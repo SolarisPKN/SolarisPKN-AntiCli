@@ -128,6 +128,21 @@ Verify(retryScript.Contains("while [ -n \"$__ac_state\" ]") &&
        retryScript.Contains("__ac_state=''") &&
        !retryScript.Contains("20.000"),
        "IF + return to command 1 exports an unlimited conditional retry");
+// A conventional success probe exits on TRUE and retries on FALSE.
+var retryUntilOk = retryGraph with
+{
+    Nodes = retryGraph.Nodes.Select(n => n.Id == "if3"
+        ? n with { CommandTemplate = "test -f /tmp/anticli-ready" } : n).ToArray(),
+    Edges = retryGraph.Edges.Select(e => e.FromId == "if3"
+        ? e with { Kind = FlowEdgeKind.False } : e).ToArray()
+};
+AutomationGraphFile.Validate(retryUntilOk);
+var untilOkScript = AutomationGraphRouter.Generate(retryWorkflow, retryUntilOk);
+Verify(untilOkScript.Contains("if sh -c 'test -f /tmp/anticli-ready'") &&
+       untilOkScript.Contains("__ac_state=''") &&
+       untilOkScript.Contains("__ac_state='s3'"),
+       "IF true means OK and EXIT, IF false retries via command 4 -> command 1");
+
 var serialized = AutomationGraphFile.Serialize(retryGraph);
 Verify(AutomationGraphFile.Parse(serialized).StartNodeId == "c1",
     "Cyclic graph keeps its explicit entry point after JSON save/load");
