@@ -1,0 +1,1385 @@
+{
+  "SchemaVersion": 1,
+  "Description": "Catálogo de tareas (ejemplos, no contrato de ejecución). Cada entrada alimenta el renderer genérico.",
+  "Linux": [
+    {
+      "Id": "system.os",
+      "Module": "system",
+      "GroupName": "Sistema",
+      "LabelEs": "Detectar sistema",
+      "Command": "cat /etc/os-release",
+      "Risk": "Green",
+      "DescriptionEs": "Distribución Linux"
+    },
+    {
+      "Id": "system.kernel",
+      "Module": "system",
+      "GroupName": "Sistema",
+      "LabelEs": "Kernel y arquitectura",
+      "Command": "uname -a",
+      "Risk": "Green",
+      "DescriptionEs": "Versión del kernel"
+    },
+    {
+      "Id": "system.uptime",
+      "Module": "system",
+      "GroupName": "Sistema",
+      "LabelEs": "Tiempo encendido",
+      "Command": "uptime",
+      "Risk": "Green",
+      "DescriptionEs": "Estado del sistema"
+    },
+    {
+      "Id": "system.users",
+      "Module": "system",
+      "GroupName": "Sistema",
+      "LabelEs": "Sesiones activas",
+      "Command": "who",
+      "Risk": "Green",
+      "DescriptionEs": "Usuarios conectados"
+    },
+    {
+      "Id": "system.date",
+      "Module": "system",
+      "GroupName": "Sistema",
+      "LabelEs": "Fecha del equipo",
+      "Command": "date -Is",
+      "Risk": "Green",
+      "DescriptionEs": "Reloj actual"
+    },
+    {
+      "Id": "system.host",
+      "Module": "system",
+      "GroupName": "Sistema",
+      "LabelEs": "Nombre del equipo",
+      "Command": "hostnamectl status",
+      "Risk": "Green",
+      "DescriptionEs": "Identidad y sistema"
+    },
+    {
+      "Id": "system.reboot",
+      "Module": "system",
+      "GroupName": "Sistema",
+      "LabelEs": "Reiniciar servidor",
+      "Command": "systemctl reboot",
+      "Risk": "Red",
+      "DescriptionEs": "Reinicia el servidor y corta SSH"
+    },
+    {
+      "Id": "system.poweroff",
+      "Module": "system",
+      "GroupName": "Sistema",
+      "LabelEs": "Apagar servidor",
+      "Command": "systemctl poweroff",
+      "Risk": "Red",
+      "DescriptionEs": "Apaga el servidor remoto"
+    },
+    {
+      "Id": "system.sync",
+      "Module": "system",
+      "GroupName": "Sistema",
+      "LabelEs": "Sincronizar escrituras",
+      "Command": "sync",
+      "Risk": "Yellow",
+      "DescriptionEs": "Solicita escritura de buffers pendientes"
+    },
+    {
+      "Id": "files.list",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Listar archivos",
+      "Command": "ls -lah",
+      "Risk": "Green",
+      "DescriptionEs": "Listado detallado del directorio"
+    },
+    {
+      "Id": "files.pwd",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Ruta actual",
+      "Command": "pwd",
+      "Risk": "Green",
+      "DescriptionEs": "Directorio de ejecución remoto"
+    },
+    {
+      "Id": "files.du",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Uso por carpeta",
+      "Command": "du -h --max-depth=1 .",
+      "Risk": "Green",
+      "DescriptionEs": "Espacio ocupado por subcarpeta"
+    },
+    {
+      "Id": "files.find",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Buscar archivos recientes",
+      "Command": "find . -maxdepth 2 -type f -mtime -1",
+      "Risk": "Green",
+      "DescriptionEs": "Archivos modificados en un día"
+    },
+    {
+      "Id": "files.tree",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Árbol de carpetas",
+      "Command": "find . -maxdepth 2 -print",
+      "Risk": "Green",
+      "DescriptionEs": "Estructura de carpetas"
+    },
+    {
+      "Id": "files.size",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Tamaño de archivos",
+      "Command": "stat /etc/os-release",
+      "Risk": "Green",
+      "DescriptionEs": "Metadatos de archivo"
+    },
+    {
+      "Id": "files.mkdir",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Crear carpeta temporal",
+      "Command": "mkdir -p /tmp/anticli-test",
+      "Risk": "Yellow",
+      "DescriptionEs": "Crea directorio temporal de prueba"
+    },
+    {
+      "Id": "files.touch",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Crear archivo temporal",
+      "Command": "touch /tmp/anticli-test/marker",
+      "Risk": "Yellow",
+      "DescriptionEs": "Crea o modifica un archivo"
+    },
+    {
+      "Id": "files.copy",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Copiar archivo de prueba",
+      "Command": "cp /etc/os-release /tmp/anticli-os-release-copy",
+      "Risk": "Yellow",
+      "DescriptionEs": "Genera copia en /tmp"
+    },
+    {
+      "Id": "files.remove",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Eliminar copia temporal",
+      "Command": "rm -f /tmp/anticli-os-release-copy",
+      "Risk": "Red",
+      "DescriptionEs": "Elimina un archivo sin papelera"
+    },
+    {
+      "Id": "files.chmod",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Cambiar permisos de ejemplo",
+      "Command": "chmod 600 /tmp/anticli-test/marker",
+      "Risk": "Yellow",
+      "DescriptionEs": "Cambia permisos del archivo indicado"
+    },
+    {
+      "Id": "files.chown",
+      "Module": "files",
+      "GroupName": "Archivos",
+      "LabelEs": "Cambiar propietario",
+      "Command": "chown root:root /tmp/anticli-test/marker",
+      "Risk": "Red",
+      "DescriptionEs": "Modifica propiedad; requiere privilegios"
+    },
+    {
+      "Id": "text.head",
+      "Module": "text",
+      "GroupName": "Texto y documentación",
+      "LabelEs": "Primeras líneas",
+      "Command": "head -n 20 /etc/passwd",
+      "Risk": "Green",
+      "DescriptionEs": "Lee 20 líneas"
+    },
+    {
+      "Id": "text.tail",
+      "Module": "text",
+      "GroupName": "Texto y documentación",
+      "LabelEs": "Últimos logs",
+      "Command": "tail -n 50 /var/log/syslog",
+      "Risk": "Green",
+      "DescriptionEs": "Lee últimas líneas si accesibles"
+    },
+    {
+      "Id": "text.grep",
+      "Module": "text",
+      "GroupName": "Texto y documentación",
+      "LabelEs": "Buscar usuario root",
+      "Command": "grep '^root:' /etc/passwd",
+      "Risk": "Green",
+      "DescriptionEs": "Busca patrón literal"
+    },
+    {
+      "Id": "text.wc",
+      "Module": "text",
+      "GroupName": "Texto y documentación",
+      "LabelEs": "Contar cuentas",
+      "Command": "wc -l /etc/passwd",
+      "Risk": "Green",
+      "DescriptionEs": "Cuenta registros"
+    },
+    {
+      "Id": "text.cut",
+      "Module": "text",
+      "GroupName": "Texto y documentación",
+      "LabelEs": "Extraer usuarios",
+      "Command": "cut -d: -f1 /etc/passwd",
+      "Risk": "Green",
+      "DescriptionEs": "Muestra los nombres de usuario"
+    },
+    {
+      "Id": "text.sort",
+      "Module": "text",
+      "GroupName": "Texto y documentación",
+      "LabelEs": "Ordenar usuarios",
+      "Command": "cut -d: -f1 /etc/passwd | sort",
+      "Risk": "Green",
+      "DescriptionEs": "Ordena un listado"
+    },
+    {
+      "Id": "text.hash",
+      "Module": "text",
+      "GroupName": "Texto y documentación",
+      "LabelEs": "Huella de archivo",
+      "Command": "sha256sum /etc/os-release",
+      "Risk": "Green",
+      "DescriptionEs": "Calcula SHA256"
+    },
+    {
+      "Id": "text.help",
+      "Module": "text",
+      "GroupName": "Texto y documentación",
+      "LabelEs": "Ayuda del sistema",
+      "Command": "man -k network",
+      "Risk": "Green",
+      "DescriptionEs": "Busca manuales por tema"
+    },
+    {
+      "Id": "text.env",
+      "Module": "text",
+      "GroupName": "Texto y documentación",
+      "LabelEs": "Variables de entorno",
+      "Command": "env",
+      "Risk": "Yellow",
+      "DescriptionEs": "Puede mostrar variables sensibles"
+    },
+    {
+      "Id": "process.ps",
+      "Module": "process",
+      "GroupName": "Procesos",
+      "LabelEs": "Procesos",
+      "Command": "ps aux",
+      "Risk": "Green",
+      "DescriptionEs": "Lista los procesos y propietarios"
+    },
+    {
+      "Id": "process.top",
+      "Module": "process",
+      "GroupName": "Procesos",
+      "LabelEs": "Procesos por CPU",
+      "Command": "ps aux --sort=-%cpu | head -n 20",
+      "Risk": "Green",
+      "DescriptionEs": "Mayor consumo de CPU"
+    },
+    {
+      "Id": "process.memory",
+      "Module": "process",
+      "GroupName": "Procesos",
+      "LabelEs": "Memoria RAM",
+      "Command": "free -h",
+      "Risk": "Green",
+      "DescriptionEs": "Memoria total, usada y libre"
+    },
+    {
+      "Id": "process.iostat",
+      "Module": "process",
+      "GroupName": "Procesos",
+      "LabelEs": "Estadísticas de CPU",
+      "Command": "vmstat 1 3",
+      "Risk": "Green",
+      "DescriptionEs": "Muestras de memoria y CPU"
+    },
+    {
+      "Id": "process.kill",
+      "Module": "process",
+      "GroupName": "Procesos",
+      "LabelEs": "Finalizar proceso de prueba",
+      "Command": "pkill -f anticli-test-process",
+      "Risk": "Red",
+      "DescriptionEs": "Termina procesos que coincidan"
+    },
+    {
+      "Id": "process.renice",
+      "Module": "process",
+      "GroupName": "Procesos",
+      "LabelEs": "Prioridad de ejemplo",
+      "Command": "renice 10 -p 12345",
+      "Risk": "Yellow",
+      "DescriptionEs": "Ajusta prioridad de PID de ejemplo"
+    },
+    {
+      "Id": "process.strace",
+      "Module": "process",
+      "GroupName": "Procesos",
+      "LabelEs": "Trazar proceso",
+      "Command": "strace -p 12345 -c",
+      "Risk": "Yellow",
+      "DescriptionEs": "Adjunta rastreador al PID indicado"
+    },
+    {
+      "Id": "network.addr",
+      "Module": "network",
+      "GroupName": "Red",
+      "LabelEs": "Interfaces de red",
+      "Command": "ip -brief address",
+      "Risk": "Green",
+      "DescriptionEs": "IP por interfaz"
+    },
+    {
+      "Id": "network.routes",
+      "Module": "network",
+      "GroupName": "Red",
+      "LabelEs": "Rutas de red",
+      "Command": "ip route show",
+      "Risk": "Green",
+      "DescriptionEs": "Tabla de rutas"
+    },
+    {
+      "Id": "network.ports",
+      "Module": "network",
+      "GroupName": "Red",
+      "LabelEs": "Sockets abiertos",
+      "Command": "ss -tulpen",
+      "Risk": "Green",
+      "DescriptionEs": "Puertos y procesos"
+    },
+    {
+      "Id": "network.ping",
+      "Module": "network",
+      "GroupName": "Red",
+      "LabelEs": "Comprobar DNS",
+      "Command": "ping -c 4 1.1.1.1",
+      "Risk": "Green",
+      "DescriptionEs": "Comprueba conectividad"
+    },
+    {
+      "Id": "network.trace",
+      "Module": "network",
+      "GroupName": "Red",
+      "LabelEs": "Rastrear red",
+      "Command": "tracepath 1.1.1.1",
+      "Risk": "Green",
+      "DescriptionEs": "Rastreo de ruta de paquetes"
+    },
+    {
+      "Id": "network.dns",
+      "Module": "network",
+      "GroupName": "Red",
+      "LabelEs": "Resolver hostname",
+      "Command": "getent hosts example.org",
+      "Risk": "Green",
+      "DescriptionEs": "Consulta nombre DNS"
+    },
+    {
+      "Id": "network.interfaces",
+      "Module": "network",
+      "GroupName": "Red",
+      "LabelEs": "Enlaces de red",
+      "Command": "ip -s link",
+      "Risk": "Green",
+      "DescriptionEs": "Estado y contadores de interfaces"
+    },
+    {
+      "Id": "network.public",
+      "Module": "network",
+      "GroupName": "Red",
+      "LabelEs": "Consultar IP pública",
+      "Command": "curl -fsS https://api.ipify.org",
+      "Risk": "Yellow",
+      "DescriptionEs": "Envía solicitud HTTPS al servicio externo"
+    },
+    {
+      "Id": "network.dnsflush",
+      "Module": "network",
+      "GroupName": "Red",
+      "LabelEs": "Vaciar caché DNS",
+      "Command": "resolvectl flush-caches",
+      "Risk": "Yellow",
+      "DescriptionEs": "Borra caché DNS del servidor"
+    },
+    {
+      "Id": "network.networkrestart",
+      "Module": "network",
+      "GroupName": "Red",
+      "LabelEs": "Reiniciar resolved",
+      "Command": "systemctl restart systemd-resolved",
+      "Risk": "Red",
+      "DescriptionEs": "Interrumpe temporalmente la resolución DNS"
+    },
+    {
+      "Id": "services.all",
+      "Module": "services",
+      "GroupName": "Servicios",
+      "LabelEs": "Todos los servicios",
+      "Command": "systemctl list-units --type=service --all --no-pager",
+      "Risk": "Green",
+      "DescriptionEs": "Lista unidades systemd"
+    },
+    {
+      "Id": "services.failed",
+      "Module": "services",
+      "GroupName": "Servicios",
+      "LabelEs": "Servicios fallidos",
+      "Command": "systemctl --failed --no-pager",
+      "Risk": "Green",
+      "DescriptionEs": "Muestra fallas de unidades"
+    },
+    {
+      "Id": "services.ssh",
+      "Module": "services",
+      "GroupName": "Servicios",
+      "LabelEs": "Estado SSH",
+      "Command": "systemctl status ssh --no-pager",
+      "Risk": "Green",
+      "DescriptionEs": "Consulta el servicio SSH"
+    },
+    {
+      "Id": "services.docker",
+      "Module": "services",
+      "GroupName": "Servicios",
+      "LabelEs": "Estado Docker",
+      "Command": "systemctl status docker --no-pager",
+      "Risk": "Green",
+      "DescriptionEs": "Consulta el servicio Docker"
+    },
+    {
+      "Id": "services.reload",
+      "Module": "services",
+      "GroupName": "Servicios",
+      "LabelEs": "Recargar configuración systemd",
+      "Command": "systemctl daemon-reload",
+      "Risk": "Yellow",
+      "DescriptionEs": "Recarga unidades del sistema"
+    },
+    {
+      "Id": "services.restart",
+      "Module": "services",
+      "GroupName": "Servicios",
+      "LabelEs": "Reiniciar cron",
+      "Command": "systemctl restart cron",
+      "Risk": "Red",
+      "DescriptionEs": "Reinicia servicio cron"
+    },
+    {
+      "Id": "services.stop",
+      "Module": "services",
+      "GroupName": "Servicios",
+      "LabelEs": "Detener cron",
+      "Command": "systemctl stop cron",
+      "Risk": "Red",
+      "DescriptionEs": "Detiene el servicio cron"
+    },
+    {
+      "Id": "services.enable",
+      "Module": "services",
+      "GroupName": "Servicios",
+      "LabelEs": "Habilitar cron al inicio",
+      "Command": "systemctl enable cron",
+      "Risk": "Yellow",
+      "DescriptionEs": "Modifica arranque automático"
+    },
+    {
+      "Id": "services.disable",
+      "Module": "services",
+      "GroupName": "Servicios",
+      "LabelEs": "Deshabilitar cron al inicio",
+      "Command": "systemctl disable cron",
+      "Risk": "Yellow",
+      "DescriptionEs": "Modifica arranque automático"
+    },
+    {
+      "Id": "packages.installed",
+      "Module": "packages",
+      "GroupName": "Paquetes APT",
+      "LabelEs": "Paquetes instalados",
+      "Command": "dpkg-query -W",
+      "Risk": "Green",
+      "DescriptionEs": "Inventario APT instalado"
+    },
+    {
+      "Id": "packages.upgradable",
+      "Module": "packages",
+      "GroupName": "Paquetes APT",
+      "LabelEs": "Paquetes actualizables",
+      "Command": "apt list --upgradable",
+      "Risk": "Green",
+      "DescriptionEs": "Muestra actualizaciones disponibles"
+    },
+    {
+      "Id": "packages.sources",
+      "Module": "packages",
+      "GroupName": "Paquetes APT",
+      "LabelEs": "Repositorios",
+      "Command": "apt-cache policy",
+      "Risk": "Green",
+      "DescriptionEs": "Fuentes de paquetes y prioridades"
+    },
+    {
+      "Id": "packages.audit",
+      "Module": "packages",
+      "GroupName": "Paquetes APT",
+      "LabelEs": "Paquetes retenidos",
+      "Command": "apt-mark showhold",
+      "Risk": "Green",
+      "DescriptionEs": "Paquetes bloqueados"
+    },
+    {
+      "Id": "packages.update",
+      "Module": "packages",
+      "GroupName": "Paquetes APT",
+      "LabelEs": "Actualizar índices",
+      "Command": "apt-get update",
+      "Risk": "Yellow",
+      "DescriptionEs": "Descarga índices APT"
+    },
+    {
+      "Id": "packages.upgrade",
+      "Module": "packages",
+      "GroupName": "Paquetes APT",
+      "LabelEs": "Actualizar paquetes",
+      "Command": "apt-get upgrade -y",
+      "Risk": "Red",
+      "DescriptionEs": "Cambia paquetes instalados sin confirmación interactiva"
+    },
+    {
+      "Id": "packages.autoremove",
+      "Module": "packages",
+      "GroupName": "Paquetes APT",
+      "LabelEs": "Eliminar dependencias huérfanas",
+      "Command": "apt-get autoremove -y",
+      "Risk": "Red",
+      "DescriptionEs": "Desinstala paquetes sobrantes"
+    },
+    {
+      "Id": "packages.install",
+      "Module": "packages",
+      "GroupName": "Paquetes APT",
+      "LabelEs": "Instalar herramienta jq",
+      "Command": "apt-get install -y jq",
+      "Risk": "Red",
+      "DescriptionEs": "Instala paquetes del sistema"
+    },
+    {
+      "Id": "packages.remove",
+      "Module": "packages",
+      "GroupName": "Paquetes APT",
+      "LabelEs": "Quitar herramienta jq",
+      "Command": "apt-get remove -y jq",
+      "Risk": "Red",
+      "DescriptionEs": "Desinstala jq"
+    },
+    {
+      "Id": "disks.df",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Uso de disco",
+      "Command": "df -hT",
+      "Risk": "Green",
+      "DescriptionEs": "Montajes y utilización"
+    },
+    {
+      "Id": "disks.lsblk",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Bloques y particiones",
+      "Command": "lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINTS",
+      "Risk": "Green",
+      "DescriptionEs": "Mapa de discos"
+    },
+    {
+      "Id": "disks.mounts",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Montajes",
+      "Command": "findmnt",
+      "Risk": "Green",
+      "DescriptionEs": "Puntos montados"
+    },
+    {
+      "Id": "disks.raid",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Estado RAID",
+      "Command": "cat /proc/mdstat",
+      "Risk": "Green",
+      "DescriptionEs": "Arreglos MD RAID"
+    },
+    {
+      "Id": "disks.mdadm",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Detalle MD RAID",
+      "Command": "mdadm --detail --scan",
+      "Risk": "Green",
+      "DescriptionEs": "Resumen de arreglos RAID"
+    },
+    {
+      "Id": "disks.lvm",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Volúmenes LVM",
+      "Command": "lvs -a",
+      "Risk": "Green",
+      "DescriptionEs": "Volúmenes lógicos"
+    },
+    {
+      "Id": "disks.vgs",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Grupos LVM",
+      "Command": "vgs",
+      "Risk": "Green",
+      "DescriptionEs": "Grupos de volúmenes"
+    },
+    {
+      "Id": "disks.pvs",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Discos LVM",
+      "Command": "pvs",
+      "Risk": "Green",
+      "DescriptionEs": "Volúmenes físicos"
+    },
+    {
+      "Id": "disks.fdisk",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Tablas de particiones",
+      "Command": "fdisk -l",
+      "Risk": "Green",
+      "DescriptionEs": "Inventario de particiones"
+    },
+    {
+      "Id": "disks.fstab",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Configuración de montaje",
+      "Command": "cat /etc/fstab",
+      "Risk": "Green",
+      "DescriptionEs": "Montajes configurados"
+    },
+    {
+      "Id": "disks.fsck",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Revisar sistema ext4",
+      "Command": "fsck -n /dev/sdb1",
+      "Risk": "Yellow",
+      "DescriptionEs": "Chequeo no destructivo en dispositivo de ejemplo; no usar sobre FS montado"
+    },
+    {
+      "Id": "disks.md-stop",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Detener RAID de ejemplo",
+      "Command": "mdadm --stop /dev/md0",
+      "Risk": "Red",
+      "DescriptionEs": "Detiene un arreglo RAID; riesgo de disponibilidad"
+    },
+    {
+      "Id": "disks.mkfs",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Formatear partición de ejemplo",
+      "Command": "mkfs.ext4 /dev/sdb1",
+      "Risk": "Red",
+      "DescriptionEs": "DESTRUCTIVO: elimina estructura previa de datos"
+    },
+    {
+      "Id": "disks.lvremove",
+      "Module": "disks",
+      "GroupName": "Discos y RAID",
+      "LabelEs": "Eliminar volumen de ejemplo",
+      "Command": "lvremove -y /dev/vg0/lv0",
+      "Risk": "Red",
+      "DescriptionEs": "DESTRUCTIVO: elimina volumen LVM"
+    },
+    {
+      "Id": "firewall.ufw",
+      "Module": "firewall",
+      "GroupName": "Firewall",
+      "LabelEs": "Estado UFW",
+      "Command": "ufw status verbose",
+      "Risk": "Green",
+      "DescriptionEs": "Reglas del firewall UFW"
+    },
+    {
+      "Id": "firewall.nft",
+      "Module": "firewall",
+      "GroupName": "Firewall",
+      "LabelEs": "Reglas nftables",
+      "Command": "nft list ruleset",
+      "Risk": "Green",
+      "DescriptionEs": "Tabla de reglas nftables"
+    },
+    {
+      "Id": "firewall.iptables",
+      "Module": "firewall",
+      "GroupName": "Firewall",
+      "LabelEs": "Reglas iptables",
+      "Command": "iptables -S",
+      "Risk": "Green",
+      "DescriptionEs": "Configuración iptables"
+    },
+    {
+      "Id": "firewall.enable",
+      "Module": "firewall",
+      "GroupName": "Firewall",
+      "LabelEs": "Activar firewall",
+      "Command": "ufw --force enable",
+      "Risk": "Red",
+      "DescriptionEs": "Puede bloquear SSH y cortarte el acceso"
+    },
+    {
+      "Id": "firewall.disable",
+      "Module": "firewall",
+      "GroupName": "Firewall",
+      "LabelEs": "Desactivar firewall",
+      "Command": "ufw disable",
+      "Risk": "Red",
+      "DescriptionEs": "Expone servicios previamente protegidos"
+    },
+    {
+      "Id": "firewall.allow",
+      "Module": "firewall",
+      "GroupName": "Firewall",
+      "LabelEs": "Permitir SSH",
+      "Command": "ufw allow 22/tcp",
+      "Risk": "Yellow",
+      "DescriptionEs": "Abre puerto SSH TCP"
+    },
+    {
+      "Id": "firewall.deny",
+      "Module": "firewall",
+      "GroupName": "Firewall",
+      "LabelEs": "Bloquear SSH",
+      "Command": "ufw deny 22/tcp",
+      "Risk": "Red",
+      "DescriptionEs": "Puede cortar el acceso remoto"
+    },
+    {
+      "Id": "firewall.reload",
+      "Module": "firewall",
+      "GroupName": "Firewall",
+      "LabelEs": "Recargar firewall",
+      "Command": "ufw reload",
+      "Risk": "Yellow",
+      "DescriptionEs": "Reaplica reglas activas"
+    },
+    {
+      "Id": "security.id",
+      "Module": "security",
+      "GroupName": "Usuarios y seguridad",
+      "LabelEs": "Identidad actual",
+      "Command": "id",
+      "Risk": "Green",
+      "DescriptionEs": "UID, grupos y privilegios"
+    },
+    {
+      "Id": "security.groups",
+      "Module": "security",
+      "GroupName": "Usuarios y seguridad",
+      "LabelEs": "Grupos del usuario",
+      "Command": "groups",
+      "Risk": "Green",
+      "DescriptionEs": "Membresías"
+    },
+    {
+      "Id": "security.accounts",
+      "Module": "security",
+      "GroupName": "Usuarios y seguridad",
+      "LabelEs": "Usuarios locales",
+      "Command": "getent passwd",
+      "Risk": "Green",
+      "DescriptionEs": "Lista cuentas locales"
+    },
+    {
+      "Id": "security.sudo",
+      "Module": "security",
+      "GroupName": "Usuarios y seguridad",
+      "LabelEs": "Permisos sudo",
+      "Command": "sudo -n -l",
+      "Risk": "Yellow",
+      "DescriptionEs": "Consulta privilegios sin solicitar contraseña"
+    },
+    {
+      "Id": "security.ssh-fingerprint",
+      "Module": "security",
+      "GroupName": "Usuarios y seguridad",
+      "LabelEs": "Huella del host",
+      "Command": "ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256",
+      "Risk": "Green",
+      "DescriptionEs": "Fingerprint SSH del servidor"
+    },
+    {
+      "Id": "security.adduser",
+      "Module": "security",
+      "GroupName": "Usuarios y seguridad",
+      "LabelEs": "Crear usuario de ejemplo",
+      "Command": "useradd -m anticli_test",
+      "Risk": "Red",
+      "DescriptionEs": "Crea una cuenta Linux"
+    },
+    {
+      "Id": "security.passwd",
+      "Module": "security",
+      "GroupName": "Usuarios y seguridad",
+      "LabelEs": "Bloquear usuario de ejemplo",
+      "Command": "passwd -l anticli_test",
+      "Risk": "Red",
+      "DescriptionEs": "Bloquea inicio de sesión de la cuenta"
+    },
+    {
+      "Id": "security.deleteuser",
+      "Module": "security",
+      "GroupName": "Usuarios y seguridad",
+      "LabelEs": "Eliminar usuario de ejemplo",
+      "Command": "userdel -r anticli_test",
+      "Risk": "Red",
+      "DescriptionEs": "Elimina cuenta y directorio personal"
+    },
+    {
+      "Id": "docker.version",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Versión de Docker",
+      "Command": "docker version",
+      "Risk": "Green",
+      "DescriptionEs": "Versiones de motor/cliente"
+    },
+    {
+      "Id": "docker.containers",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Contenedores",
+      "Command": "docker ps -a",
+      "Risk": "Green",
+      "DescriptionEs": "Lista todos los contenedores"
+    },
+    {
+      "Id": "docker.images",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Imágenes",
+      "Command": "docker image ls",
+      "Risk": "Green",
+      "DescriptionEs": "Lista imágenes locales"
+    },
+    {
+      "Id": "docker.networks",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Redes Docker",
+      "Command": "docker network ls",
+      "Risk": "Green",
+      "DescriptionEs": "Lista redes Docker"
+    },
+    {
+      "Id": "docker.volumes",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Volúmenes Docker",
+      "Command": "docker volume ls",
+      "Risk": "Green",
+      "DescriptionEs": "Lista volúmenes Docker"
+    },
+    {
+      "Id": "docker.stats",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Recursos de contenedores",
+      "Command": "docker stats --no-stream",
+      "Risk": "Green",
+      "DescriptionEs": "Consumo instantáneo"
+    },
+    {
+      "Id": "docker.compose",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Servicios Compose",
+      "Command": "docker compose ps",
+      "Risk": "Green",
+      "DescriptionEs": "Lista servicios Compose"
+    },
+    {
+      "Id": "docker.prune",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Limpiar imágenes sin uso",
+      "Command": "docker image prune -f",
+      "Risk": "Red",
+      "DescriptionEs": "Elimina imágenes Docker no usadas"
+    },
+    {
+      "Id": "docker.restart",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Reiniciar contenedor de ejemplo",
+      "Command": "docker restart anticli-test",
+      "Risk": "Red",
+      "DescriptionEs": "Interrumpe el contenedor indicado"
+    },
+    {
+      "Id": "docker.compose-up",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Crear o actualizar Compose",
+      "Command": "docker compose up -d",
+      "Risk": "Red",
+      "DescriptionEs": "Puede recrear contenedores y modificar infraestructura"
+    },
+    {
+      "Id": "docker.compose-down",
+      "Module": "docker",
+      "GroupName": "Docker y Compose",
+      "LabelEs": "Detener Compose",
+      "Command": "docker compose down",
+      "Risk": "Red",
+      "DescriptionEs": "Detiene y elimina recursos Compose"
+    },
+    {
+      "Id": "salt.version",
+      "Module": "salt",
+      "GroupName": "SaltStack",
+      "LabelEs": "Versión Salt",
+      "Command": "salt-call --version",
+      "Risk": "Green",
+      "DescriptionEs": "Versión del minion Salt"
+    },
+    {
+      "Id": "salt.grains",
+      "Module": "salt",
+      "GroupName": "SaltStack",
+      "LabelEs": "Grains locales",
+      "Command": "salt-call --local grains.items --out=json",
+      "Risk": "Green",
+      "DescriptionEs": "Datos del minion"
+    },
+    {
+      "Id": "salt.pillar",
+      "Module": "salt",
+      "GroupName": "SaltStack",
+      "LabelEs": "Pillar local",
+      "Command": "salt-call --local pillar.items --out=json",
+      "Risk": "Yellow",
+      "DescriptionEs": "PUEDE revelar secretos; no compartir salida"
+    },
+    {
+      "Id": "salt.highstate",
+      "Module": "salt",
+      "GroupName": "SaltStack",
+      "LabelEs": "Simular highstate",
+      "Command": "salt-call --local state.apply test=True --out=json",
+      "Risk": "Yellow",
+      "DescriptionEs": "Simula estados Salt; requiere permisos"
+    },
+    {
+      "Id": "salt.states",
+      "Module": "salt",
+      "GroupName": "SaltStack",
+      "LabelEs": "Aplicar estados",
+      "Command": "salt-call --local state.apply --out=json",
+      "Risk": "Red",
+      "DescriptionEs": "Modifica sistema según definiciones Salt"
+    },
+    {
+      "Id": "salt.ping",
+      "Module": "salt",
+      "GroupName": "SaltStack",
+      "LabelEs": "Estado minion",
+      "Command": "salt-call test.ping --out=json",
+      "Risk": "Green",
+      "DescriptionEs": "Comprueba Salt minion"
+    },
+    {
+      "Id": "salt.keys",
+      "Module": "salt",
+      "GroupName": "SaltStack",
+      "LabelEs": "Claves Salt",
+      "Command": "salt-key -L",
+      "Risk": "Yellow",
+      "DescriptionEs": "Muestra claves del master, si instalado"
+    },
+    {
+      "Id": "salt.accept",
+      "Module": "salt",
+      "GroupName": "SaltStack",
+      "LabelEs": "Aceptar claves pendientes",
+      "Command": "salt-key -A -y",
+      "Risk": "Red",
+      "DescriptionEs": "Confía en claves Salt pendientes"
+    },
+    {
+      "Id": "monitor.icinga",
+      "Module": "monitor",
+      "GroupName": "Monitorización",
+      "LabelEs": "Estado Icinga2",
+      "Command": "systemctl status icinga2 --no-pager",
+      "Risk": "Green",
+      "DescriptionEs": "Estado servicio Icinga"
+    },
+    {
+      "Id": "monitor.icinga-config",
+      "Module": "monitor",
+      "GroupName": "Monitorización",
+      "LabelEs": "Validar configuración Icinga2",
+      "Command": "icinga2 daemon -C",
+      "Risk": "Green",
+      "DescriptionEs": "Valida config sin activarla"
+    },
+    {
+      "Id": "monitor.icinga-reload",
+      "Module": "monitor",
+      "GroupName": "Monitorización",
+      "LabelEs": "Recargar Icinga2",
+      "Command": "systemctl reload icinga2",
+      "Risk": "Yellow",
+      "DescriptionEs": "Actualiza configuración en ejecución"
+    },
+    {
+      "Id": "monitor.icinga-restart",
+      "Module": "monitor",
+      "GroupName": "Monitorización",
+      "LabelEs": "Reiniciar Icinga2",
+      "Command": "systemctl restart icinga2",
+      "Risk": "Red",
+      "DescriptionEs": "Reinicia servicio monitorización"
+    },
+    {
+      "Id": "monitor.journal",
+      "Module": "monitor",
+      "GroupName": "Monitorización",
+      "LabelEs": "Logs críticos",
+      "Command": "journalctl -p err -n 50 --no-pager",
+      "Risk": "Green",
+      "DescriptionEs": "Últimos errores del journal"
+    },
+    {
+      "Id": "monitor.tail-icinga",
+      "Module": "monitor",
+      "GroupName": "Monitorización",
+      "LabelEs": "Logs de Icinga2",
+      "Command": "journalctl -u icinga2 -n 60 --no-pager",
+      "Risk": "Green",
+      "DescriptionEs": "Eventos recientes del servicio"
+    },
+    {
+      "Id": "monitor.sensors",
+      "Module": "monitor",
+      "GroupName": "Monitorización",
+      "LabelEs": "Temperaturas y sensores",
+      "Command": "sensors",
+      "Risk": "Green",
+      "DescriptionEs": "Requiere lm-sensors"
+    },
+    {
+      "Id": "cloud.azversion",
+      "Module": "cloud",
+      "GroupName": "Nube Azure",
+      "LabelEs": "Azure CLI",
+      "Command": "az version",
+      "Risk": "Green",
+      "DescriptionEs": "Versiones Azure CLI"
+    },
+    {
+      "Id": "cloud.azaccount",
+      "Module": "cloud",
+      "GroupName": "Nube Azure",
+      "LabelEs": "Cuenta activa",
+      "Command": "az account show",
+      "Risk": "Yellow",
+      "DescriptionEs": "Muestra suscripción y tenant de la sesión"
+    },
+    {
+      "Id": "cloud.azlist",
+      "Module": "cloud",
+      "GroupName": "Nube Azure",
+      "LabelEs": "Suscripciones",
+      "Command": "az account list --output table",
+      "Risk": "Yellow",
+      "DescriptionEs": "Enumera metadatos de suscripciones"
+    },
+    {
+      "Id": "cloud.azgroups",
+      "Module": "cloud",
+      "GroupName": "Nube Azure",
+      "LabelEs": "Grupos de recursos",
+      "Command": "az group list --output table",
+      "Risk": "Green",
+      "DescriptionEs": "Recursos del tenant autorizado"
+    },
+    {
+      "Id": "cloud.azvms",
+      "Module": "cloud",
+      "GroupName": "Nube Azure",
+      "LabelEs": "Máquinas virtuales",
+      "Command": "az vm list --output table",
+      "Risk": "Green",
+      "DescriptionEs": "Lista máquinas virtuales"
+    },
+    {
+      "Id": "cloud.azlogout",
+      "Module": "cloud",
+      "GroupName": "Nube Azure",
+      "LabelEs": "Cerrar sesión de Azure",
+      "Command": "az logout",
+      "Risk": "Yellow",
+      "DescriptionEs": "Cierra la sesión de Azure CLI"
+    },
+    {
+      "Id": "cloud.azlogin",
+      "Module": "cloud",
+      "GroupName": "Nube Azure",
+      "LabelEs": "Autenticar Azure",
+      "Command": "az login --use-device-code",
+      "Risk": "Yellow",
+      "DescriptionEs": "Inicia login interactivo; puede no funcionar en SSH sin TTY"
+    },
+    {
+      "Id": "logs.journal",
+      "Module": "logs",
+      "GroupName": "Logs y auditoría",
+      "LabelEs": "Logs recientes",
+      "Command": "journalctl -n 100 --no-pager",
+      "Risk": "Green",
+      "DescriptionEs": "Últimos eventos del sistema"
+    },
+    {
+      "Id": "logs.boots",
+      "Module": "logs",
+      "GroupName": "Logs y auditoría",
+      "LabelEs": "Inicios del sistema",
+      "Command": "journalctl --list-boots --no-pager",
+      "Risk": "Green",
+      "DescriptionEs": "Registro de reinicios"
+    },
+    {
+      "Id": "logs.ssh",
+      "Module": "logs",
+      "GroupName": "Logs y auditoría",
+      "LabelEs": "Fallos SSH",
+      "Command": "journalctl -u ssh -n 100 --no-pager",
+      "Risk": "Green",
+      "DescriptionEs": "Historial SSH"
+    },
+    {
+      "Id": "logs.syslog",
+      "Module": "logs",
+      "GroupName": "Logs y auditoría",
+      "LabelEs": "Syslog",
+      "Command": "tail -n 100 /var/log/syslog",
+      "Risk": "Green",
+      "DescriptionEs": "Puede revelar datos operativos"
+    },
+    {
+      "Id": "logs.audit",
+      "Module": "logs",
+      "GroupName": "Logs y auditoría",
+      "LabelEs": "Eventos de autenticación",
+      "Command": "tail -n 80 /var/log/auth.log",
+      "Risk": "Yellow",
+      "DescriptionEs": "Logs con información sensible"
+    },
+    {
+      "Id": "logs.rotate",
+      "Module": "logs",
+      "GroupName": "Logs y auditoría",
+      "LabelEs": "Forzar rotación de logs",
+      "Command": "logrotate -f /etc/logrotate.conf",
+      "Risk": "Red",
+      "DescriptionEs": "Fuerza rotación del sistema"
+    },
+    {
+      "Id": "git.version",
+      "Module": "git",
+      "GroupName": "Git",
+      "LabelEs": "Versión de Git",
+      "Command": "git --version",
+      "Risk": "Green",
+      "DescriptionEs": "Comprueba instalación"
+    },
+    {
+      "Id": "git.status",
+      "Module": "git",
+      "GroupName": "Git",
+      "LabelEs": "Estado del repositorio",
+      "Command": "git status --short",
+      "Risk": "Green",
+      "DescriptionEs": "Estado en el directorio remoto"
+    },
+    {
+      "Id": "git.log",
+      "Module": "git",
+      "GroupName": "Git",
+      "LabelEs": "Historial reciente",
+      "Command": "git log -5 --oneline",
+      "Risk": "Green",
+      "DescriptionEs": "Últimos commits"
+    },
+    {
+      "Id": "git.branches",
+      "Module": "git",
+      "GroupName": "Git",
+      "LabelEs": "Ramas locales",
+      "Command": "git branch --list",
+      "Risk": "Green",
+      "DescriptionEs": "Ramas del repositorio"
+    },
+    {
+      "Id": "git.fetch",
+      "Module": "git",
+      "GroupName": "Git",
+      "LabelEs": "Descargar refs remotas",
+      "Command": "git fetch --all --prune",
+      "Risk": "Yellow",
+      "DescriptionEs": "Actualiza refs locales de Git"
+    },
+    {
+      "Id": "git.pull",
+      "Module": "git",
+      "GroupName": "Git",
+      "LabelEs": "Actualizar rama",
+      "Command": "git pull --ff-only",
+      "Risk": "Red",
+      "DescriptionEs": "Modifica árbol de trabajo remoto"
+    },
+    {
+      "Id": "git.reset",
+      "Module": "git",
+      "GroupName": "Git",
+      "LabelEs": "Descartar cambios locales",
+      "Command": "git reset --hard HEAD",
+      "Risk": "Red",
+      "DescriptionEs": "DESTRUCTIVO: descarta cambios sin confirmar"
+    },
+    {
+      "Id": "backup.rsyncdry",
+      "Module": "backup",
+      "GroupName": "Copias y compresión",
+      "LabelEs": "Simulación copia local",
+      "Command": "rsync -avn /etc/ /tmp/anticli-etc-backup/",
+      "Risk": "Green",
+      "DescriptionEs": "Simula sincronización"
+    },
+    {
+      "Id": "backup.tarlist",
+      "Module": "backup",
+      "GroupName": "Copias y compresión",
+      "LabelEs": "Listar tar de ejemplo",
+      "Command": "tar -tf /tmp/backup.tar",
+      "Risk": "Green",
+      "DescriptionEs": "Lista archivo, si existe"
+    },
+    {
+      "Id": "backup.rsync",
+      "Module": "backup",
+      "GroupName": "Copias y compresión",
+      "LabelEs": "Copiar configuración",
+      "Command": "rsync -av /etc/ /tmp/anticli-etc-backup/",
+      "Risk": "Yellow",
+      "DescriptionEs": "Copia archivos en /tmp"
+    },
+    {
+      "Id": "backup.tar",
+      "Module": "backup",
+      "GroupName": "Copias y compresión",
+      "LabelEs": "Comprimir configuración",
+      "Command": "tar -czf /tmp/anticli-etc-backup.tar.gz /etc",
+      "Risk": "Yellow",
+      "DescriptionEs": "Escribe archivo comprimido; puede contener secretos"
+    },
+    {
+      "Id": "backup.sync",
+      "Module": "backup",
+      "GroupName": "Copias y compresión",
+      "LabelEs": "Sincronizar /tmp",
+      "Command": "rsync -av --delete /tmp/a/ /tmp/b/",
+      "Risk": "Red",
+      "DescriptionEs": "DESTRUCTIVO en destino: --delete elimina archivos"
+    }
+  ],
+  "Windows": [
+    {
+      "Id": "windows.os",
+      "Module": "os",
+      "GroupName": "Windows",
+      "LabelEs": "Versión de Windows",
+      "Command": "cmd /c ver",
+      "Risk": "Green",
+      "DescriptionEs": "Versión de Windows"
+    },
+    {
+      "Id": "windows.user",
+      "Module": "user",
+      "GroupName": "Windows",
+      "LabelEs": "Usuario conectado",
+      "Command": "whoami",
+      "Risk": "Green",
+      "DescriptionEs": "Usuario conectado"
+    },
+    {
+      "Id": "windows.host",
+      "Module": "host",
+      "GroupName": "Windows",
+      "LabelEs": "Nombre del equipo",
+      "Command": "hostname",
+      "Risk": "Green",
+      "DescriptionEs": "Nombre del equipo"
+    },
+    {
+      "Id": "windows.network",
+      "Module": "network",
+      "GroupName": "Windows",
+      "LabelEs": "Configuración de red",
+      "Command": "ipconfig /all",
+      "Risk": "Green",
+      "DescriptionEs": "Configuración de red"
+    },
+    {
+      "Id": "windows.process",
+      "Module": "process",
+      "GroupName": "Windows",
+      "LabelEs": "Procesos activos",
+      "Command": "tasklist",
+      "Risk": "Green",
+      "DescriptionEs": "Procesos activos"
+    },
+    {
+      "Id": "windows.services",
+      "Module": "services",
+      "GroupName": "Windows",
+      "LabelEs": "Servicios instalados",
+      "Command": "sc.exe query",
+      "Risk": "Green",
+      "DescriptionEs": "Servicios instalados"
+    },
+    {
+      "Id": "windows.ports",
+      "Module": "ports",
+      "GroupName": "Windows",
+      "LabelEs": "Conexiones de red",
+      "Command": "netstat -ano",
+      "Risk": "Green",
+      "DescriptionEs": "Conexiones de red"
+    }
+  ]
+}
