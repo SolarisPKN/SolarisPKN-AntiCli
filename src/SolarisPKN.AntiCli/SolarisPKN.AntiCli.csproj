@@ -18,6 +18,7 @@
     <EmbeddedResource Include="Data\admin-commands.json" LogicalName="AntiCli.AdminCommands" />
     <EmbeddedResource Include="Data\command-schemas.json" LogicalName="AntiCli.CommandSchemas" />
     <EmbeddedResource Include="Data\guided-commands.json" LogicalName="AntiCli.GuidedCommands" />
+    <EmbeddedResource Include="Data\install-providers.json" LogicalName="AntiCli.InstallProviders" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.22" />
