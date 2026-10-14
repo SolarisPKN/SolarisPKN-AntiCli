@@ -1,3 +1,17 @@
+## Diseño modular adaptable y scroll independiente
+
+La pantalla **2 · Comandos y bloques** ahora está compuesta por **tres controles Avalonia independientes**, con código y vista propios:
+
+- `CommandWorkspaceView.axaml` — zona de trabajo superior para búsqueda universal, módulos, flags, parámetros y formulario superpuesto. El catálogo tiene su propio scroll, y el formulario guiado también puede desplazarse sin mover la consola.
+- `SshTerminalPane.axaml` — terminal SSH con salida, comandos anteriores, historial editable y botones para **desacoplar**, **maximizar el área** o **mover el panel a izquierda/derecha**. Tiene scroll propio para logs largos.
+- `CommandEntryPane.axaml` — franja inferior **siempre visible** con campo manual y controles de ejecutar/\`sudo\`. Los controles accesorios tienen su propio scroll; la entrada de texto se queda fija arriba.
+
+El contenedor `SessionView.axaml` distribuye proporcionalmente la pantalla: **70% de altura para la zona superior**, **30% para los comandos inferiores**; en vista normal, la zona superior se reparte **75% trabajo / 25% terminal**, o viceversa cuando el operador mueve la terminal a la izquierda. Los tamaños se recalculan con la ventana; cada módulo contiene su scroll en lugar de extender la altura de toda la pantalla.
+
+Al ocultar, expandir o desacoplar la terminal se redimensiona solo la región superior. El módulo inferior no desaparece al variar la resolución. Si se desacopla en un segundo monitor, la nueva ventana sigue consultando la misma sesión SSH y los mismos registros, sin copiar credenciales.
+
+**Nota:** el reparto de tamaño y los scrolls tienen compilación automatizada, pero necesitan validación visual en Windows a distintas resoluciones (especialmente 1366×768, 1920×1080 y ventanas estrechas).
+
 ## Consola SSH desacoplable (dos monitores)
 
 Dentro de la pestaña de comandos, la consola aparece a la derecha (aprox. 25% de ancho). Pulsá **Desacoplar ↗** para abrir una **ventana de consola independiente**. Arrastrala al segundo monitor y pulsá **Maximizar** (también funciona `F11`). De este modo, el catálogo, los formularios y la barra fija de comandos manuales siguen visibles en la ventana principal; la salida y el historial ocupan la otra pantalla.
