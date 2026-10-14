@@ -96,7 +96,8 @@ public partial class SessionView
                     {
                         new TextBlock
                         {
-                            Text = (node.Kind == FlowNodeKind.Loop
+                            Text = (node.Id == _flowStartId ? "▶ " : "") +
+                                (node.Kind == FlowNodeKind.Loop
                                 ? "↺ " + node.LoopMode + " ≤ " + node.MaxIterations
                                 : node.Kind.ToString()) + " · " + node.Label,
                             FontWeight = FontWeight.Bold, Foreground = Brushes.White,
